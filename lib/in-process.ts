@@ -1,4 +1,9 @@
 const appBasePath = (process.env.NEXT_PUBLIC_AXION_BASE_PATH ?? '').replace(/\/$/, '');
+const backendApiUrl = (
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  'https://artha-backend-scn2.onrender.com'
+).replace(/\/$/, '');
 
 export function axionAppPath(path: string): string {
   if (!path.startsWith('/') || path.startsWith('//') || !appBasePath ||
@@ -17,6 +22,9 @@ export function axionLocalPath(path: string): string {
 
 export function axionApiPath(path: string): string {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  if (backendApiUrl && backendApiUrl.startsWith('http')) {
+    return `${backendApiUrl}${normalizedPath}`;
+  }
   return axionAppPath(normalizedPath);
 }
 
