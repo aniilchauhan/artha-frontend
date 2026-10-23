@@ -25,6 +25,7 @@ const DashboardMarketRadar = dynamic(() => import('./DashboardMarketRadar'), { s
 const WholeMarketForecast = dynamic(() => import('./WholeMarketForecast'), { ssr: false });
 const NseSmartMoneyWidget = dynamic(() => import('./NseSmartMoneyWidget'), { ssr: false });
 const LiveMarketHeatmapGrid = dynamic(() => import('./LiveMarketHeatmapGrid'), { ssr: false });
+const DashboardPowerRadarsHub = dynamic(() => import('./DashboardPowerRadarsHub'), { ssr: false });
 import QuickTradeModal from './QuickTradeModal';
 import { playTargetChime } from '../lib/sound-notifications';
 import {
@@ -657,6 +658,7 @@ export default function DashboardMain() {
           </div>
           <nav aria-label="Dashboard sections" className="flex max-w-full gap-1.5 overflow-x-auto pb-0.5">
             {[
+              { href: '#dashboard-power-radars-hub', label: 'Top 3 Radars' },
               { href: '#live-market-heatmap-grid', label: 'Market heatmap' },
               { href: '#dashboard-research-desk', label: 'Research desk' },
               { href: '#dashboard-stock-opportunities', label: 'Stock opportunities' },
@@ -701,6 +703,9 @@ export default function DashboardMain() {
           </div>
         </div>
       )}
+
+      {/* ─── Top 3 Core Execution Radars: Small Cap 2%, 10% Screener, 2-5% Fall ─── */}
+      <DashboardPowerRadarsHub />
 
       {/* ─── Live Intraday Small-Cap Multi-Indicator Heatmap Grid (Top Priority) ── */}
       <LiveMarketHeatmapGrid customStocks={effectiveStocks} />
