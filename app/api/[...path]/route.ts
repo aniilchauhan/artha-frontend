@@ -54,7 +54,14 @@ async function handleProxy(
   } catch (error: any) {
     return NextResponse.json(
       { error: "Backend proxy error", details: error?.message || "Failed to connect to backend" },
-      { status: 502 }
+      {
+        status: 502,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+          "Access-Control-Allow-Headers": "*",
+        },
+      }
     );
   }
 }
