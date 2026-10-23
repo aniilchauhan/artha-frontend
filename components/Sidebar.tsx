@@ -9,7 +9,7 @@ import {
   Gauge, Rocket, Filter, Layers, Newspaper, Award,
   Calendar, BarChart3, FlaskConical, ShieldCheck, Info,
   ChevronDown, PanelLeftClose, PanelLeftOpen,
-  TrendingUp, Compass, Menu
+  TrendingUp, TrendingDown, Compass, Menu
 } from 'lucide-react';
 import { useStockContext } from '../context/StockContext';
 
@@ -60,6 +60,7 @@ const navigationGroups: NavGroup[] = [
       { name: 'Greeks Monitor', href: '/greeks', icon: Gauge, badge: 'Δ', badgeType: 'greek', color: 'text-teal-500' },
       { name: 'Gap Screener', href: '/gap-analysis', icon: Maximize2, badge: 'GAP', badgeType: 'neutral', color: 'text-amber-500' },
       { name: 'Small Cap 2% Picks', href: '/small-cap-predictions', icon: TrendingUp, color: 'text-emerald-500' },
+      { name: '2–5% Fall Predictions', href: '/fall-predictions', icon: TrendingDown, badge: 'SHORT', badgeType: 'hot', color: 'text-rose-500' },
       { name: 'Multibagger Ideas', href: '/multibagger', icon: Rocket, color: 'text-fuchsia-500' },
       { name: 'Stock Opportunities', href: '/opportunities', icon: Flame, badge: 'HOT', badgeType: 'hot', color: 'text-rose-500' },
       { name: 'Live Decisions', href: '/live-decisions', icon: Zap, badge: 'LIVE', badgeType: 'live', color: 'text-emerald-500' },

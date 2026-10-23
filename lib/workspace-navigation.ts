@@ -18,6 +18,7 @@ export const workspacePages = [
   { href: '/frameworks', name: 'Strategy Lab (Lab)', group: 'Research Labs', description: 'Evaluate institutional quantitative rules and frameworks' },
   { href: '/quant', name: 'Quant Suite (Lab)', group: 'Research Labs', description: 'Quantitative risk modeling and portfolio optimization' },
   { href: '/small-cap-predictions', name: 'Small Cap 2% Picks (Lab)', group: 'Research Labs', description: 'Small-cap momentum research setups' },
+  { href: '/fall-predictions', name: '2–5% Fall Predictions (Lab)', group: 'Research Labs', description: 'Bearish support breakdown and Put Option (PE) setups' },
   { href: '/futures-options', name: 'Futures & Options (Lab)', group: 'Research Labs', description: 'Derivatives research, options chain and Greeks' },
   { href: '/gap-analysis', name: 'Gap Analysis (Lab)', group: 'Research Labs', description: 'Overnight gap screening and candle payoff backtests' },
   { href: '/predictions', name: 'Prediction Tracker (Lab)', group: 'Research Labs', description: 'Historical prediction logs and calibration reviews' },
