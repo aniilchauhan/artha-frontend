@@ -1,0 +1,21 @@
+{
+  "name": "Artha AI Market Intelligence & Research Terminal",
+  "short_name": "Artha AI",
+  "description": "NSE & BSE AI Market Intelligence, Breakout Radar, Derivatives, Greeks Monitor, Live Price Streaming, and Real-Time Alerts",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "categories": ["finance", "business"],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

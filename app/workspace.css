@@ -1,0 +1,467 @@
+/* Shared workspace system. Scoped so charts and third-party overlays keep their own styles. */
+:root, [data-theme="light"], .axion-workspace {
+  --ds-canvas: #f3f5f8;
+  --ds-surface: #ffffff;
+  --ds-raised: #e9eef5;
+  --ds-border: #d2dce9;
+  --ds-text: #17243a;
+  --ds-secondary: #52627a;
+  --ds-muted: #626f82;
+  --ds-accent: #075ccb;
+  --theme-accent: #075ccb;
+  --theme-secondary: #0284c7;
+
+  --workspace-surface: var(--ds-surface);
+  --workspace-border: var(--ds-border);
+  --workspace-muted: var(--ds-muted);
+  --workspace-accent: var(--ds-accent);
+  --workspace-foreground: var(--ds-text);
+  font-variant-numeric: tabular-nums;
+  color-scheme: light;
+}
+
+.dark, [data-theme="dark"], [data-theme="dark"] .axion-workspace {
+  --ds-canvas: #0c0c0e;
+  --ds-surface: #171719;
+  --ds-raised: #262629;
+  --ds-border: #333337;
+  --ds-text: #f5f5f7;
+  --ds-secondary: #bdbdc5;
+  --ds-muted: #a1a1ab;
+  --ds-accent: #8ab4ff;
+  --theme-accent: #6366f1;
+  --theme-secondary: #a855f7;
+
+  --workspace-surface: var(--ds-surface);
+  --workspace-border: var(--ds-border);
+  --workspace-muted: var(--ds-muted);
+  --workspace-accent: var(--ds-accent);
+  --workspace-foreground: var(--ds-text);
+  color-scheme: dark;
+}
+
+/* 3. Matrix Terminal (Cyber Phosphor Green) */
+[data-theme="emerald"], [data-theme="emerald"] .axion-workspace {
+  --ds-canvas: #040d07;
+  --ds-surface: #0a180e;
+  --ds-raised: #122619;
+  --ds-border: #184227;
+  --ds-text: #ecfdf5;
+  --ds-secondary: #6ee7b7;
+  --ds-muted: #34d399;
+  --ds-accent: #10b981;
+  --theme-accent: #10b981;
+  --theme-secondary: #059669;
+
+  --workspace-surface: var(--ds-surface);
+  --workspace-border: var(--ds-border);
+  --workspace-muted: var(--ds-muted);
+  --workspace-accent: var(--ds-accent);
+  --workspace-foreground: var(--ds-text);
+  color-scheme: dark;
+}
+
+/* 4. Wall St Bloomberg (Amber Gold) */
+[data-theme="amber"], [data-theme="amber"] .axion-workspace {
+  --ds-canvas: #0e0c08;
+  --ds-surface: #19150e;
+  --ds-raised: #282116;
+  --ds-border: #423521;
+  --ds-text: #fef3c7;
+  --ds-secondary: #fde68a;
+  --ds-muted: #fbbf24;
+  --ds-accent: #f59e0b;
+  --theme-accent: #f59e0b;
+  --theme-secondary: #d97706;
+
+  --workspace-surface: var(--ds-surface);
+  --workspace-border: var(--ds-border);
+  --workspace-muted: var(--ds-muted);
+  --workspace-accent: var(--ds-accent);
+  --workspace-foreground: var(--ds-text);
+  color-scheme: dark;
+}
+
+/* 5. Tokyo Synthwave (Neon Pink & Cyan) */
+[data-theme="cyberpunk"], [data-theme="cyberpunk"] .axion-workspace {
+  --ds-canvas: #0c0817;
+  --ds-surface: #160e29;
+  --ds-raised: #251642;
+  --ds-border: #3d236d;
+  --ds-text: #fdf2f8;
+  --ds-secondary: #f472b6;
+  --ds-muted: #e879f9;
+  --ds-accent: #ec4899;
+  --theme-accent: #ec4899;
+  --theme-secondary: #06b6d4;
+
+  --workspace-surface: var(--ds-surface);
+  --workspace-border: var(--ds-border);
+  --workspace-muted: var(--ds-muted);
+  --workspace-accent: var(--ds-accent);
+  --workspace-foreground: var(--ds-text);
+  color-scheme: dark;
+}
+
+/* 6. Arctic Glacier (Nordic Ice Blue & Teal) */
+[data-theme="nordic"], [data-theme="nordic"] .axion-workspace {
+  --ds-canvas: #070e17;
+  --ds-surface: #0e1a2b;
+  --ds-raised: #16273e;
+  --ds-border: #1f3a5c;
+  --ds-text: #f0f9ff;
+  --ds-secondary: #7dd3fc;
+  --ds-muted: #38bdf8;
+  --ds-accent: #0284c7;
+  --theme-accent: #38bdf8;
+  --theme-secondary: #2dd4bf;
+
+  --workspace-surface: var(--ds-surface);
+  --workspace-border: var(--ds-border);
+  --workspace-muted: var(--ds-muted);
+  --workspace-accent: var(--ds-accent);
+  --workspace-foreground: var(--ds-text);
+  color-scheme: dark;
+}
+
+/* 7. Royal Velvet (Deep Violet Amethyst) */
+[data-theme="amethyst"], [data-theme="amethyst"] .axion-workspace {
+  --ds-canvas: #0d0617;
+  --ds-surface: #180b2a;
+  --ds-raised: #271144;
+  --ds-border: #431b73;
+  --ds-text: #faf5ff;
+  --ds-secondary: #d8b4fe;
+  --ds-muted: #c084fc;
+  --ds-accent: #a855f7;
+  --theme-accent: #a855f7;
+  --theme-secondary: #c084fc;
+
+  --workspace-surface: var(--ds-surface);
+  --workspace-border: var(--ds-border);
+  --workspace-muted: var(--ds-muted);
+  --workspace-accent: var(--ds-accent);
+  --workspace-foreground: var(--ds-text);
+  color-scheme: dark;
+}
+
+/* 8. Apex Crimson (Fiery Red & Carbon) */
+[data-theme="crimson"], [data-theme="crimson"] .axion-workspace {
+  --ds-canvas: #0e0608;
+  --ds-surface: #1a0b10;
+  --ds-raised: #291119;
+  --ds-border: #4a1d29;
+  --ds-text: #fff1f2;
+  --ds-secondary: #fda4af;
+  --ds-muted: #fb7185;
+  --ds-accent: #ef4444;
+  --theme-accent: #ef4444;
+  --theme-secondary: #f43f5e;
+
+  --workspace-surface: var(--ds-surface);
+  --workspace-border: var(--ds-border);
+  --workspace-muted: var(--ds-muted);
+  --workspace-accent: var(--ds-accent);
+  --workspace-foreground: var(--ds-text);
+  color-scheme: dark;
+}
+
+/* 9. Solar Dusk (Tangerine & Coral) */
+[data-theme="sunset"], [data-theme="sunset"] .axion-workspace {
+  --ds-canvas: #100806;
+  --ds-surface: #1c0e0b;
+  --ds-raised: #2b1712;
+  --ds-border: #4c261e;
+  --ds-text: #fff7ed;
+  --ds-secondary: #fdba74;
+  --ds-muted: #fb923c;
+  --ds-accent: #f97316;
+  --theme-accent: #f97316;
+  --theme-secondary: #fb7185;
+
+  --workspace-surface: var(--ds-surface);
+  --workspace-border: var(--ds-border);
+  --workspace-muted: var(--ds-muted);
+  --workspace-accent: var(--ds-accent);
+  --workspace-foreground: var(--ds-text);
+  color-scheme: dark;
+}
+
+/* 10. Quantum OLED (True 0% Black & Platinum) */
+[data-theme="quantum"], [data-theme="quantum"] .axion-workspace {
+  --ds-canvas: #000000;
+  --ds-surface: #0a0a0a;
+  --ds-raised: #171717;
+  --ds-border: #262626;
+  --ds-text: #ffffff;
+  --ds-secondary: #d4d4d8;
+  --ds-muted: #a1a1aa;
+  --ds-accent: #ffffff;
+  --theme-accent: #ffffff;
+  --theme-secondary: #94a3b8;
+
+  --workspace-surface: var(--ds-surface);
+  --workspace-border: var(--ds-border);
+  --workspace-muted: var(--ds-muted);
+  --workspace-accent: var(--ds-accent);
+  --workspace-foreground: var(--ds-text);
+  color-scheme: dark;
+}
+.axion-workspace :where(button, a, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--workspace-accent);
+  outline-offset: 3px;
+}
+.axion-workspace :where(button:not(:disabled), summary, select) { cursor: pointer; }
+.axion-workspace :where(button:disabled) { cursor: not-allowed; }
+.axion-workspace :where(input, select, textarea) { accent-color: #6366f1; }
+.axion-workspace :where(h1, h2, h3) { text-wrap: balance; }
+.axion-workspace :where(p) { text-wrap: pretty; }
+.workspace-frame { max-width: 1800px; margin-inline: auto; }
+.workspace-main { scroll-margin-top: 9rem; }
+.workspace-main :where(.text-\[8px\], .text-\[9px\], .text-\[10px\]) { font-size: 0.6875rem; line-height: 1.5; }
+.workspace-main :where(.text-xs) { line-height: 1.55; }
+.workspace-main :where(.rounded-3xl) { border-radius: 1.25rem; }
+.workspace-main :where(.shadow-2xl) { box-shadow: 0 8px 24px -14px rgb(15 23 42 / 0.25); }
+.axion-workspace .glass-panel, .axion-workspace .glass-card { background: var(--workspace-surface); border-color: var(--workspace-border); box-shadow: 0 4px 16px -12px rgb(15 23 42 / .3); }
+.axion-workspace .table-row-hover:hover { transform: none; }
+.axion-workspace :where(.badge-pulse, .float-slow, .animate-glow-pulse) { animation: none; }
+.axion-workspace :where(table) { font-variant-numeric: tabular-nums; }
+.axion-workspace :where(th) { font-weight: 600; }
+.axion-workspace :where(tbody tr) { transition: background-color 120ms ease; }
+.axion-workspace :where(tbody tr:hover) { background-color: rgb(99 102 241 / .045); }
+.axion-workspace .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.workspace-skip-link { position: fixed; top: .75rem; left: 1rem; z-index: 100; transform: translateY(-160%); padding: .75rem 1rem; border-radius: .75rem; background: #4f46e5; color: white; font-size: .875rem; font-weight: 600; }
+.workspace-skip-link:focus { transform: translateY(0); }
+#app-main-header { background: var(--workspace-surface); border-color: var(--workspace-border); box-shadow: 0 1px 0 rgb(15 23 42 / .025); }
+#header-actions-container > button { min-height: 38px; min-width: 38px; }
+#app-sidebar-nav { width: 272px; padding: .75rem; margin: 0; border-radius: 0; border-width: 0 1px 0 0; background: var(--workspace-surface); box-shadow: none; border-color: var(--workspace-border); }
+#app-sidebar-nav[data-collapsed="true"] { width: 72px; padding: .5rem; }
+#app-sidebar-nav .sidebar-tool-label { white-space: normal; overflow-wrap: anywhere; line-height: 1.45; }
+#app-sidebar-nav a { gap: .5rem; }
+#app-sidebar-nav a > div:first-of-type { min-width: 0; }
+#app-sidebar-nav a > div:first-of-type > div { flex-shrink: 0; }
+#app-sidebar-nav .sidebar-tools { scrollbar-width: thin; scrollbar-color: rgb(148 163 184 / .5) transparent; padding-right: .25rem; }
+#app-sidebar-nav .sidebar-tools::-webkit-scrollbar { width: 5px; }
+#app-sidebar-nav .sidebar-tools::-webkit-scrollbar-thumb { background: rgb(148 163 184 / .5); border-radius: 8px; }
+#app-sidebar-nav :where(a) { border-radius: .75rem; }
+#app-sidebar-nav [aria-current="page"] { background: rgb(99 102 241 / .10); box-shadow: none; }
+#app-sidebar-nav :where(h3) { font-size: 11px; line-height: 1.5; }
+#app-sidebar-nav :where(.pill-active-glow) { box-shadow: none; }
+.workspace-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: -.25rem 0 1.25rem; padding-bottom: .875rem; border-bottom: 1px solid var(--workspace-border); }
+.workspace-tool-trigger, .workspace-back { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 38px; border-radius: .625rem; font-size: .75rem; font-weight: 600; white-space: nowrap; }
+.workspace-tool-trigger { padding: .5rem .75rem; border: 1px solid var(--workspace-border); color: var(--workspace-foreground); background: var(--workspace-surface); }
+.workspace-tool-trigger:hover, .workspace-icon-button:hover { background: rgb(99 102 241 / .08); }
+.workspace-back { color: var(--workspace-accent); }
+.workspace-tool-dialog { margin: auto; padding: 0; width: min(580px, calc(100vw - 24px)); max-height: min(720px, calc(100dvh - 32px)); border: 1px solid var(--workspace-border); border-radius: 1.25rem; color: var(--workspace-foreground); background: var(--workspace-surface); box-shadow: 0 24px 80px rgb(0 0 0 / .25); }
+.workspace-tool-dialog::backdrop { background: rgb(15 23 42 / .55); backdrop-filter: blur(4px); }
+.workspace-dialog-content { display: flex; flex-direction: column; max-height: min(720px, calc(100dvh - 34px)); }
+.workspace-icon-button { display: inline-flex; align-items: center; justify-content: center; min-width: 40px; min-height: 40px; border: 1px solid var(--workspace-border); border-radius: .75rem; }
+.workspace-directory-input { width: 100%; height: 46px; padding: .75rem .75rem .75rem 2.5rem; background: transparent; border: 1px solid var(--workspace-border); border-radius: .75rem; font-size: .875rem; }
+.workspace-directory-results { overflow-y: auto; overscroll-behavior: contain; padding: 0 .75rem .75rem; }
+.workspace-directory-link { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-radius: .75rem; padding: .75rem; }
+.workspace-directory-link:hover, .workspace-directory-link[aria-current="page"] { background: rgb(99 102 241 / .08); }
+.workspace-context { border: 1px solid var(--workspace-border); border-radius: 1.25rem; background: var(--workspace-surface); }
+.workspace-context > summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.125rem 1.25rem; list-style: none; }
+.workspace-context > summary::-webkit-details-marker { display: none; }
+.workspace-context[open] > summary { border-bottom: 1px solid var(--workspace-border); }
+.workspace-context[open] > summary svg { transform: rotate(90deg); }
+.workspace-context-content { display: grid; gap: 1.25rem; padding: 1.25rem; }
+@media (min-width: 768px) {
+  .workspace-frame { max-width: none; margin: 0; padding-inline: 0; }
+  .workspace-main { padding: 1.5rem; }
+}
+@media (max-width: 767px) {
+  .workspace-main { padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)); }
+  .workspace-toolbar { margin-top: 0; margin-bottom: 1rem; }
+  #app-main-header .header-row { height: auto; min-height: 64px; flex-wrap: wrap; padding-top: .5rem; padding-bottom: .75rem; row-gap: .75rem; }
+  #app-main-header .stock-search { display: block; order: 3; max-width: none; width: 100%; margin-left: 0; }
+  #app-main-header .stock-search input { min-height: 44px; font-size: 16px; }
+  #header-actions-container > div:first-child { display: none; }
+  #header-actions-container { margin-left: auto; }
+  .workspace-main :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) { font-size: 16px; }
+  .workspace-main :where(button, summary) { min-height: 40px; }
+  .workspace-context-content { padding: .875rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .axion-workspace *, .axion-workspace *::before, .axion-workspace *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Shared design system theme adoption for all pages */
+.axion-workspace {
+  background: var(--ds-canvas);
+  color: var(--ds-text);
+  font-family: var(--font-sans), Segoe UI, sans-serif;
+}
+
+/* Card & Panel Surface Backgrounds */
+.axion-workspace :is(
+  .bg-white,
+  .bg-white\/70,
+  .bg-white\/80,
+  .bg-white\/85,
+  .bg-white\/90,
+  .bg-white\/95,
+  .dark\:bg-gray-900,
+  .dark\:bg-gray-900\/70,
+  .dark\:bg-gray-900\/80,
+  .dark\:bg-gray-900\/90,
+  .dark\:bg-slate-900,
+  .dark\:bg-slate-900\/70,
+  .dark\:bg-slate-900\/80,
+  .dark\:bg-slate-900\/85,
+  .dark\:bg-slate-900\/90,
+  .dark\:bg-slate-950,
+  .dark\:bg-slate-950\/70,
+  .dark\:bg-slate-950\/80,
+  .dark\:bg-slate-950\/90
+) {
+  background-color: var(--ds-surface);
+}
+
+/* Secondary / Elevated / Input / Hover Surfaces */
+.axion-workspace :is(
+  .bg-slate-50,
+  .bg-slate-100,
+  .bg-gray-50,
+  .bg-gray-100,
+  .dark\:bg-slate-800,
+  .dark\:bg-slate-800\/40,
+  .dark\:bg-slate-800\/60,
+  .dark\:bg-slate-800\/70,
+  .dark\:bg-slate-800\/80,
+  .dark\:bg-gray-800,
+  .dark\:bg-gray-800\/60,
+  .dark\:bg-gray-800\/80
+) {
+  background-color: var(--ds-raised);
+}
+
+/* Glass Card & Panel Styling */
+.axion-workspace :is(.glass-card, .glass-panel) {
+  border-radius: 1.25rem;
+  background-color: var(--ds-surface);
+  border-color: var(--ds-border);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Harmonize Card & Component Borders */
+.axion-workspace :is(
+  .border-slate-200,
+  .border-slate-200\/60,
+  .border-slate-200\/70,
+  .border-slate-200\/80,
+  .border-slate-100,
+  .border-gray-200,
+  .border-gray-100,
+  .dark\:border-slate-800,
+  .dark\:border-slate-800\/60,
+  .dark\:border-slate-800\/70,
+  .dark\:border-slate-800\/80,
+  .dark\:border-slate-800\/90,
+  .dark\:border-slate-700,
+  .dark\:border-slate-700\/50,
+  .dark\:border-slate-700\/60,
+  .dark\:border-slate-700\/80,
+  .dark\:border-gray-800,
+  .dark\:border-gray-700
+) {
+  border-color: var(--ds-border);
+}
+
+/* Primary Headings & High-contrast Text */
+.axion-workspace :is(h1, h2, h3) {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.axion-workspace :is(
+  .text-slate-900,
+  .text-gray-900,
+  .text-slate-800,
+  .dark\:text-white,
+  .dark\:text-slate-100,
+  .dark\:text-slate-200
+) {
+  color: var(--ds-text);
+}
+
+/* Secondary & Subtitle Text */
+.axion-workspace :is(
+  .text-slate-600,
+  .text-slate-500,
+  .text-gray-600,
+  .text-gray-500,
+  .dark\:text-slate-300,
+  .dark\:text-slate-400,
+  .dark\:text-gray-400
+) {
+  color: var(--ds-secondary);
+}
+
+/* Muted & Micro-caption Text */
+.axion-workspace :is(
+  .text-slate-400,
+  .text-gray-400,
+  .dark\:text-slate-500,
+  .dark\:text-gray-500
+) {
+  color: var(--ds-muted);
+}
+
+/* Typography micro scale */
+.axion-workspace :is(.text-\[8px\], .text-\[9px\], .text-\[10px\]) {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* Ensure hardcoded dark-only card classes automatically adapt to light mode */
+.axion-workspace:not(.dark) :is(
+  .bg-slate-900,
+  .bg-slate-900\/90,
+  .bg-slate-900\/80,
+  .bg-slate-900\/60,
+  .bg-slate-900\/50,
+  .bg-slate-950,
+  .bg-slate-850
+):not([data-force-dark]) {
+  background-color: var(--ds-surface);
+  border-color: var(--ds-border);
+}
+
+.axion-workspace:not(.dark) :is(
+  .bg-slate-900,
+  .bg-slate-900\/90,
+  .bg-slate-900\/80,
+  .bg-slate-900\/60,
+  .bg-slate-900\/50,
+  .bg-slate-950,
+  .bg-slate-850
+):not([data-force-dark]) :is(.text-white, .text-slate-100, .text-slate-200) {
+  color: var(--ds-text);
+}
+
+.axion-workspace:not(.dark) :is(
+  .bg-slate-900,
+  .bg-slate-900\/90,
+  .bg-slate-900\/80,
+  .bg-slate-900\/60,
+  .bg-slate-900\/50,
+  .bg-slate-950,
+  .bg-slate-850
+):not([data-force-dark]) :is(.text-slate-300, .text-slate-400) {
+  color: var(--ds-secondary);
+}
+
+/* In dark mode, ensure hardcoded dark cards use the canonical theme surface */
+.dark .axion-workspace :is(
+  .bg-slate-900,
+  .bg-slate-900\/90,
+  .bg-slate-900\/80,
+  .bg-slate-900\/60,
+  .bg-slate-900\/50,
+  .bg-slate-950
+):not([data-force-dark]) {
+  background-color: var(--ds-surface);
+  border-color: var(--ds-border);
+}
+

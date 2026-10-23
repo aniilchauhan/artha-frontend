@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artha AI — Official Brand Identity & Antigravity Logo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #060813;
+      --card-bg: #0d1224;
+      --border: #1e293b;
+      --accent: #6366f1;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 2.5rem 1rem 5rem;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 3rem 1.5rem;
+      background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.25), rgba(236, 72, 153, 0.15) 50%, transparent 80%);
+      border-radius: 1.5rem;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #ffffff 20%, #a5b4fc 60%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto 1.5rem;
+    }
+    .hero-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      padding: 2.5rem;
+      background: rgba(13, 18, 36, 0.9);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 1.5rem;
+      margin-bottom: 3.5rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 50px rgba(99, 102, 241, 0.15);
+    }
+    .hero-img {
+      width: 180px;
+      height: 180px;
+      border-radius: 2rem;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 40px rgba(99, 102, 241, 0.35);
+      border: 1px solid #334155;
+    }
+    .hero-details {
+      max-width: 580px;
+    }
+    .hero-tag {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .hero-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin: 0.25rem 0 0.5rem;
+      color: #fff;
+    }
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+    .specs-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .spec-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      border-radius: 0.4rem;
+      color: #94a3b8;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+    .logo-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s ease;
+    }
+    .logo-card:hover {
+      transform: translateY(-4px);
+      border-color: #6366f1;
+      box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.35);
+    }
+    .img-wrap {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #04060e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 0.75rem;
+    }
+    .card-body {
+      padding: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 0.35rem;
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 0.4rem;
+    }
+    .palette-tag {
+      font-size: 0.8rem;
+      color: #a5b4fc;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .board-full {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      overflow: hidden;
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .board-full img {
+      width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      display: block;
+    }
+    .back-btn {
+      display: inline-block;
+      padding: 0.85rem 1.75rem;
+      background: #6366f1;
+      color: #fff;
+      font-weight: 700;
+      border-radius: 0.75rem;
+      text-decoration: none;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .back-btn:hover {
+      background: #4f46e5;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Official Brand Identity</div>
+      <h1>Artha AI (अर्थ)</h1>
+      <p class="subtitle">The Neural Synaptic Tree of Compounding Wealth (Kalpavriksha) rendered in signature Google Antigravity luminous mesh gradients.</p>
+      <a href="/" class="back-btn">&larr; Return to Artha AI Terminal</a>
+    </header>
+
+    <!-- OFFICIAL ACTIVE LOGO -->
+    <div class="hero-banner">
+      <img src="./branding/preview/tree_master_transparent.png" alt="Artha AI Official Logo" class="hero-img">
+      <div class="hero-details">
+        <div class="hero-tag">Active Official Identity</div>
+        <h2 class="hero-title">Neural Synaptic Tree of Compounding Wealth</h2>
+        <p class="hero-desc">
+          Rooted in Sanskrit economic wisdom (<em>Artha</em>) and inspired by the mythical wish-fulfilling tree of infinite capital growth (<em>Kalpavriksha</em>). Styled with fiber-optic synaptic neural pathways and illuminated alpha coin nodes, bathed in radiant ultraviolet, magenta, and cyber cyan mesh gradients.
+        </p>
+        <div class="specs-list">
+          <span class="spec-pill">Web: /branding/axion-logo.png</span>
+          <span class="spec-pill">Favicon: 64x64 RGBA</span>
+          <span class="spec-pill">Apple: 180x180 RGB</span>
+          <span class="spec-pill">Mobile: 1024x1024</span>
+          <span class="spec-pill">Palette: Antigravity Mesh</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 TREE DESIGNS -->
+    <div style="margin-bottom: 4rem;">
+      <h2 style="font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 1.25rem;">
+        Antigravity Gradient Design Variations
+      </h2>
+      <div class="grid">
+        <div class="logo-card">
+          <div class="img-wrap"><img src="./branding/preview/tree_01.png" alt="Neural Synaptic Tree"></div>
+          <div class="card-body">
+            <div class="card-badge">ACTIVE #17-A</div>
+            <div class="card-title">Neural Synaptic Tree</div>
+            <div class="palette-tag">Ultraviolet &bull; Magenta &bull; Cyan</div>
+            <div class="desc">Fiber-optic roots and trunk branching into illuminated alpha coin nodes and synaptic AI pathways.</div>
+          </div>
+        </div>
+
+        <div class="logo-card">
+          <div class="img-wrap"><img src="./branding/preview/tree_02.png" alt="Growth Curve Tree"></div>
+          <div class="card-body">
+            <div class="card-badge">DESIGN #17-B</div>
+            <div class="card-title">Exponential Growth Curve</div>
+            <div class="palette-tag">Neon Pink &bull; Laser Cyan</div>
+            <div class="desc">Trunk splitting into logarithmic compounding curves rising into the upper atmosphere.</div>
+          </div>
+        </div>
+
+        <div class="logo-card">
+          <div class="img-wrap"><img src="./branding/preview/tree_03.png" alt="Crystal Prism Tree"></div>
+          <div class="card-body">
+            <div class="card-badge">DESIGN #17-C</div>
+            <div class="card-title">Geometric Crystal Prism</div>
+            <div class="palette-tag">Holographic Spectrum</div>
+            <div class="desc">Multifaceted gemstone tree structure refracting rainbow iridescent light across low-poly facets.</div>
+          </div>
+        </div>
+
+        <div class="logo-card">
+          <div class="img-wrap"><img src="./branding/preview/tree_04.png" alt="Fibonacci Spiral Tree"></div>
+          <div class="card-body">
+            <div class="card-badge">DESIGN #17-D</div>
+            <div class="card-title">Fibonacci Spiral Shell</div>
+            <div class="palette-tag">Royal Violet &bull; Turquoise</div>
+            <div class="desc">Golden ratio logarithmic spiral canopy blooming in seamless dimensional curves.</div>
+          </div>
+        </div>
+
+        <div class="logo-card">
+          <div class="img-wrap"><img src="./branding/preview/tree_05.png" alt="Fluid Ribbon Tree"></div>
+          <div class="card-body">
+            <div class="card-badge">DESIGN #17-E</div>
+            <div class="card-title">Continuous Fluid Ribbon</div>
+            <div class="palette-tag">Neon Gradient Infinity Loop</div>
+            <div class="desc">Single continuous vector ribbon looping from root system to canopy in ultraviolet and cyan.</div>
+          </div>
+        </div>
+
+        <div class="logo-card">
+          <div class="img-wrap"><img src="./branding/preview/tree_06.png" alt="Tiered Cloud Bonsai"></div>
+          <div class="card-body">
+            <div class="card-badge">DESIGN #17-F</div>
+            <div class="card-title">Tiered Cloud Bonsai</div>
+            <div class="palette-tag">Magenta &bull; Mint Iridescent</div>
+            <div class="desc">Sculptural bonsai with layered liquidity shelves glowing with an ethereal cyberpunk aura.</div>
+          </div>
+        </div>
+
+        <div class="logo-card">
+          <div class="img-wrap"><img src="./branding/preview/tree_07.png" alt="Sovereign Constellation Tree"></div>
+          <div class="card-body">
+            <div class="card-badge">DESIGN #17-G</div>
+            <div class="card-title">Sovereign Constellation Tree</div>
+            <div class="palette-tag">Cyan Aura &bull; Golden Tokens</div>
+            <div class="desc">Vivid neon celestial canopy with illuminated alpha tokens and glowing perimeter.</div>
+          </div>
+        </div>
+
+        <div class="logo-card">
+          <div class="img-wrap"><img src="./branding/preview/tree_08.png" alt="Minimalist 'A' Monogram Tree"></div>
+          <div class="card-body">
+            <div class="card-badge">DESIGN #17-H</div>
+            <div class="card-title">Minimalist "A" Monogram Tree</div>
+            <div class="palette-tag">Violet &bull; Cyber Blue</div>
+            <div class="desc">Architectural letter "A" forming the strong trunk with geometric branches radiating upward.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="board-full">
+        <h3 style="margin-bottom: 0.75rem; font-size: 1.1rem; color: #a5b4fc;">Full Antigravity Tree Showcase Board</h3>
+        <img src="./branding/preview/tree_antigravity_sheet.jpg" alt="Antigravity Tree Variations Board">
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+'use client';
+import {useEffect,useState} from 'react';
+import {axionFetch} from '../lib/in-process';
+export default function BackendSnapshotNotice({job}:{job:string}){
+  const [status,setStatus]=useState<{status:string;generatedAt:string|null;marketDataAsOf:string|null;coverage:{evaluated:number;total:number}|null;worker?:{state:string}}|null>(null);
+  useEffect(()=>{const controller=new AbortController();async function read(){try{const response=await axionFetch('/api/backend-snapshots',{signal:controller.signal});if(!response.ok)throw new Error();const data=await response.json();if(!controller.signal.aborted)setStatus(data[job]);}catch{if(!controller.signal.aborted)setStatus(null);}}void read();const timer=setInterval(()=>void read(),60000);return()=>{controller.abort();clearInterval(timer);};},[job]);
+  return <p role="status" className="mb-3 rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">Backend results · {status?.status??'status unavailable'}{status?.generatedAt&&` · Calculated ${new Date(status.generatedAt).toLocaleString('en-IN')}`}{status?.marketDataAsOf?` · Market data ${new Date(status.marketDataAsOf).toLocaleString('en-IN')}`:' · Market-data timestamp unavailable'}{status?.coverage&&` · Evaluated ${status.coverage.evaluated}/${status.coverage.total}`}{['running','updating'].includes(status?.worker?.state??'')&&' · Backend update in progress'}{status?.worker?.state==='failed'&&' · Latest update failed; previous snapshot retained'}. Opening this page only reads the saved snapshot.{job==='gap-screener'&&' Gap analysis uses provider OHLC for the app’s tracked symbols. The scan does not cover the full NSE listing.'}</p>;
+}

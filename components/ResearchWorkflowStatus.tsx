@@ -1,0 +1,14 @@
+'use client';
+import {useEffect,useState} from 'react';
+import Link from './WorkspaceLink';
+import {axionFetch} from '../lib/in-process';
+type Status={ready:boolean;rows?:number;simulations?:number;invalidBenchmarkBars?:number;historicalWindow?:string;error?:string;worker?:{status:string;lastSuccess:string|null}};
+export default function ResearchWorkflowStatus(){
+  const [status,setStatus]=useState<Status|null>(null);
+  useEffect(()=>{const controller=new AbortController();const refresh=()=>{if(document.hidden)return;void axionFetch('/api/research-status',{signal:controller.signal}).then(async response=>{const body=await response.json();if(!controller.signal.aborted)setStatus(body);}).catch(()=>{if(!controller.signal.aborted)setStatus({ready:false,error:'Research status unavailable.'});});};refresh();const timer=setInterval(refresh,60000);return()=>{controller.abort();clearInterval(timer);};},[]);
+  return <section aria-label="Research workflow status" className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"><div className="flex flex-wrap justify-between gap-3"><div><h2 className="font-bold text-slate-900 dark:text-white">From research to tracked outcomes</h2><p className="mt-1 text-xs text-slate-500">Historical results, sourced explanations and forward paper observations are separate evidence.</p></div><span className="h-fit rounded-lg bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">Live strategy approval: not established</span></div><div className="mt-4 grid gap-3 sm:grid-cols-3">
+    <Link href="/research-backtests" className="rounded-xl bg-slate-50 p-4 dark:bg-slate-800"><h3 className="text-sm font-semibold">1. Review backtests →</h3><p className="mt-2 text-xs text-slate-500">{status?.ready?`${status.simulations?.toLocaleString('en-IN')} simulations · ₹50k–₹10 lakh · 1–20 sessions per trade`:status?.error||'Checking saved research…'}</p>{status?.ready&&<p className="mt-1 text-xs text-slate-500">{status.historicalWindow} · {status.invalidBenchmarkBars} invalid benchmark bars quarantined across source history.</p>}</Link>
+    <Link href="/predictions" className="rounded-xl bg-slate-50 p-4 dark:bg-slate-800"><h3 className="text-sm font-semibold">2. Inspect prediction evidence →</h3><p className="mt-2 text-xs text-slate-500">Check source timestamps, supporting metrics, missing company information and invalidation conditions.</p></Link>
+    <Link href="/research-paper" className="rounded-xl bg-slate-50 p-4 dark:bg-slate-800"><h3 className="text-sm font-semibold">3. Track conditional paper plans →</h3><p className="mt-2 text-xs text-slate-500">Worker checkpoint: {status?.worker?.status.replaceAll('_',' ')||'unavailable'}. This is not confirmation of a portfolio fill.</p><p className="mt-1 text-xs text-slate-500">Last shared success: {status?.worker?.lastSuccess||'not recorded'}</p></Link>
+  </div></section>;
+}
