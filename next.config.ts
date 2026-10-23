@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
-const BACKEND_URL = process.env.BACKEND_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL =
+  process.env.BACKEND_API_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "https://artha-backend-scn2.onrender.com";
 
 const nextConfig: NextConfig = {
   compress: true,
