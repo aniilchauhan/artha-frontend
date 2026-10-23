@@ -188,7 +188,7 @@ export default function SmallCapStockDetail({
           className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-xs font-bold text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Back to Small Cap Picks</span>
+          <span>{smallCapData ? 'Back to Small Cap Picks' : 'Back to Dashboard'}</span>
         </button>
 
         <div className="flex items-center gap-2">
@@ -237,7 +237,7 @@ export default function SmallCapStockDetail({
                 {stock.ticker}
               </span>
               <span className="rounded-lg bg-emerald-100 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                NSE Small Cap
+                {stock.marketCap && stock.marketCap >= 100000 ? 'NSE Large Cap' : stock.marketCap && stock.marketCap >= 20000 ? 'NSE Mid Cap' : 'NSE Small Cap'}
               </span>
               {series && (
                 <span className="rounded-lg bg-gray-100 px-2 py-1 text-[10px] font-bold text-gray-600 dark:bg-gray-800 dark:text-gray-300">

@@ -22,6 +22,7 @@ import LocalOllamaCatalystWidget from './LocalOllamaCatalystWidget';
 import QuickTradeModal from './QuickTradeModal';
 import { playTargetChime } from '../lib/sound-notifications';
 import { quoteStatusLabel, withCurrentStatus } from '../lib/market-quote';
+import StockHighLevelP2P from './StockHighLevelP2P';
 
 export default function StockDetailView() {
   const router = useRouter();
@@ -40,12 +41,16 @@ export default function StockDetailView() {
     addToast
   } = useStockContext();
 
-  const [smallCapViewMode, setSmallCapViewMode] = useState<'point-to-point' | 'full'>('point-to-point');
+  const [smallCapViewMode, setSmallCapViewMode] = useState<'point-to-point' | 'full'>('full');
 
-  // Reset to point-to-point default mode whenever the active stock changes
+  // Default to point-to-point if selected from small cap screen, else full pro view
   useEffect(() => {
-    setSmallCapViewMode('point-to-point');
-  }, [selectedTicker]);
+    if (selectedSmallCapStock && selectedSmallCapStock.ticker === selectedTicker) {
+      setSmallCapViewMode('point-to-point');
+    } else {
+      setSmallCapViewMode('full');
+    }
+  }, [selectedTicker, selectedSmallCapStock]);
 
   const [chartEngine, setChartEngine] = useState<'recharts' | 'd3'>('recharts');
   const [chartStyle, setChartStyle] = useState<'line' | 'candlestick'>('line');
@@ -801,7 +806,7 @@ export default function StockDetailView() {
     (typeof stock.marketCap === 'number' && stock.marketCap > 0 && stock.marketCap < 20000)
   );
 
-  if (isSmallCap && smallCapViewMode === 'point-to-point') {
+  if (smallCapViewMode === 'point-to-point') {
     return (
       <SmallCapStockDetail
         stock={stock}
@@ -828,22 +833,6 @@ export default function StockDetailView() {
       <div className="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 rounded-full bg-indigo-500/10 dark:bg-indigo-500/5 blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 rounded-full bg-emerald-500/10 dark:bg-emerald-500/5 blur-3xl pointer-events-none" />
 
-      {/* Small Cap Quick Switch to Point-to-Point Banner */}
-      {isSmallCap && (
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 p-3.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl mb-4 text-xs">
-          <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-bold">
-            <Zap className="h-4 w-4 text-emerald-600" /> Small Cap Stock ({stock.ticker}) — Viewing Full Pro Technical View
-          </div>
-          <button
-            type="button"
-            onClick={() => setSmallCapViewMode('point-to-point')}
-            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
-          >
-            <Zap className="h-3.5 w-3.5" /> Switch to Point-to-Point View
-          </button>
-        </div>
-      )}
-
       {/* Header action bar */}
       <div className="flex justify-between items-center pb-2 relative z-10">
         <button
@@ -857,7 +846,19 @@ export default function StockDetailView() {
           <span>Back to Dashboard</span>
         </button>
 
-        <div className="flex gap-3">
+        <div className="flex items-center gap-2.5">
+          {/* Switch to Point-to-Point View for ALL stocks */}
+          <button
+            type="button"
+            onClick={() => setSmallCapViewMode('point-to-point')}
+            className="group flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-xs font-bold transition shadow-xs cursor-pointer backdrop-blur-sm"
+            id="btn-switch-to-point-to-point-top"
+            title="Open dedicated Point-to-Point view with 2-5% target and breakout calculation"
+          >
+            <Zap className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 fill-current" />
+            <span>Point-to-Point View</span>
+          </button>
+
           {/* Watchlist toggle */}
           <button
             onClick={() => toggleWatchlist(stock.ticker)}
@@ -976,99 +977,8 @@ export default function StockDetailView() {
         </div>
       </div>
 
-      {/* ─── Institutional Price Range & Key Stats Dock ─────────── */}
-      {stock.history && stock.history.length > 0 && (() => {
-        const dayLow = stock.low || stock.currentPrice * 0.98;
-        const dayHigh = stock.high || stock.currentPrice * 1.02;
-        const dayRangeSpan = Math.max(dayHigh - dayLow, 0.01);
-        const dayPosPct = Math.min(100, Math.max(0, ((stock.currentPrice - dayLow) / dayRangeSpan) * 100));
-
-        // 52-Week Low/High approximation from history
-        const allCloses = stock.history.map((h: any) => h.close || h.price).filter(Boolean);
-        const yearLow = allCloses.length > 0 ? Math.min(...allCloses) : dayLow * 0.8;
-        const yearHigh = allCloses.length > 0 ? Math.max(...allCloses) : dayHigh * 1.2;
-        const yearRangeSpan = Math.max(yearHigh - yearLow, 0.01);
-        const yearPosPct = Math.min(100, Math.max(0, ((stock.currentPrice - yearLow) / yearRangeSpan) * 100));
-
-        return (
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-5 sm:p-6 bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border border-slate-200/70 dark:border-slate-800/80 rounded-3xl shadow-sm">
-            {/* Day's Range Slider */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] font-mono font-bold text-slate-400">
-                <span>Day&apos;s Range</span>
-                <span className="text-indigo-600 dark:text-indigo-400">{dayPosPct.toFixed(0)}% of range</span>
-              </div>
-              <div className="relative h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-500 transition-all duration-700"
-                  style={{ width: '100%' }}
-                />
-              </div>
-              {/* Needle Indicator */}
-              <div className="relative w-full h-2">
-                <div
-                  className="absolute -top-3 -translate-x-1/2 w-3 h-3 rounded-full bg-indigo-600 dark:bg-indigo-400 border-2 border-white dark:border-slate-900 shadow-md"
-                  style={{ left: `${dayPosPct}%` }}
-                />
-              </div>
-              <div className="flex items-center justify-between text-xs font-mono font-black text-slate-800 dark:text-slate-200">
-                <span>L: ₹{dayLow.toFixed(2)}</span>
-                <span>H: ₹{dayHigh.toFixed(2)}</span>
-              </div>
-            </div>
-
-            {/* 52-Week Range Slider */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] font-mono font-bold text-slate-400">
-                <span>52-Week Range</span>
-                <span className="text-indigo-600 dark:text-indigo-400">{yearPosPct.toFixed(0)}% of range</span>
-              </div>
-              <div className="relative h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-500 transition-all duration-700"
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <div className="relative w-full h-2">
-                <div
-                  className="absolute -top-3 -translate-x-1/2 w-3 h-3 rounded-full bg-indigo-600 dark:bg-indigo-400 border-2 border-white dark:border-slate-900 shadow-md"
-                  style={{ left: `${yearPosPct}%` }}
-                />
-              </div>
-              <div className="flex items-center justify-between text-xs font-mono font-black text-slate-800 dark:text-slate-200">
-                <span>52W L: ₹{yearLow.toFixed(2)}</span>
-                <span>52W H: ₹{yearHigh.toFixed(2)}</span>
-              </div>
-            </div>
-
-            {/* Volume Stat */}
-            <div className="flex flex-col justify-center px-4 py-2 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60">
-              <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-                Trading Volume
-              </span>
-              <span className="text-lg font-black font-mono text-slate-900 dark:text-white mt-0.5">
-                {stock.volume > 1e6 ? `${(stock.volume / 1e6).toFixed(2)}M` : stock.volume > 1e3 ? `${(stock.volume / 1e3).toFixed(0)}K` : stock.volume} shares
-              </span>
-              <span className="text-[10px] text-slate-400 mt-0.5">
-                NSE Real-time execution
-              </span>
-            </div>
-
-            {/* Sector / Industry */}
-            <div className="flex flex-col justify-center px-4 py-2 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60">
-              <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-                Sector Classification
-              </span>
-              <span className="text-base font-black text-indigo-600 dark:text-indigo-400 truncate mt-0.5">
-                {stock.sector || 'Nifty General'}
-              </span>
-              <span className="text-[10px] text-slate-400 mt-0.5 font-mono">
-                Benchmark: NIFTY 50
-              </span>
-            </div>
-          </div>
-        );
-      })()}
+      {/* ─── Institutional High-Level Data & Point-to-Point Return Matrix ─────────── */}
+      <StockHighLevelP2P stock={stock} onOpenPointToPointModal={() => setSmallCapViewMode('point-to-point')} />
 
       {/* Penny Stock & Liquidity Warning Guard Banner */}
       {stock.currentPrice > 0 && stock.currentPrice < 20 && (
