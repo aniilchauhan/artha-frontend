@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useStockContext } from '../context/StockContext';
 import { THEMES, ThemeDefinition, ThemeId } from '../lib/themes';
 import { 
@@ -29,13 +30,18 @@ export default function ThemeCustomizerModal({ isOpen, onClose }: ThemeCustomize
     if (isOpen) {
       const prev = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') onClose();
+      };
+      window.addEventListener('keydown', handleKeyDown);
       return () => {
         document.body.style.overflow = prev;
+        window.removeEventListener('keydown', handleKeyDown);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === 'undefined') return null;
 
   const categories = ['All', 'Classic', 'Cyber', 'Financial', 'Vibrant', 'Minimal'];
 
@@ -45,9 +51,9 @@ export default function ThemeCustomizerModal({ isOpen, onClose }: ThemeCustomize
 
   const activeThemeObj = THEMES.find(t => t.id === theme) || THEMES[0];
 
-  return (
+  return createPortal(
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto backdrop-blur-md bg-black/60 animate-fade-in"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto backdrop-blur-md bg-slate-950/80 animate-fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -56,11 +62,11 @@ export default function ThemeCustomizerModal({ isOpen, onClose }: ThemeCustomize
       aria-labelledby="theme-modal-title"
     >
       <div 
-        className="relative w-full max-w-4xl rounded-2xl md:rounded-3xl border shadow-2xl overflow-hidden animate-fade-up max-h-[90vh] flex flex-col"
+        className="axion-workspace relative w-full max-w-4xl rounded-2xl md:rounded-3xl border shadow-2xl overflow-hidden animate-fade-up max-h-[90dvh] flex flex-col my-auto"
         style={{
-          backgroundColor: 'var(--ds-surface)',
-          borderColor: 'var(--ds-border)',
-          color: 'var(--ds-text)',
+          backgroundColor: 'var(--ds-surface, #18181b)',
+          borderColor: 'var(--ds-border, #27272a)',
+          color: 'var(--ds-text, #f4f4f5)',
         }}
       >
         {/* Header */}
@@ -354,6 +360,7 @@ export default function ThemeCustomizerModal({ isOpen, onClose }: ThemeCustomize
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

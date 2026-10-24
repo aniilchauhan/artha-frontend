@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Search,
   Zap,
@@ -121,12 +122,12 @@ export default function CommandPaletteModal({ isOpen, onClose }: CommandPaletteM
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === 'undefined') return null;
 
-  return (
+  return createPortal(
     <>
       <div
-        className="fixed inset-0 z-[100] flex items-start justify-center pt-8 sm:pt-20 p-3 sm:p-4 bg-slate-950/80 backdrop-blur-xl animate-in fade-in duration-150 overflow-y-auto"
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-xl animate-in fade-in duration-150 overflow-y-auto"
         onClick={(e) => {
           if (e.target === e.currentTarget) onClose();
         }}
@@ -317,6 +318,7 @@ export default function CommandPaletteModal({ isOpen, onClose }: CommandPaletteM
           initialStopLossPct={1.0}
         />
       )}
-    </>
+    </>,
+    document.body
   );
 }

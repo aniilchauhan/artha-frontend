@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AlertTriangle, Calculator, CheckCircle2, Download, ShieldCheck, X } from 'lucide-react';
 import { useStockContext } from '../context/StockContext';
 import { playTargetChime } from '../lib/sound-notifications';
@@ -102,7 +103,7 @@ export default function QuickTradeModal({
     }
   }, [isOpen, initialTargetPct, initialStopLossPct, ticker]);
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === 'undefined') return null;
 
   const cleanSymbol = ticker.trim().toUpperCase().replace(/\.NS$/, '');
   const price: number | null =
@@ -215,9 +216,9 @@ export default function QuickTradeModal({
     }
   };
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/75 p-3 sm:p-4 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 p-3 sm:p-4 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -507,6 +508,7 @@ export default function QuickTradeModal({
           Institutional Risk Execution Engine · 0.15% roundtrip friction modeled.
         </p>
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }

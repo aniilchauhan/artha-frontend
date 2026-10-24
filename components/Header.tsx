@@ -3,6 +3,7 @@
 
 import { axionAppPath, axionAssetPath } from '../lib/in-process';
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useStockContext } from '../context/StockContext';
 import { useSession, signOut } from 'next-auth/react';
 import Link from './WorkspaceLink';
@@ -93,6 +94,17 @@ export default function Header() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Lock body scroll when auth modal is open
+  useEffect(() => {
+    if (showAuthModal) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [showAuthModal]);
 
   // Handle ESC key to close modal/menu
   useEffect(() => {
@@ -609,24 +621,25 @@ export default function Header() {
       )}
 
       {/* Authentication Modal Dialog */}
-      {showAuthModal && (
+      {showAuthModal && typeof document !== 'undefined' && createPortal(
         <div 
           id="auth-modal-overlay" 
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-200"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setShowAuthModal(false);
             }
           }}
         >
-          <div className="w-full max-w-md relative animate-in zoom-in-95 duration-200">
+          <div className="w-full max-w-md relative my-auto animate-in zoom-in-95 duration-200">
             <AuthScreen 
               onSuccess={() => setShowAuthModal(false)} 
               onClose={() => setShowAuthModal(false)} 
               isModal 
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Task Onboarding Modal (M10-01) */}
