@@ -1,0 +1,2270 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Axion · Stock Opportunities Component Redesign Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Dark Theme (Default) */
+      --bg-canvas: #090a0f;
+      --bg-surface: #12141c;
+      --bg-card: #171a26;
+      --bg-card-hover: #1e2233;
+      --bg-muted: #1c202e;
+      --border: #232738;
+      --border-accent: #373e59;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      /* Accents */
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.25);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.2);
+      --rose: #f43f5e;
+      --rose-glow: rgba(244, 63, 94, 0.2);
+      --amber: #f59e0b;
+      --cyan: #06b6d4;
+      --purple: #a855f7;
+    }
+
+    .light-theme {
+      --bg-canvas: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-muted: #e2e8f0;
+      --border: #e2e8f0;
+      --border-accent: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      --primary: #4f46e5;
+      --primary-glow: rgba(79, 70, 229, 0.15);
+      --emerald-glow: rgba(16, 185, 129, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    /* Header & Navigation Bar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(18, 20, 28, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+    }
+
+    .light-theme header {
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .header-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 900;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-subtitle {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    /* Navigation Sections */
+    .nav-sections {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-pills {
+      display: flex;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 0.25rem;
+      border-radius: 9999px;
+      gap: 0.2rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: var(--bg-card-hover);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 10px var(--primary-glow);
+    }
+
+    .tab-btn.combo {
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #c084fc;
+    }
+
+    .tab-btn.combo.active {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: #ffffff;
+      border-color: transparent;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .btn-icon {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--border-accent);
+      color: var(--text-main);
+      background: var(--bg-card-hover);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* Concept Banner */
+    .concept-hero {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(168, 85, 247, 0.04));
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 1.25rem;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .concept-badge {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      background: rgba(99, 102, 241, 0.15);
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      display: inline-block;
+      margin-bottom: 0.35rem;
+    }
+
+    .concept-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .concept-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      max-width: 800px;
+      margin-top: 0.25rem;
+    }
+
+    /* Common Card Styles */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card:hover {
+      border-color: var(--border-accent);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Badges & Tags */
+    .tag {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      text-transform: uppercase;
+    }
+
+    .tag-emerald {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .tag-rose {
+      background: rgba(244, 63, 94, 0.12);
+      color: var(--rose);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+    }
+
+    .tag-purple {
+      background: rgba(168, 85, 247, 0.12);
+      color: var(--purple);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+    }
+
+    .tag-amber {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .tag-cyan {
+      background: rgba(6, 182, 212, 0.12);
+      color: var(--cyan);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+    }
+
+    .btn-trade {
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      color: white;
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .btn-trade:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px var(--primary-glow);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 0.78rem;
+      padding: 0.5rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: var(--border-accent);
+    }
+
+    /* Views */
+    .view-content {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .view-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Split-Pane */
+    .split-pane-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .split-pane-grid { grid-template-columns: 1fr; }
+    }
+
+    .pane-list {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pane-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stream-items {
+      max-height: 680px;
+      overflow-y: auto;
+      padding: 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .stream-card {
+      padding: 0.85rem 1rem;
+      border-radius: 0.85rem;
+      border: 1px solid transparent;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .stream-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+    }
+
+    .stream-card.selected {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.08));
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 18px rgba(99, 102, 241, 0.15);
+    }
+
+    .pane-detail {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      position: sticky;
+      top: 5rem;
+    }
+
+    .rr-bracket-bar {
+      height: 10px;
+      border-radius: 9999px;
+      display: flex;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.06);
+      margin: 1.25rem 0 0.5rem;
+    }
+
+    .rr-risk {
+      background: var(--rose);
+      transition: width 0.3s;
+    }
+
+    .rr-reward {
+      background: var(--emerald);
+      transition: width 0.3s;
+    }
+
+    /* Bento Grid */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.25rem;
+    }
+
+    .bento-hero {
+      grid-column: span 8;
+      background: linear-gradient(135deg, #131728 0%, #171630 100%);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      position: relative;
+      overflow: hidden;
+      border-radius: 1.5rem;
+      padding: 1.75rem;
+    }
+
+    .light-theme .bento-hero {
+      background: linear-gradient(135deg, #f0f4ff 0%, #fbf5ff 100%);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .bento-side-1 { grid-column: span 4; }
+    .bento-card-4 { grid-column: span 4; }
+    .bento-card-4-alt { grid-column: span 4; }
+    .bento-card-4-third { grid-column: span 4; }
+
+    @media (max-width: 1024px) {
+      .bento-hero { grid-column: span 12; }
+      .bento-side-1 { grid-column: span 12; }
+      .bento-card-4, .bento-card-4-alt, .bento-card-4-third { grid-column: span 6; }
+    }
+
+    @media (max-width: 640px) {
+      .bento-card-4, .bento-card-4-alt, .bento-card-4-third { grid-column: span 12; }
+    }
+
+    /* Pipeline */
+    .pipeline-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 1024px) {
+      .pipeline-grid { grid-template-columns: 1fr; }
+    }
+
+    .pipeline-col {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .pipeline-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pipeline-body {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      min-height: 450px;
+    }
+
+    /* Matrix */
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 840px) {
+      .matrix-grid { grid-template-columns: 1fr; }
+    }
+
+    .matrix-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .matrix-card:hover {
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);
+    }
+
+    .pnl-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 0.85rem;
+      padding: 0.75rem;
+      text-align: center;
+      margin: 1.25rem 0;
+    }
+
+    /* High Density Table */
+    .table-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .dense-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: left;
+    }
+
+    .dense-table th {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dense-table td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .dense-row {
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .dense-row:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .dense-row.expanded {
+      background: rgba(99, 102, 241, 0.06);
+    }
+
+    .expandable-panel {
+      display: none;
+      background: var(--bg-card);
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem;
+    }
+
+    .dense-row.expanded + .expandable-row .expandable-panel {
+      display: block;
+    }
+
+    /* Slide-Over Drawer for Combination D */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .drawer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-sheet {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 520px;
+      max-width: 90vw;
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-accent);
+      z-index: 9999;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+      padding: 1.75rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer-sheet.active {
+      transform: translateX(0);
+    }
+
+    .sparkline {
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .sparkline-up { stroke: var(--emerald); }
+    .sparkline-down { stroke: var(--rose); }
+
+    /* Modal Simulation */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(4, 7, 15, 0.8);
+      backdrop-filter: blur(12px);
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      border-radius: 1.5rem;
+      width: 100%;
+      max-width: 500px;
+      padding: 1.75rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Bar -->
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">A</div>
+        <div>
+          <div class="brand-title">Stock Opportunities Redesign Lab</div>
+          <div class="brand-subtitle">Axion Interactive 5-Design + 4-Combination Preview</div>
+        </div>
+      </div>
+
+      <!-- Navigation Sections -->
+      <div class="nav-sections">
+        <!-- Spotlight User-Requested Hybrid -->
+        <button class="tab-btn combo active" style="background: linear-gradient(135deg, #6366f1, #a855f7); color: white; font-weight: 800; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); padding: 0.45rem 0.9rem;" onclick="switchDesign('bento-pipeline', event)">
+          🌟 Bento + Pipeline Hybrid
+        </button>
+
+        <!-- Individual Designs Group -->
+        <div class="tab-pills" role="tablist">
+          <button class="tab-btn" onclick="switchDesign('split', event)">⚡ 1. Split</button>
+          <button class="tab-btn" onclick="switchDesign('bento', event)">🍱 2. Bento</button>
+          <button class="tab-btn" onclick="switchDesign('kanban', event)">📋 3. Pipeline</button>
+          <button class="tab-btn" onclick="switchDesign('matrix', event)">🎯 4. Matrix</button>
+          <button class="tab-btn" onclick="switchDesign('strips', event)">📊 5. Strips</button>
+        </div>
+
+        <!-- Other Combinations Group -->
+        <div class="tab-pills" style="background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.25);">
+          <button class="tab-btn combo" onclick="switchDesign('combo-a', event)">🚀 Cockpit</button>
+          <button class="tab-btn combo" onclick="switchDesign('combo-b', event)">📋 Stages+Table</button>
+          <button class="tab-btn combo" onclick="switchDesign('combo-c', event)">🎛️ Multi-View</button>
+          <button class="tab-btn combo" onclick="switchDesign('combo-d', event)">🗂️ Cards+Drawer</button>
+        </div>
+      </div>
+
+      <!-- Theme Switcher -->
+      <div class="header-actions">
+        <button class="btn-icon" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌓</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Dynamic Concept Hero Banner -->
+    <section class="concept-hero">
+      <div>
+        <span class="concept-badge" id="hero-badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; border-color: rgba(168, 85, 247, 0.4);">🌟 BENTO + PIPELINE HYBRID</span>
+        <h1 class="concept-title" id="hero-title">Bento Spotlight + 3-Stage Execution Pipeline</h1>
+        <p class="concept-desc" id="hero-desc">
+          Your favorite elements united: The morning's #1 high-conviction pick in a prominent Bento Hero card on top, paired with 3-stage visual pipeline swimlanes below (Radar Forming ➔ In Buy Zone 🎯 ➔ Target Runners 🚀) with 1-click execution.
+        </p>
+      </div>
+      <div>
+        <button class="btn-trade" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">
+          ⚡ Test Quick Trade Modal
+        </button>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         USER FAVORITE: BENTO + PIPELINE HYBRID
+         ══════════════════════════════════════════════════════════════ -->
+    <div id="view-bento-pipeline" class="view-content active">
+      <!-- Top Section: Bento Spotlight Hero + Stage Counters -->
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
+        <!-- Spotlight Bento Hero -->
+        <div class="bento-hero" style="padding: 1.5rem 1.75rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span class="tag tag-emerald">⭐ #1 CONVICTION CALL · IN BUY ZONE</span>
+              <span class="tag tag-purple">2% Small Cap Pick</span>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);">Live NSE Trigger</span>
+          </div>
+
+          <div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <h2 style="font-size: 2.1rem; font-family: var(--font-mono); font-weight: 900; letter-spacing: -0.02em;">KAYNES TECH</h2>
+              <p style="color: var(--text-muted); font-size: 0.85rem;">Kaynes Technology India · CMP <strong style="color: var(--text-main); font-family: var(--font-mono);">₹4,890.00</strong> (+2.45%)</p>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase;">Projected ROI</div>
+              <div style="font-size: 1.75rem; font-family: var(--font-mono); font-weight: 900; color: var(--emerald);">+10.4%</div>
+            </div>
+          </div>
+
+          <!-- R:R Bar & Pockets -->
+          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.85rem; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; font-family: var(--font-mono); margin-bottom: 0.35rem;">
+              <span style="color: var(--rose);">STOP LOSS: ₹4,720 (-3.4%)</span>
+              <span style="color: var(--emerald); font-weight: 700;">ACTIVE BUY POCKET: ₹4,870 – ₹4,910</span>
+              <span style="color: var(--emerald);">TARGET: ₹5,400 (+10.4%)</span>
+            </div>
+            <div class="rr-bracket-bar">
+              <div class="rr-risk" style="width: 25%;"></div>
+              <div class="rr-reward" style="width: 75%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-dim); margin-top: 0.25rem;">
+              <span>Max Risk: ₹3,400 on ₹1L</span>
+              <span style="color: var(--emerald); font-weight: 700;">3.4x Reward Ratio</span>
+              <span>Projected Net Gain: +₹10,400 on ₹1L</span>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn-trade" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">
+              ⚡ 1-Click Buy in Pocket
+            </button>
+            <button class="btn-outline">
+              📊 Full Technical Rationale
+            </button>
+          </div>
+        </div>
+
+        <!-- Companion Bento Box: Pipeline Flow Counter -->
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">PIPELINE STATUS</span>
+              <span class="tag tag-emerald">5 Tracked</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border);">
+                <span style="font-size: 0.75rem; font-weight: 600;">🟡 Radar Forming</span>
+                <span style="font-family: var(--font-mono); font-weight: 700; color: var(--amber);">2 Setups</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.08); padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                <span style="font-size: 0.75rem; font-weight: 700; color: var(--emerald);">🟢 In Buy Zone 🎯</span>
+                <span style="font-family: var(--font-mono); font-weight: 800; color: var(--emerald);">2 Ready Now</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); padding: 0.65rem 0.85rem; border-radius: 8px; border: 1px solid var(--border);">
+                <span style="font-size: 0.75rem; font-weight: 600;">🟣 Target Runners</span>
+                <span style="font-family: var(--font-mono); font-weight: 700; color: var(--purple);">1 In Trail</span>
+              </div>
+            </div>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-dim); text-align: center; margin-top: 0.75rem;">
+            Average R:R across all active setups: <strong style="color: var(--primary);">3.2x</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Section: 3 Pipeline Bento Swimlanes -->
+      <div class="pipeline-grid">
+        <!-- Stage 1: Radar Forming -->
+        <div class="pipeline-col">
+          <div class="pipeline-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 800;">1. RADAR FORMING 🟡</span>
+              <span class="tag tag-amber">Approaching</span>
+            </div>
+            <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">2 Setups</span>
+          </div>
+
+          <div class="pipeline-body">
+            <!-- Bento Card: CGPOWER -->
+            <div class="card" style="border-left: 3px solid var(--amber);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <strong style="font-family: var(--font-mono); font-size: 1.05rem;">CGPOWER</strong>
+                  <span class="tag tag-amber" style="margin-left: 0.3rem;">Pullback 50 DMA</span>
+                </div>
+                <div style="font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem;">₹695.00</div>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-dim); margin: 0.3rem 0 0.75rem;">Industrial & Semis NSE</div>
+
+              <div style="background: var(--bg-canvas); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem; font-size: 0.72rem; font-family: var(--font-mono); margin-bottom: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+                  <span style="color: var(--text-dim);">Trigger Level:</span>
+                  <strong>₹703.00</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-dim);">Distance to Entry:</span>
+                  <strong style="color: var(--amber);">₹8.0 (1.1%)</strong>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.72rem; color: var(--emerald); font-weight: 700; font-family: var(--font-mono);">Target ₹780 (3.2x R:R)</span>
+                <button class="btn-outline" style="padding: 0.35rem 0.65rem; font-size: 0.72rem;">Set Alert</button>
+              </div>
+            </div>
+
+            <!-- Bento Card: TATACHEM -->
+            <div class="card" style="border-left: 3px solid var(--cyan);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <strong style="font-family: var(--font-mono); font-size: 1.05rem;">TATACHEM</strong>
+                  <span class="tag tag-cyan" style="margin-left: 0.3rem;">Base Coil</span>
+                </div>
+                <div style="font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem;">₹1,040.00</div>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-dim); margin: 0.3rem 0 0.75rem;">Chemicals & Fertilizer NSE</div>
+
+              <div style="background: var(--bg-canvas); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem; font-size: 0.72rem; font-family: var(--font-mono); margin-bottom: 0.75rem;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-dim);">Consolidation:</span>
+                  <strong style="color: var(--cyan);">14-day tight range</strong>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.72rem; color: var(--emerald); font-weight: 700; font-family: var(--font-mono);">Target ₹1,180 (3.0x R:R)</span>
+                <button class="btn-outline" style="padding: 0.35rem 0.65rem; font-size: 0.72rem;">Set Alert</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 2: In Buy Zone -->
+        <div class="pipeline-col" style="border-color: rgba(16, 185, 129, 0.45); box-shadow: 0 4px 25px rgba(16, 185, 129, 0.08);">
+          <div class="pipeline-header" style="background: rgba(16, 185, 129, 0.1);">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 900; color: var(--emerald);">2. IN BUY ZONE 🎯</span>
+              <span class="tag tag-emerald">Active Now</span>
+            </div>
+            <span style="font-size: 0.7rem; color: var(--emerald); font-family: var(--font-mono); font-weight: 700;">TRIGGER ON</span>
+          </div>
+
+          <div class="pipeline-body">
+            <!-- Bento Card: KAYNES -->
+            <div class="card" style="border-color: rgba(16, 185, 129, 0.35); background: linear-gradient(135deg, var(--bg-card), rgba(16, 185, 129, 0.04));">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <strong style="font-family: var(--font-mono); font-size: 1.1rem;">KAYNES</strong>
+                  <span class="tag tag-emerald" style="margin-left: 0.3rem;">2% Small Cap</span>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-family: var(--font-mono); font-weight: 800; font-size: 1.05rem;">₹4,890.00</div>
+                  <div style="color: var(--emerald); font-weight: 700; font-size: 0.75rem;">+2.45% ▲</div>
+                </div>
+              </div>
+
+              <div style="margin: 0.75rem 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.72rem; font-family: var(--font-mono); margin-bottom: 0.3rem;">
+                  <span style="color: var(--rose);">SL ₹4,720</span>
+                  <span style="color: var(--emerald); font-weight: 700;">Pocket: ₹4,870–₹4,910</span>
+                  <span style="color: var(--emerald);">TP ₹5,400</span>
+                </div>
+                <div class="rr-bracket-bar">
+                  <div class="rr-risk" style="width: 25%;"></div>
+                  <div class="rr-reward" style="width: 75%;"></div>
+                </div>
+              </div>
+
+              <button class="btn-trade" style="width: 100%; justify-content: center; padding: 0.65rem;" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">
+                ⚡ Buy KAYNES in Pocket
+              </button>
+            </div>
+
+            <!-- Bento Card: DIXON -->
+            <div class="card" style="border-color: rgba(16, 185, 129, 0.35); background: linear-gradient(135deg, var(--bg-card), rgba(16, 185, 129, 0.04));">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <strong style="font-family: var(--font-mono); font-size: 1.1rem;">DIXON</strong>
+                  <span class="tag tag-purple" style="margin-left: 0.3rem;">Momentum</span>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-family: var(--font-mono); font-weight: 800; font-size: 1.05rem;">₹13,200.00</div>
+                  <div style="color: var(--emerald); font-weight: 700; font-size: 0.75rem;">+3.10% ▲</div>
+                </div>
+              </div>
+
+              <div style="margin: 0.75rem 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.72rem; font-family: var(--font-mono); margin-bottom: 0.3rem;">
+                  <span style="color: var(--rose);">SL ₹12,800</span>
+                  <span style="color: var(--emerald); font-weight: 700;">Pocket: ₹13,100–₹13,250</span>
+                  <span style="color: var(--emerald);">TP ₹14,600</span>
+                </div>
+                <div class="rr-bracket-bar">
+                  <div class="rr-risk" style="width: 24%;"></div>
+                  <div class="rr-reward" style="width: 76%;"></div>
+                </div>
+              </div>
+
+              <button class="btn-trade" style="width: 100%; justify-content: center; padding: 0.65rem;" onclick="openQuickTrade('DIXON', 13200, 14600, 12800)">
+                ⚡ Buy DIXON in Pocket
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 3: Target Runners -->
+        <div class="pipeline-col">
+          <div class="pipeline-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 800; color: var(--purple);">3. TARGET RUNNERS 🚀</span>
+              <span class="tag tag-purple">Trailing</span>
+            </div>
+            <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">1 Active</span>
+          </div>
+
+          <div class="pipeline-body">
+            <!-- Bento Card: TRENT -->
+            <div class="card" style="border-left: 3px solid var(--purple);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <strong style="font-family: var(--font-mono); font-size: 1.05rem;">TRENT</strong>
+                  <span class="tag tag-cyan" style="margin-left: 0.3rem;">Post-IPO</span>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-family: var(--font-mono); font-weight: 800; font-size: 1.05rem;">₹7,120.00</div>
+                  <div style="color: var(--emerald); font-weight: 700; font-size: 0.75rem;">+5.4% Gain Made</div>
+                </div>
+              </div>
+
+              <div style="background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 8px; padding: 0.65rem; margin: 0.75rem 0; font-size: 0.75rem;">
+                <div style="color: var(--purple); font-weight: 700; margin-bottom: 0.2rem;">🛡️ TRAILING STOP RATCHET</div>
+                <div style="font-family: var(--font-mono);">
+                  Stop Loss Locked at: <strong style="color: var(--text-main);">₹7,010.00</strong> (+3.8% Profit Guaranteed)
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn-outline" style="flex: 1; padding: 0.45rem; font-size: 0.72rem;" onclick="alert('Profits locked on TRENT!')">
+                  Lock Profits
+                </button>
+                <button class="btn-trade" style="flex: 1; padding: 0.45rem; font-size: 0.72rem; justify-content: center;">
+                  Trail +1%
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         DESIGN 1: SPLIT-PANE COMMAND TERMINAL
+         ══════════════════════════════════════════════════════════════ -->
+    <div id="view-split" class="view-content">
+      <div class="split-pane-grid">
+        <div class="pane-list">
+          <div class="pane-header">
+            <div style="font-weight: 700; font-size: 0.9rem;">
+              Opportunities Stream <span style="font-size: 0.75rem; color: var(--text-dim);">(5 Qualified)</span>
+            </div>
+            <span class="tag tag-emerald">2% Small Cap Active</span>
+          </div>
+
+          <div class="stream-items">
+            <div class="stream-card selected" onclick="selectStreamStock(this, 'KAYNES', 'Kaynes Technology India', 4890.0, 2.45, 5400.0, 4720.0, '3.4x', '94% Conviction', 'Breakout runner clearing 20 EMA with 2.8x RVOL volume confirmation.')">
+              <div>
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                  <strong style="font-family: var(--font-mono); font-size: 0.95rem;">KAYNES</strong>
+                  <span class="tag tag-emerald">2% Small</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.15rem;">Kaynes Technology India</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">
+                  Target ₹5,400.0 · <span style="color: var(--emerald); font-weight: 600;">3.4x R:R</span>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-family: var(--font-mono); font-weight: 700;">₹4,890.0</div>
+                <div style="color: var(--emerald); font-size: 0.78rem; font-weight: 700;">+2.45% ▲</div>
+                <svg width="60" height="20" class="sparkline sparkline-up"><path d="M0,16 L12,14 L24,15 L36,9 L48,11 L60,3" /></svg>
+              </div>
+            </div>
+
+            <div class="stream-card" onclick="selectStreamStock(this, 'DIXON', 'Dixon Technologies Ltd', 13200.0, 3.10, 14600.0, 12800.0, '3.1x', '91% Conviction', 'Electronics manufacturing PLI tailwind with strong institutional accumulation.')">
+              <div>
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                  <strong style="font-family: var(--font-mono); font-size: 0.95rem;">DIXON</strong>
+                  <span class="tag tag-purple">Momentum</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.15rem;">Dixon Tech NSE</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">
+                  Target ₹14,600.0 · <span style="color: var(--emerald); font-weight: 600;">3.1x R:R</span>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-family: var(--font-mono); font-weight: 700;">₹13,200.0</div>
+                <div style="color: var(--emerald); font-size: 0.78rem; font-weight: 700;">+3.10% ▲</div>
+                <svg width="60" height="20" class="sparkline sparkline-up"><path d="M0,18 L15,14 L30,12 L45,8 L60,2" /></svg>
+              </div>
+            </div>
+
+            <div class="stream-card" onclick="selectStreamStock(this, 'TRENT', 'Trent Ltd (Westside & Zudio)', 7120.0, 1.80, 7850.0, 6900.0, '2.8x', '89% Conviction', 'Retail store expansion compounding quarterly sales at 40%+ YoY.')">
+              <div>
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                  <strong style="font-family: var(--font-mono); font-size: 0.95rem;">TRENT</strong>
+                  <span class="tag tag-cyan">Post-IPO</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.15rem;">Tata Retail Group</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">
+                  Target ₹7,850.0 · <span style="color: var(--emerald); font-weight: 600;">2.8x R:R</span>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-family: var(--font-mono); font-weight: 700;">₹7,120.0</div>
+                <div style="color: var(--emerald); font-size: 0.78rem; font-weight: 700;">+1.80% ▲</div>
+                <svg width="60" height="20" class="sparkline sparkline-up"><path d="M0,15 L15,16 L30,11 L45,12 L60,4" /></svg>
+              </div>
+            </div>
+
+            <div class="stream-card" onclick="selectStreamStock(this, 'CGPOWER', 'CG Power & Industrial', 695.0, -0.85, 780.0, 672.0, '3.2x', '86% Conviction', 'Pullback to 50 DMA support. Clean risk-defined bounce entry.')">
+              <div>
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                  <strong style="font-family: var(--font-mono); font-size: 0.95rem;">CGPOWER</strong>
+                  <span class="tag tag-amber">Dip Buy</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.15rem;">Industrial & Semis</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">
+                  Target ₹780.0 · <span style="color: var(--emerald); font-weight: 600;">3.2x R:R</span>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-family: var(--font-mono); font-weight: 700;">₹695.0</div>
+                <div style="color: var(--rose); font-size: 0.78rem; font-weight: 700;">-0.85% ▼</div>
+                <svg width="60" height="20" class="sparkline sparkline-down"><path d="M0,4 L15,8 L30,6 L45,14 L60,16" /></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Deep Dive Inspector Panel -->
+        <div class="pane-detail">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <h2 style="font-size: 1.6rem; font-family: var(--font-mono); font-weight: 900;" id="detail-ticker">KAYNES</h2>
+                <span class="tag tag-emerald" id="detail-conviction">94% Conviction</span>
+              </div>
+              <div style="color: var(--text-muted); font-size: 0.85rem;" id="detail-name">Kaynes Technology India · NSE Equity</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 1.6rem; font-family: var(--font-mono); font-weight: 800;" id="detail-price">₹4,890.00</div>
+              <div style="color: var(--emerald); font-weight: 700; font-size: 0.9rem;" id="detail-chg">+2.45% Live</div>
+            </div>
+          </div>
+
+          <div style="margin: 1.5rem 0;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-family: var(--font-mono);">
+              <span style="color: var(--rose); font-weight: 700;">STOP LOSS: <span id="detail-stop">₹4,720.00</span> (-3.4%)</span>
+              <span style="color: var(--text-main); font-weight: 700;">CURRENT ENTRY: <span id="detail-entry">₹4,890.00</span></span>
+              <span style="color: var(--emerald); font-weight: 700;">TARGET: <span id="detail-target">₹5,400.00</span> (+10.4%)</span>
+            </div>
+            <div class="rr-bracket-bar">
+              <div class="rr-risk" style="width: 25%;"></div>
+              <div class="rr-reward" style="width: 75%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-top: 0.25rem;">
+              <span>1.0x Downside Risk (₹170/sh)</span>
+              <span style="font-weight: 700; color: var(--emerald);" id="detail-rr">3.4x Reward Ratio</span>
+              <span>3.4x Upside Room (₹510/sh)</span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem; margin-bottom: 1.5rem;">
+            <div>
+              <div style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase;">Standard Capital</div>
+              <div style="font-size: 1rem; font-family: var(--font-mono); font-weight: 700;">₹1,00,000</div>
+            </div>
+            <div>
+              <div style="font-size: 0.7rem; color: var(--rose); text-transform: uppercase;">Max Risk INR</div>
+              <div style="font-size: 1rem; font-family: var(--font-mono); font-weight: 700; color: var(--rose);">₹3,476</div>
+            </div>
+            <div>
+              <div style="font-size: 0.7rem; color: var(--emerald); text-transform: uppercase;">Target Net Gain</div>
+              <div style="font-size: 1rem; font-family: var(--font-mono); font-weight: 700; color: var(--emerald);">+₹10,429</div>
+            </div>
+          </div>
+
+          <div style="background: var(--bg-card); border-left: 3px solid var(--primary); padding: 0.9rem 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary); margin-bottom: 0.2rem;">AI CATALYST & SETUP DIAGNOSTIC</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted);" id="detail-thesis">
+              Breakout runner clearing 20 EMA with 2.8x RVOL volume confirmation. Relative strength vs Nifty Smallcap 250 is +4.2%.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn-trade" style="flex: 2; justify-content: center; padding: 0.85rem;" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">
+              ⚡ 1-Click Quick Trade Order
+            </button>
+            <button class="btn-outline" style="flex: 1; justify-content: center;" onclick="alert('Added to your watchlist!')">
+              ⭐ Add Watchlist
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         DESIGN 2: BENTO GRID SPOTLIGHT
+         ══════════════════════════════════════════════════════════════ -->
+    <div id="view-bento" class="view-content">
+      <div class="bento-grid">
+        <div class="bento-hero">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+            <span class="tag tag-emerald">⭐ TOP HIGH-CONVICTION PICK OF THE MORNING</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim);">Updated 2m ago</span>
+          </div>
+
+          <div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+            <div>
+              <h2 style="font-size: 2.2rem; font-family: var(--font-mono); font-weight: 900; letter-spacing: -0.03em;">KAYNES TECH</h2>
+              <p style="color: var(--text-muted); font-size: 0.85rem;">Kaynes Technology India · ₹4,890.00 (+2.45%)</p>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">Projected Upside</div>
+              <div style="font-size: 1.75rem; font-family: var(--font-mono); font-weight: 900; color: var(--emerald);">+10.4%</div>
+            </div>
+          </div>
+
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; max-width: 600px;">
+            Clearing 3-week base resistance on 2.8x average daily volume. Ideal entry pocket between ₹4,870 and ₹4,910 with defined invalidation below ₹4,720.
+          </p>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn-trade" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">
+              🚀 Execute Trade (Target: ₹5,400)
+            </button>
+            <button class="btn-outline">📊 Full Technical Breakdown</button>
+          </div>
+        </div>
+
+        <div class="card bento-side-1">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span class="tag tag-purple">⚡ MOMENTUM RUNNER</span>
+            <span style="color: var(--emerald); font-weight: 700; font-size: 0.8rem;">+3.1%</span>
+          </div>
+          <h3 style="font-size: 1.35rem; font-family: var(--font-mono); font-weight: 800;">DIXON TECH</h3>
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 0.15rem;">₹13,200 · Target ₹14,600</p>
+          <div style="margin: 1.25rem 0;">
+            <div style="font-size: 0.7rem; color: var(--text-dim);">RISK:REWARD RATIO</div>
+            <div style="font-size: 1.2rem; font-family: var(--font-mono); font-weight: 800; color: var(--emerald);">3.1x</div>
+          </div>
+          <button class="btn-trade" style="width: 100%; justify-content: center;" onclick="openQuickTrade('DIXON', 13200, 14600, 12800)">
+            ⚡ Quick Trade DIXON
+          </button>
+        </div>
+
+        <div class="card bento-card-4">
+          <span class="tag tag-cyan">🚀 2-YR IPO EQUITIES</span>
+          <h3 style="font-size: 1.2rem; font-family: var(--font-mono); font-weight: 800; margin-top: 0.75rem;">TRENT LTD</h3>
+          <p style="font-size: 0.78rem; color: var(--text-dim);">₹7,120 · Upside +10.2%</p>
+          <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted);">
+            High institutional float lockup. 2.8x Reward-to-Risk ratio.
+          </div>
+        </div>
+
+        <div class="card bento-card-4-alt">
+          <span class="tag tag-amber">🛡️ PULLBACK SUPPORT</span>
+          <h3 style="font-size: 1.2rem; font-family: var(--font-mono); font-weight: 800; margin-top: 0.75rem;">CG POWER</h3>
+          <p style="font-size: 0.78rem; color: var(--text-dim);">₹695.00 · Target ₹780.00</p>
+          <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted);">
+            Bounce from 50 DMA with tight ₹23 stop loss bracket.
+          </div>
+        </div>
+
+        <div class="card bento-card-4-third">
+          <span class="tag tag-emerald">💎 HIGH ASYMMETRY</span>
+          <h3 style="font-size: 1.2rem; font-family: var(--font-mono); font-weight: 800; margin-top: 0.75rem;">BCL INDUSTRIES</h3>
+          <p style="font-size: 0.78rem; color: var(--text-dim);">₹78.50 · 4.2x R:R</p>
+          <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted);">
+            Micro-cap accumulation volume surge. Minimal downside slippage.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         DESIGN 3: EXECUTION PIPELINE (KANBAN)
+         ══════════════════════════════════════════════════════════════ -->
+    <div id="view-kanban" class="view-content">
+      <div class="pipeline-grid">
+        <div class="pipeline-col">
+          <div class="pipeline-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 800;">1. RADAR FORMING</span>
+              <span class="tag tag-amber">2 Watching</span>
+            </div>
+            <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">Approaching Entry</span>
+          </div>
+          <div class="pipeline-body">
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="font-family: var(--font-mono); font-size: 1rem;">CGPOWER</strong>
+                <span class="tag tag-amber">Pullback</span>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-dim); margin: 0.2rem 0 0.75rem;">CMP ₹695.00 · Testing 50 DMA</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); background: var(--bg-canvas); padding: 0.5rem; border-radius: 6px;">
+                ⏱️ Distance to Trigger: <strong style="color: var(--amber);">₹8.0 (1.1%)</strong>
+              </div>
+            </div>
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="font-family: var(--font-mono); font-size: 1rem;">TATACHEM</strong>
+                <span class="tag tag-cyan">Base Consolidation</span>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-dim); margin: 0.2rem 0 0.75rem;">CMP ₹1,040.00 · 14-day tight coil</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); background: var(--bg-canvas); padding: 0.5rem; border-radius: 6px;">
+                ⏱️ Volume building at ₹1,035 support
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pipeline-col" style="border-color: rgba(16, 185, 129, 0.4);">
+          <div class="pipeline-header" style="background: rgba(16, 185, 129, 0.08);">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 800; color: var(--emerald);">2. IN BUY ZONE 🎯</span>
+              <span class="tag tag-emerald">2 Active</span>
+            </div>
+            <span style="font-size: 0.7rem; color: var(--emerald); font-family: var(--font-mono); font-weight: 700;">TRIGGER ACTIVATED</span>
+          </div>
+          <div class="pipeline-body">
+            <div class="card" style="border-color: rgba(16, 185, 129, 0.3); box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="font-family: var(--font-mono); font-size: 1.05rem;">KAYNES</strong>
+                <span class="tag tag-emerald">2% Small Cap</span>
+              </div>
+              <div style="font-size: 0.85rem; font-weight: 700; margin: 0.35rem 0;">CMP ₹4,890.00 · Target ₹5,400</div>
+              <div style="font-size: 0.75rem; color: var(--emerald); font-weight: 600; margin-bottom: 0.85rem;">
+                Buy Range: ₹4,870 – ₹4,910 (3.4x R:R)
+              </div>
+              <button class="btn-trade" style="width: 100%; justify-content: center;" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">
+                ⚡ Buy Now in Pocket
+              </button>
+            </div>
+            <div class="card" style="border-color: rgba(16, 185, 129, 0.3);">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="font-family: var(--font-mono); font-size: 1.05rem;">DIXON</strong>
+                <span class="tag tag-purple">Momentum</span>
+              </div>
+              <div style="font-size: 0.85rem; font-weight: 700; margin: 0.35rem 0;">CMP ₹13,200.00 · Target ₹14,600</div>
+              <div style="font-size: 0.75rem; color: var(--emerald); font-weight: 600; margin-bottom: 0.85rem;">
+                Buy Range: ₹13,100 – ₹13,250 (3.1x R:R)
+              </div>
+              <button class="btn-trade" style="width: 100%; justify-content: center;" onclick="openQuickTrade('DIXON', 13200, 14600, 12800)">
+                ⚡ Buy Now in Pocket
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pipeline-col">
+          <div class="pipeline-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 800; color: var(--purple);">3. TARGET RUNNERS 🚀</span>
+              <span class="tag tag-purple">1 In Profit</span>
+            </div>
+            <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">Trailing Stop</span>
+          </div>
+          <div class="pipeline-body">
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="font-family: var(--font-mono); font-size: 1rem;">TRENT</strong>
+                <span class="tag tag-cyan">+5.4% Gain Made</span>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-dim); margin: 0.2rem 0 0.75rem;">CMP ₹7,120 · In Profit Lock</div>
+              <div style="font-size: 0.75rem; color: var(--purple); font-family: var(--font-mono); background: rgba(168, 85, 247, 0.08); padding: 0.6rem; border-radius: 6px;">
+                🛡️ Trail Stop Updated to: <strong>₹7,010.00</strong> (Locked +3.8%)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         DESIGN 4: RISK-REWARD MATRIX CARDS
+         ══════════════════════════════════════════════════════════════ -->
+    <div id="view-matrix" class="view-content">
+      <div class="matrix-grid">
+        <div class="matrix-card">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <h3 style="font-size: 1.35rem; font-family: var(--font-mono); font-weight: 900;">KAYNES TECH</h3>
+                <span class="tag tag-emerald">2% Small Cap</span>
+              </div>
+              <div style="font-size: 0.78rem; color: var(--text-dim);">NSE · Industrial Electronics · RVOL 2.8x</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 1.25rem; font-family: var(--font-mono); font-weight: 800;">₹4,890.00</div>
+              <div style="color: var(--emerald); font-weight: 700; font-size: 0.8rem;">+2.45% ▲</div>
+            </div>
+          </div>
+
+          <div style="margin: 1.25rem 0 0.5rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; font-family: var(--font-mono); margin-bottom: 0.35rem;">
+              <span style="color: var(--rose);">STOP: ₹4,720 (-3.4%)</span>
+              <span style="color: var(--emerald); font-weight: 700;">TARGET: ₹5,400 (+10.4%)</span>
+            </div>
+            <div class="rr-bracket-bar">
+              <div class="rr-risk" style="width: 25%;"></div>
+              <div class="rr-reward" style="width: 75%;"></div>
+            </div>
+          </div>
+
+          <div class="pnl-strip">
+            <div>
+              <div style="font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase;">1L Deployment</div>
+              <div style="font-size: 0.85rem; font-family: var(--font-mono); font-weight: 700;">20 Shares</div>
+            </div>
+            <div>
+              <div style="font-size: 0.68rem; color: var(--rose); text-transform: uppercase;">Max Risk</div>
+              <div style="font-size: 0.85rem; font-family: var(--font-mono); font-weight: 700; color: var(--rose);">-₹3,400</div>
+            </div>
+            <div>
+              <div style="font-size: 0.68rem; color: var(--emerald); text-transform: uppercase;">Target Net ROI</div>
+              <div style="font-size: 0.85rem; font-family: var(--font-mono); font-weight: 700; color: var(--emerald);">+₹10,400</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.6rem;">
+            <button class="btn-trade" style="flex: 1; justify-content: center;" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">⚡ 1-Click Buy</button>
+            <button class="btn-outline" style="flex: 1; justify-content: center;">⭐ Watch</button>
+          </div>
+        </div>
+
+        <div class="matrix-card">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <h3 style="font-size: 1.35rem; font-family: var(--font-mono); font-weight: 900;">DIXON TECH</h3>
+                <span class="tag tag-purple">Momentum</span>
+              </div>
+              <div style="font-size: 0.78rem; color: var(--text-dim);">NSE · Consumer Electronics · RVOL 3.1x</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 1.25rem; font-family: var(--font-mono); font-weight: 800;">₹13,200.00</div>
+              <div style="color: var(--emerald); font-weight: 700; font-size: 0.8rem;">+3.10% ▲</div>
+            </div>
+          </div>
+
+          <div style="margin: 1.25rem 0 0.5rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; font-family: var(--font-mono); margin-bottom: 0.35rem;">
+              <span style="color: var(--rose);">STOP: ₹12,800 (-3.0%)</span>
+              <span style="color: var(--emerald); font-weight: 700;">TARGET: ₹14,600 (+10.6%)</span>
+            </div>
+            <div class="rr-bracket-bar">
+              <div class="rr-risk" style="width: 24%;"></div>
+              <div class="rr-reward" style="width: 76%;"></div>
+            </div>
+          </div>
+
+          <div class="pnl-strip">
+            <div>
+              <div style="font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase;">1L Deployment</div>
+              <div style="font-size: 0.85rem; font-family: var(--font-mono); font-weight: 700;">7 Shares</div>
+            </div>
+            <div>
+              <div style="font-size: 0.68rem; color: var(--rose); text-transform: uppercase;">Max Risk</div>
+              <div style="font-size: 0.85rem; font-family: var(--font-mono); font-weight: 700; color: var(--rose);">-₹2,800</div>
+            </div>
+            <div>
+              <div style="font-size: 0.68rem; color: var(--emerald); text-transform: uppercase;">Target Net ROI</div>
+              <div style="font-size: 0.85rem; font-family: var(--font-mono); font-weight: 700; color: var(--emerald);">+₹9,800</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.6rem;">
+            <button class="btn-trade" style="flex: 1; justify-content: center;" onclick="openQuickTrade('DIXON', 13200, 14600, 12800)">⚡ 1-Click Buy</button>
+            <button class="btn-outline" style="flex: 1; justify-content: center;">⭐ Watch</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         DESIGN 5: HIGH-DENSITY TERMINAL STRIPS
+         ══════════════════════════════════════════════════════════════ -->
+    <div id="view-strips" class="view-content">
+      <div class="table-container">
+        <table class="dense-table">
+          <thead>
+            <tr>
+              <th style="width: 32px;">#</th>
+              <th>Symbol / Name</th>
+              <th>15D Trend</th>
+              <th style="text-align: right;">LTP (₹)</th>
+              <th style="text-align: right;">1D Chg</th>
+              <th style="text-align: right;">Target (₹)</th>
+              <th style="text-align: right;">Stop (₹)</th>
+              <th style="text-align: right;">R:R</th>
+              <th>Category</th>
+              <th style="text-align: center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="dense-row expanded" onclick="toggleRowExpand(this)">
+              <td style="font-family: var(--font-mono); color: var(--text-dim);">01</td>
+              <td>
+                <strong style="font-family: var(--font-mono); font-size: 0.95rem;">KAYNES</strong>
+                <span style="font-size: 0.72rem; color: var(--text-dim); display: block;">Kaynes Technology India</span>
+              </td>
+              <td><svg width="60" height="18" class="sparkline sparkline-up"><path d="M0,15 L12,13 L24,14 L36,8 L48,9 L60,2" /></svg></td>
+              <td style="font-family: var(--font-mono); font-weight: 700; text-align: right;">₹4,890.0</td>
+              <td style="color: var(--emerald); font-family: var(--font-mono); font-weight: 700; text-align: right;">+2.45%</td>
+              <td style="color: var(--emerald); font-family: var(--font-mono); font-weight: 700; text-align: right;">₹5,400.0 (+10.4%)</td>
+              <td style="color: var(--rose); font-family: var(--font-mono); text-align: right;">₹4,720.0</td>
+              <td style="font-family: var(--font-mono); font-weight: 700; text-align: right; color: var(--emerald);">3.4x</td>
+              <td><span class="tag tag-emerald">2% Small</span></td>
+              <td style="text-align: center;">
+                <button class="btn-trade" style="padding: 0.35rem 0.75rem; font-size: 0.72rem;" onclick="event.stopPropagation(); openQuickTrade('KAYNES', 4890, 5400, 4720)">Buy</button>
+              </td>
+            </tr>
+            <tr class="expandable-row">
+              <td colspan="10" style="padding: 0;">
+                <div class="expandable-panel">
+                  <div style="display: flex; gap: 2rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                    <div>
+                      <span style="color: var(--primary); font-weight: 700;">↳ Execution Blueprint:</span>
+                      Statutory breakeven: ₹4,897.35 · Recommended: 20 shares (₹97,800)
+                    </div>
+                    <div>RSI: 62.4 · RVOL: 2.8x · Profit Lock: ₹5,085 (+4.0%)</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr class="dense-row" onclick="toggleRowExpand(this)">
+              <td style="font-family: var(--font-mono); color: var(--text-dim);">02</td>
+              <td>
+                <strong style="font-family: var(--font-mono); font-size: 0.95rem;">DIXON</strong>
+                <span style="font-size: 0.72rem; color: var(--text-dim); display: block;">Dixon Technologies Ltd</span>
+              </td>
+              <td><svg width="60" height="18" class="sparkline sparkline-up"><path d="M0,17 L15,13 L30,11 L45,7 L60,1" /></svg></td>
+              <td style="font-family: var(--font-mono); font-weight: 700; text-align: right;">₹13,200.0</td>
+              <td style="color: var(--emerald); font-family: var(--font-mono); font-weight: 700; text-align: right;">+3.10%</td>
+              <td style="color: var(--emerald); font-family: var(--font-mono); font-weight: 700; text-align: right;">₹14,600.0 (+10.6%)</td>
+              <td style="color: var(--rose); font-family: var(--font-mono); text-align: right;">₹12,800.0</td>
+              <td style="font-family: var(--font-mono); font-weight: 700; text-align: right; color: var(--emerald);">3.1x</td>
+              <td><span class="tag tag-purple">Momentum</span></td>
+              <td style="text-align: center;">
+                <button class="btn-trade" style="padding: 0.35rem 0.75rem; font-size: 0.72rem;" onclick="event.stopPropagation(); openQuickTrade('DIXON', 13200, 14600, 12800)">Buy</button>
+              </td>
+            </tr>
+            <tr class="expandable-row">
+              <td colspan="10" style="padding: 0;">
+                <div class="expandable-panel">
+                  <div style="display: flex; gap: 2rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                    <div>
+                      <span style="color: var(--primary); font-weight: 700;">↳ Execution Blueprint:</span>
+                      Statutory breakeven: ₹13,219.80 · Recommended: 7 shares (₹92,400)
+                    </div>
+                    <div>RSI: 67.8 · RVOL: 3.1x · Trailing Step: ₹150 / 1.5%</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         RECOMMENDED COMBINATION A: THE PRO TRADER COCKPIT
+         (Hero Spotlight on Top + Split-Pane Stream/Inspector below)
+         ══════════════════════════════════════════════════════════════ -->
+    <div id="view-combo-a" class="view-content">
+      <!-- Top Row: Compact Hero Spotlight + Summary Pill -->
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
+        <div class="bento-hero" style="padding: 1.35rem 1.75rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span class="tag tag-emerald">⭐ TOP HIGH-CONVICTION CALL · MORNING RADAR</span>
+            <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);">Live NSE Trigger</span>
+          </div>
+          <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2 style="font-size: 1.8rem; font-family: var(--font-mono); font-weight: 900;">KAYNES TECH</h2>
+              <p style="color: var(--text-muted); font-size: 0.8rem;">CMP ₹4,890.00 (+2.45%) · Target ₹5,400.00 (+10.4%)</p>
+            </div>
+            <div style="display: flex; gap: 0.6rem;">
+              <button class="btn-trade" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">⚡ Execute Trade</button>
+              <button class="btn-outline">Thesis</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">PIPELINE VITALITY</span>
+            <span class="tag tag-emerald">High Flow</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; text-align: center; margin: 0.75rem 0;">
+            <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 8px;">
+              <div style="font-size: 0.65rem; color: var(--text-dim);">IN BUY ZONE</div>
+              <div style="font-size: 1.25rem; font-family: var(--font-mono); font-weight: 800; color: var(--emerald);">3 Setups</div>
+            </div>
+            <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 8px;">
+              <div style="font-size: 0.65rem; color: var(--text-dim);">AVG R:R RATIO</div>
+              <div style="font-size: 1.25rem; font-family: var(--font-mono); font-weight: 800; color: var(--primary);">3.2x</div>
+            </div>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-dim); text-align: center;">Click any ticker below to inspect</div>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Split-Pane Terminal -->
+      <div class="split-pane-grid">
+        <div class="pane-list">
+          <div class="pane-header">
+            <span style="font-weight: 700; font-size: 0.85rem;">Browse Opportunities</span>
+            <span class="tag tag-purple">4 Actionable</span>
+          </div>
+          <div class="stream-items">
+            <div class="stream-card selected" onclick="selectStreamStock(this, 'KAYNES', 'Kaynes Technology India', 4890.0, 2.45, 5400.0, 4720.0, '3.4x', '94% Conviction', 'Breakout runner clearing 20 EMA with 2.8x RVOL volume confirmation.')">
+              <div>
+                <strong style="font-family: var(--font-mono);">KAYNES</strong>
+                <span class="tag tag-emerald" style="margin-left: 0.3rem;">2% Small</span>
+                <div style="font-size: 0.72rem; color: var(--text-dim);">₹4,890.0 · Target ₹5,400</div>
+              </div>
+              <div style="text-align: right; color: var(--emerald); font-weight: 700; font-family: var(--font-mono);">+2.45%</div>
+            </div>
+
+            <div class="stream-card" onclick="selectStreamStock(this, 'DIXON', 'Dixon Technologies Ltd', 13200.0, 3.10, 14600.0, 12800.0, '3.1x', '91% Conviction', 'Electronics manufacturing PLI tailwind with strong institutional accumulation.')">
+              <div>
+                <strong style="font-family: var(--font-mono);">DIXON</strong>
+                <span class="tag tag-purple" style="margin-left: 0.3rem;">Momentum</span>
+                <div style="font-size: 0.72rem; color: var(--text-dim);">₹13,200.0 · Target ₹14,600</div>
+              </div>
+              <div style="text-align: right; color: var(--emerald); font-weight: 700; font-family: var(--font-mono);">+3.10%</div>
+            </div>
+
+            <div class="stream-card" onclick="selectStreamStock(this, 'TRENT', 'Trent Ltd (Tata Retail)', 7120.0, 1.80, 7850.0, 6900.0, '2.8x', '89% Conviction', 'Retail retail store expansion compounding quarterly sales at 40%+ YoY.')">
+              <div>
+                <strong style="font-family: var(--font-mono);">TRENT</strong>
+                <span class="tag tag-cyan" style="margin-left: 0.3rem;">Post-IPO</span>
+                <div style="font-size: 0.72rem; color: var(--text-dim);">₹7,120.0 · Target ₹7,850</div>
+              </div>
+              <div style="text-align: right; color: var(--emerald); font-weight: 700; font-family: var(--font-mono);">+1.80%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pane-detail">
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+            <div>
+              <h3 style="font-size: 1.5rem; font-family: var(--font-mono); font-weight: 900;">KAYNES TECH</h3>
+              <div style="font-size: 0.8rem; color: var(--text-dim);">Kaynes Technology India · ₹4,890.00 (+2.45%)</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="tag tag-emerald">94% Conviction</span>
+              <div style="font-size: 1.25rem; font-family: var(--font-mono); font-weight: 800; color: var(--emerald); margin-top: 0.25rem;">+10.4% Target</div>
+            </div>
+          </div>
+
+          <div style="margin: 1.25rem 0;">
+            <div class="rr-bracket-bar">
+              <div class="rr-risk" style="width: 25%;"></div>
+              <div class="rr-reward" style="width: 75%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim);">
+              <span style="color: var(--rose);">SL: ₹4,720 (-3.4%)</span>
+              <span style="color: var(--emerald); font-weight: 700;">3.4x Reward Ratio</span>
+              <span style="color: var(--emerald);">TP: ₹5,400 (+10.4%)</span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; background: var(--bg-card); padding: 0.85rem; border-radius: 0.75rem; margin-bottom: 1.25rem; font-family: var(--font-mono);">
+            <div>
+              <div style="font-size: 0.65rem; color: var(--text-dim);">1L ALLOCATION</div>
+              <div style="font-size: 0.95rem; font-weight: 700;">20 Shares</div>
+            </div>
+            <div>
+              <div style="font-size: 0.65rem; color: var(--rose);">RISK INR</div>
+              <div style="font-size: 0.95rem; font-weight: 700; color: var(--rose);">-₹3,400</div>
+            </div>
+            <div>
+              <div style="font-size: 0.65rem; color: var(--emerald);">EXPECTED GAIN</div>
+              <div style="font-size: 0.95rem; font-weight: 700; color: var(--emerald);">+₹10,400</div>
+            </div>
+          </div>
+
+          <button class="btn-trade" style="width: 100%; justify-content: center; padding: 0.85rem;" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">
+            ⚡ 1-Click Buy KAYNES at ₹4,890
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         RECOMMENDED COMBINATION B: PIPELINE STAGES + EXPANDABLE TABLE
+         ══════════════════════════════════════════════════════════════ -->
+    <div id="view-combo-b" class="view-content">
+      <!-- Stage Filter Strip -->
+      <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 1rem; padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Lifecycle Filter:</span>
+          <button class="tab-btn active" style="font-size: 0.75rem;">🟢 In Buy Zone 🎯 (3)</button>
+          <button class="tab-btn" style="font-size: 0.75rem;">🟡 Radar Forming (2)</button>
+          <button class="tab-btn" style="font-size: 0.75rem;">🟣 Runners in Trail (1)</button>
+          <button class="tab-btn" style="font-size: 0.75rem;">All (6)</button>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-dim); font-family: var(--font-mono);">
+          Only showing stocks strictly in active buy range (±0.8% of trigger)
+        </div>
+      </div>
+
+      <!-- Expandable Dense Table -->
+      <div class="table-container">
+        <table class="dense-table">
+          <thead>
+            <tr>
+              <th style="width: 32px;">#</th>
+              <th>Symbol / Sector</th>
+              <th>Trigger Pocket</th>
+              <th style="text-align: right;">CMP (₹)</th>
+              <th style="text-align: right;">Target (ROI)</th>
+              <th style="text-align: right;">Stop Loss</th>
+              <th style="text-align: right;">R:R</th>
+              <th>Status</th>
+              <th style="text-align: center;">Quick Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="dense-row expanded" onclick="toggleRowExpand(this)">
+              <td style="font-family: var(--font-mono); color: var(--text-dim);">01</td>
+              <td>
+                <strong style="font-family: var(--font-mono); font-size: 0.95rem;">KAYNES</strong>
+                <span style="font-size: 0.72rem; color: var(--text-dim); display: block;">Industrial Electronics</span>
+              </td>
+              <td><span style="font-family: var(--font-mono); font-weight: 600; color: var(--emerald);">₹4,870 – ₹4,910</span></td>
+              <td style="font-family: var(--font-mono); font-weight: 700; text-align: right;">₹4,890.0</td>
+              <td style="color: var(--emerald); font-family: var(--font-mono); font-weight: 700; text-align: right;">₹5,400.0 (+10.4%)</td>
+              <td style="color: var(--rose); font-family: var(--font-mono); text-align: right;">₹4,720.0</td>
+              <td style="font-family: var(--font-mono); font-weight: 700; text-align: right; color: var(--emerald);">3.4x</td>
+              <td><span class="tag tag-emerald">In Buy Zone 🎯</span></td>
+              <td style="text-align: center;">
+                <button class="btn-trade" style="padding: 0.35rem 0.75rem; font-size: 0.72rem;" onclick="event.stopPropagation(); openQuickTrade('KAYNES', 4890, 5400, 4720)">Buy Now</button>
+              </td>
+            </tr>
+            <tr class="expandable-row">
+              <td colspan="10" style="padding: 0;">
+                <div class="expandable-panel">
+                  <div style="display: flex; gap: 2rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                    <div>
+                      <span style="color: var(--primary); font-weight: 700;">↳ Setup Diagnostic:</span>
+                      Triggered 14m ago on 20 EMA bounce with 2.8x RVOL · Breakeven ₹4,897.35
+                    </div>
+                    <div>
+                      Trail Rule: Once price touches ₹5,085 (+4%), ratchets stop loss to breakeven +0.5%.
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr class="dense-row" onclick="toggleRowExpand(this)">
+              <td style="font-family: var(--font-mono); color: var(--text-dim);">02</td>
+              <td>
+                <strong style="font-family: var(--font-mono); font-size: 0.95rem;">DIXON</strong>
+                <span style="font-size: 0.72rem; color: var(--text-dim); display: block;">Consumer Electronics</span>
+              </td>
+              <td><span style="font-family: var(--font-mono); font-weight: 600; color: var(--emerald);">₹13,100 – ₹13,250</span></td>
+              <td style="font-family: var(--font-mono); font-weight: 700; text-align: right;">₹13,200.0</td>
+              <td style="color: var(--emerald); font-family: var(--font-mono); font-weight: 700; text-align: right;">₹14,600.0 (+10.6%)</td>
+              <td style="color: var(--rose); font-family: var(--font-mono); text-align: right;">₹12,800.0</td>
+              <td style="font-family: var(--font-mono); font-weight: 700; text-align: right; color: var(--emerald);">3.1x</td>
+              <td><span class="tag tag-emerald">In Buy Zone 🎯</span></td>
+              <td style="text-align: center;">
+                <button class="btn-trade" style="padding: 0.35rem 0.75rem; font-size: 0.72rem;" onclick="event.stopPropagation(); openQuickTrade('DIXON', 13200, 14600, 12800)">Buy Now</button>
+              </td>
+            </tr>
+            <tr class="expandable-row">
+              <td colspan="10" style="padding: 0;">
+                <div class="expandable-panel">
+                  <div style="display: flex; gap: 2rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                    <div>
+                      <span style="color: var(--primary); font-weight: 700;">↳ Setup Diagnostic:</span>
+                      PLI subsidy expansion catalyst · Invalidation strictly below ₹12,800.
+                    </div>
+                    <div>Recommended Sizing: 7 Shares (₹92,400)</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         RECOMMENDED COMBINATION C: MULTI-VIEW HYBRID WITH TOGGLE
+         ══════════════════════════════════════════════════════════════ -->
+    <div id="view-combo-c" class="view-content">
+      <!-- Hero Top -->
+      <div class="bento-hero" style="margin-bottom: 1.5rem; padding: 1.5rem 1.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <span class="tag tag-emerald">⭐ AI SPOTLIGHT SETUP</span>
+          <span style="font-size: 0.75rem; color: var(--text-dim); font-family: var(--font-mono);">Real-Time Scan</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 2rem; font-family: var(--font-mono); font-weight: 900;">KAYNES TECH · ₹4,890 (+2.45%)</h2>
+            <p style="color: var(--text-muted); font-size: 0.82rem;">2% Small Cap Momentum Trigger · Target ₹5,400 (3.4x R:R)</p>
+          </div>
+          <button class="btn-trade" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">⚡ Execute Trade</button>
+        </div>
+      </div>
+
+      <!-- View Selector Toolbar -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+        <div style="font-weight: 800; font-size: 1rem;">All Qualified Setups (5)</div>
+        <div style="display: flex; align-items: center; gap: 0.4rem; background: var(--bg-surface); border: 1px solid var(--border); padding: 0.25rem; border-radius: 9999px;">
+          <button class="tab-btn active" onclick="switchComboCSubView('cards', this)">🎯 Visual Cards</button>
+          <button class="tab-btn" onclick="switchComboCSubView('table', this)">📊 Financial Table</button>
+          <button class="tab-btn" onclick="switchComboCSubView('kanban', this)">📋 Kanban Board</button>
+        </div>
+      </div>
+
+      <!-- Sub View 1: Cards -->
+      <div id="combo-c-sub-cards" class="matrix-grid">
+        <div class="matrix-card">
+          <div style="display: flex; justify-content: space-between;">
+            <div>
+              <strong style="font-family: var(--font-mono); font-size: 1.2rem;">DIXON TECH</strong>
+              <span class="tag tag-purple" style="margin-left: 0.4rem;">Momentum</span>
+            </div>
+            <div style="font-family: var(--font-mono); font-weight: 800; font-size: 1.1rem;">₹13,200.00</div>
+          </div>
+          <div class="rr-bracket-bar" style="margin: 1rem 0 0.4rem;">
+            <div class="rr-risk" style="width: 25%;"></div>
+            <div class="rr-reward" style="width: 75%;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 1rem;">
+            <span>Stop: ₹12,800</span>
+            <span style="color: var(--emerald); font-weight: 700;">3.1x R:R</span>
+            <span>Target: ₹14,600</span>
+          </div>
+          <button class="btn-trade" style="width: 100%; justify-content: center;" onclick="openQuickTrade('DIXON', 13200, 14600, 12800)">1-Click Buy DIXON</button>
+        </div>
+
+        <div class="matrix-card">
+          <div style="display: flex; justify-content: space-between;">
+            <div>
+              <strong style="font-family: var(--font-mono); font-size: 1.2rem;">TRENT LTD</strong>
+              <span class="tag tag-cyan" style="margin-left: 0.4rem;">Post-IPO</span>
+            </div>
+            <div style="font-family: var(--font-mono); font-weight: 800; font-size: 1.1rem;">₹7,120.00</div>
+          </div>
+          <div class="rr-bracket-bar" style="margin: 1rem 0 0.4rem;">
+            <div class="rr-risk" style="width: 28%;"></div>
+            <div class="rr-reward" style="width: 72%;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 1rem;">
+            <span>Stop: ₹6,900</span>
+            <span style="color: var(--emerald); font-weight: 700;">2.8x R:R</span>
+            <span>Target: ₹7,850</span>
+          </div>
+          <button class="btn-trade" style="width: 100%; justify-content: center;" onclick="openQuickTrade('TRENT', 7120, 7850, 6900)">1-Click Buy TRENT</button>
+        </div>
+      </div>
+
+      <!-- Sub View 2: Table -->
+      <div id="combo-c-sub-table" class="table-container" style="display: none;">
+        <table class="dense-table">
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>LTP (₹)</th>
+              <th>1D Chg</th>
+              <th>Target (₹)</th>
+              <th>Stop (₹)</th>
+              <th>R:R</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>KAYNES</strong></td>
+              <td>₹4,890.0</td>
+              <td style="color: var(--emerald);">+2.45%</td>
+              <td style="color: var(--emerald);">₹5,400.0</td>
+              <td style="color: var(--rose);">₹4,720.0</td>
+              <td>3.4x</td>
+              <td><button class="btn-trade" style="padding: 0.35rem 0.75rem; font-size: 0.72rem;" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">Buy</button></td>
+            </tr>
+            <tr>
+              <td><strong>DIXON</strong></td>
+              <td>₹13,200.0</td>
+              <td style="color: var(--emerald);">+3.10%</td>
+              <td style="color: var(--emerald);">₹14,600.0</td>
+              <td style="color: var(--rose);">₹12,800.0</td>
+              <td>3.1x</td>
+              <td><button class="btn-trade" style="padding: 0.35rem 0.75rem; font-size: 0.72rem;" onclick="openQuickTrade('DIXON', 13200, 14600, 12800)">Buy</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sub View 3: Kanban -->
+      <div id="combo-c-sub-kanban" class="pipeline-grid" style="display: none;">
+        <div class="pipeline-col">
+          <div class="pipeline-header"><span>Forming</span></div>
+          <div class="pipeline-body"><div class="card">CGPOWER · ₹695.0</div></div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-header"><span>In Buy Zone 🎯</span></div>
+          <div class="pipeline-body"><div class="card">KAYNES · ₹4,890.0</div></div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-header"><span>Target Runners 🚀</span></div>
+          <div class="pipeline-body"><div class="card">TRENT · ₹7,120.0</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         RECOMMENDED COMBINATION D: CARDS + SLIDE-OVER DRAWER
+         ══════════════════════════════════════════════════════════════ -->
+    <div id="view-combo-d" class="view-content">
+      <div style="margin-bottom: 1.25rem; font-size: 0.85rem; color: var(--text-muted);">
+        Click <strong>"Inspect Thesis & Blueprint"</strong> on any card to smoothly slide open the deep-dive research drawer.
+      </div>
+
+      <div class="matrix-grid">
+        <div class="matrix-card">
+          <div style="display: flex; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 1.35rem; font-family: var(--font-mono); font-weight: 900;">KAYNES TECH</h3>
+              <span class="tag tag-emerald">2% Small Cap</span>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 1.25rem; font-family: var(--font-mono); font-weight: 800;">₹4,890.00</div>
+              <div style="color: var(--emerald); font-weight: 700; font-size: 0.8rem;">+2.45% ▲</div>
+            </div>
+          </div>
+
+          <div class="rr-bracket-bar" style="margin: 1.25rem 0 0.4rem;">
+            <div class="rr-risk" style="width: 25%;"></div>
+            <div class="rr-reward" style="width: 75%;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 1.25rem;">
+            <span>Stop: ₹4,720</span>
+            <span style="color: var(--emerald); font-weight: 700;">3.4x R:R</span>
+            <span>Target: ₹5,400</span>
+          </div>
+
+          <div style="display: flex; gap: 0.6rem;">
+            <button class="btn-trade" style="flex: 1; justify-content: center;" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">⚡ Quick Buy</button>
+            <button class="btn-outline" style="flex: 1; justify-content: center;" onclick="openDrawer('KAYNES', 'Kaynes Technology India', 4890, 5400, 4720, '3.4x', 'Breakout runner clearing 20 EMA base with 2.8x RVOL volume confirmation.')">
+              🔍 Inspect Drawer
+            </button>
+          </div>
+        </div>
+
+        <div class="matrix-card">
+          <div style="display: flex; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 1.35rem; font-family: var(--font-mono); font-weight: 900;">DIXON TECH</h3>
+              <span class="tag tag-purple">Momentum</span>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 1.25rem; font-family: var(--font-mono); font-weight: 800;">₹13,200.00</div>
+              <div style="color: var(--emerald); font-weight: 700; font-size: 0.8rem;">+3.10% ▲</div>
+            </div>
+          </div>
+
+          <div class="rr-bracket-bar" style="margin: 1.25rem 0 0.4rem;">
+            <div class="rr-risk" style="width: 24%;"></div>
+            <div class="rr-reward" style="width: 76%;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 1.25rem;">
+            <span>Stop: ₹12,800</span>
+            <span style="color: var(--emerald); font-weight: 700;">3.1x R:R</span>
+            <span>Target: ₹14,600</span>
+          </div>
+
+          <div style="display: flex; gap: 0.6rem;">
+            <button class="btn-trade" style="flex: 1; justify-content: center;" onclick="openQuickTrade('DIXON', 13200, 14600, 12800)">⚡ Quick Buy</button>
+            <button class="btn-outline" style="flex: 1; justify-content: center;" onclick="openDrawer('DIXON', 'Dixon Technologies Ltd', 13200, 14600, 12800, '3.1x', 'PLI electronics manufacturing tailwind with continuous institutional accumulation.')">
+              🔍 Inspect Drawer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Slide-Over Drawer Sheet for Combination D -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <aside class="drawer-sheet" id="drawerSheet">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 1.5rem;">
+      <div>
+        <h2 style="font-size: 1.75rem; font-family: var(--font-mono); font-weight: 900;" id="drawerTicker">KAYNES</h2>
+        <div style="font-size: 0.85rem; color: var(--text-muted);" id="drawerName">Kaynes Technology India</div>
+      </div>
+      <button class="btn-outline" style="padding: 0.4rem 0.7rem;" onclick="closeDrawer()">✕ Close</button>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; font-size: 1.4rem; font-family: var(--font-mono); font-weight: 800; margin-bottom: 0.35rem;">
+        <span id="drawerPrice">₹4,890.00</span>
+        <span style="color: var(--emerald);" id="drawerTarget">Target ₹5,400</span>
+      </div>
+      <div style="font-size: 0.75rem; color: var(--text-dim);">Stop Loss: <span id="drawerStop" style="color: var(--rose); font-weight: 700;">₹4,720.00</span></div>
+    </div>
+
+    <div class="rr-bracket-bar" style="margin-bottom: 1.5rem;">
+      <div class="rr-risk" style="width: 25%;"></div>
+      <div class="rr-reward" style="width: 75%;"></div>
+    </div>
+
+    <div style="background: var(--bg-card); border-radius: 1rem; border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1.5rem;">
+      <h4 style="font-size: 0.8rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">EXECUTION & SIZING BLUEPRINT</h4>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8rem;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-dim);">Statutory Breakeven:</span>
+          <strong style="font-family: var(--font-mono);">₹4,897.35</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-dim);">Suggested Allocation (₹1L):</span>
+          <strong style="font-family: var(--font-mono);">20 Shares (₹97,800)</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-dim);">Max Downside Risk:</span>
+          <strong style="font-family: var(--font-mono); color: var(--rose);">-₹3,400</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-dim);">Target Net Gain:</span>
+          <strong style="font-family: var(--font-mono); color: var(--emerald);">+₹10,400</strong>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: var(--bg-card); border-left: 3px solid var(--primary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+      <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary); margin-bottom: 0.35rem;">AI THESIS</div>
+      <p style="font-size: 0.8rem; color: var(--text-muted);" id="drawerThesis">
+        Breakout runner clearing 20 EMA base with 2.8x RVOL volume confirmation.
+      </p>
+    </div>
+
+    <div style="margin-top: auto; display: flex; gap: 0.75rem;">
+      <button class="btn-trade" style="flex: 2; justify-content: center; padding: 0.85rem;" onclick="openQuickTrade('KAYNES', 4890, 5400, 4720)">
+        ⚡ 1-Click Order
+      </button>
+      <button class="btn-outline" style="flex: 1; justify-content: center;">
+        ⭐ Watch
+      </button>
+    </div>
+  </aside>
+
+  <!-- Interactive Quick Trade Modal Simulation -->
+  <div class="modal-overlay" id="quickTradeModal" onclick="closeQuickTrade(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">⚡</div>
+          <div>
+            <h3 style="font-size: 1.15rem; font-family: var(--font-mono); font-weight: 800;" id="modalTicker">KAYNES</h3>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">Axion 1-Click Institutional Execution</span>
+          </div>
+        </div>
+        <button class="btn-outline" style="padding: 0.3rem 0.6rem;" onclick="closeModal()">✕</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; justify-content: space-between; background: var(--bg-card); padding: 0.85rem; border-radius: 0.75rem; border: 1px solid var(--border);">
+          <div>
+            <div style="font-size: 0.7rem; color: var(--text-dim);">LTP ENTRY</div>
+            <div style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700;" id="modalPrice">₹4,890.00</div>
+          </div>
+          <div>
+            <div style="font-size: 0.7rem; color: var(--emerald);">TARGET (+10%)</div>
+            <div style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--emerald);" id="modalTarget">₹5,400.00</div>
+          </div>
+          <div>
+            <div style="font-size: 0.7rem; color: var(--rose);">STOP LOSS</div>
+            <div style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--rose);" id="modalStop">₹4,720.00</div>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-dim); display: block; margin-bottom: 0.35rem;">
+            Position Size / Quantity
+          </label>
+          <input type="number" value="20" id="modalQty" oninput="updateModalTotals()" style="width: 100%; padding: 0.65rem 0.85rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-family: var(--font-mono); font-weight: 700; outline: none;">
+        </div>
+
+        <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 8px; padding: 0.85rem; font-size: 0.78rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+            <span style="color: var(--text-muted);">Required Capital:</span>
+            <strong style="font-family: var(--font-mono);" id="modalRequiredCapital">₹97,800.00</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Modeled Roundtrip Friction:</span>
+            <span style="color: var(--text-dim); font-family: var(--font-mono);">₹146.70 (0.15%)</span>
+          </div>
+        </div>
+
+        <button class="btn-trade" style="width: 100%; justify-content: center; padding: 0.85rem;" onclick="executeMockOrder()">
+          Confirm & Dispatch Paper Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DESIGNS = {
+      split: {
+        badge: 'CONCEPT 1 OF 5',
+        title: 'Split-Pane Command Terminal',
+        desc: 'Professional master-detail layout. Instant ticker selection on the left with live chart, R:R bracket slider, and 1-click execution slip on the right.'
+      },
+      bento: {
+        badge: 'CONCEPT 2 OF 5',
+        title: 'Modern Bento Grid Spotlight',
+        desc: 'Linear and Apple-inspired Bento architecture. Features the morning\'s #1 conviction hero setup with companion tiles for Momentum, IPO Breakouts, and Dip buys.'
+      },
+      kanban: {
+        badge: 'CONCEPT 3 OF 5',
+        title: 'Execution Pipeline (Kanban)',
+        desc: 'Stage-driven lifecycle view. Categorizes setups into Radar Forming, Active Buy Zone, and In-Profit Runners so traders know exact timing without guessing.'
+      },
+      matrix: {
+        badge: 'CONCEPT 4 OF 5',
+        title: 'Risk-Reward Matrix Cards',
+        desc: 'Asymmetric visual cards featuring dynamic green-to-red payoff proportion sliders and instant INR rupee expectancy calculations on ₹1L capital.'
+      },
+      strips: {
+        badge: 'CONCEPT 5 OF 5',
+        title: 'High-Density Terminal Strips',
+        desc: 'Compact institutional financial rows with expandable accordion blueprints. Pack 15-20 qualified stocks per viewport with instant execution.'
+      },
+      'combo-a': {
+        badge: 'RECOMMENDED COMBO A',
+        title: 'The Pro Trader Cockpit (Hero Spotlight + Split Terminal)',
+        desc: 'Combines the high-impact Bento Hero Spotlight on top for the day\'s #1 pick with the interactive Split-Pane Stream and Deep-Dive Inspector below.'
+      },
+      'combo-b': {
+        badge: 'RECOMMENDED COMBO B',
+        title: 'Lifecycle Pipeline + Expandable Institutional Strips',
+        desc: 'Top lifecycle stage filters (Forming ➔ In Buy Zone 🎯 ➔ Runners) controlling an institutional dense table with expandable friction & breakeven blueprints.'
+      },
+      'combo-c': {
+        badge: 'RECOMMENDED COMBO C',
+        title: 'Multi-View Hybrid with Viewport Switcher',
+        desc: 'Bento Spotlight Hero on top, followed by an interactive view switcher allowing traders to toggle on-demand between Visual Cards, Dense Table, and Kanban stages.'
+      },
+      'combo-d': {
+        badge: 'RECOMMENDED COMBO D',
+        title: 'Risk-Reward Matrix Cards with Slide-Over Drawer',
+        desc: 'Clean 2-column proportional R:R cards that smoothly slide out a full-height institutional research drawer on click without navigating away.'
+      },
+      'bento-pipeline': {
+        badge: '🌟 USER FAVORITE · HYBRID',
+        title: 'Bento Grid Spotlight + 3-Stage Execution Pipeline',
+        desc: 'The best of both worlds: Morning\'s #1 high-conviction hero spotlight on top, with 3-stage visual pipeline swimlanes below (Radar Forming ➔ In Buy Zone 🎯 ➔ Target Runners 🚀) styled as sleek Bento tiles.'
+      }
+    };
+
+    function switchDesign(key, evt) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      if (evt && evt.currentTarget) {
+        evt.currentTarget.classList.add('active');
+      }
+
+      document.querySelectorAll('.view-content').forEach(view => view.classList.remove('active'));
+      const targetView = document.getElementById('view-' + key);
+      if (targetView) targetView.classList.add('active');
+
+      const info = DESIGNS[key];
+      if (info) {
+        document.getElementById('hero-badge').textContent = info.badge;
+        document.getElementById('hero-title').textContent = info.title;
+        document.getElementById('hero-desc').textContent = info.desc;
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('light-theme');
+    }
+
+    function selectStreamStock(el, ticker, name, price, chg, target, stop, rr, conv, thesis) {
+      document.querySelectorAll('.stream-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+
+      const setIfExists = (id, val) => {
+        const elem = document.getElementById(id);
+        if (elem) elem.textContent = val;
+      };
+
+      setIfExists('detail-ticker', ticker);
+      setIfExists('detail-name', name + ' · NSE Equity');
+      setIfExists('detail-price', '₹' + price.toFixed(2));
+      setIfExists('detail-chg', (chg >= 0 ? '+' : '') + chg.toFixed(2) + '% Live');
+      setIfExists('detail-stop', '₹' + stop.toFixed(2));
+      setIfExists('detail-entry', '₹' + price.toFixed(2));
+      setIfExists('detail-target', '₹' + target.toFixed(2));
+      setIfExists('detail-rr', rr + ' Reward Ratio');
+      setIfExists('detail-conviction', conv);
+      setIfExists('detail-thesis', thesis);
+    }
+
+    function toggleRowExpand(row) {
+      row.classList.toggle('expanded');
+    }
+
+    function switchComboCSubView(viewKey, btn) {
+      btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      ['cards', 'table', 'kanban'].forEach(k => {
+        const el = document.getElementById('combo-c-sub-' + k);
+        if (el) el.style.display = (k === viewKey) ? (k === 'cards' || k === 'kanban' ? 'grid' : 'block') : 'none';
+      });
+    }
+
+    function openDrawer(ticker, name, price, target, stop, rr, thesis) {
+      document.getElementById('drawerTicker').textContent = ticker;
+      document.getElementById('drawerName').textContent = name + ' · NSE Equity';
+      document.getElementById('drawerPrice').textContent = '₹' + price.toFixed(2);
+      document.getElementById('drawerTarget').textContent = 'Target ₹' + target.toFixed(2);
+      document.getElementById('drawerStop').textContent = '₹' + stop.toFixed(2);
+      document.getElementById('drawerThesis').textContent = thesis;
+
+      document.getElementById('drawerOverlay').classList.add('active');
+      document.getElementById('drawerSheet').classList.add('active');
+    }
+
+    function closeDrawer() {
+      document.getElementById('drawerOverlay').classList.remove('active');
+      document.getElementById('drawerSheet').classList.remove('active');
+    }
+
+    let activeModalStock = { ticker: 'KAYNES', price: 4890, target: 5400, stop: 4720 };
+
+    function openQuickTrade(ticker, price, target, stop) {
+      activeModalStock = { ticker, price, target, stop };
+      document.getElementById('modalTicker').textContent = ticker;
+      document.getElementById('modalPrice').textContent = '₹' + price.toFixed(2);
+      document.getElementById('modalTarget').textContent = '₹' + target.toFixed(2);
+      document.getElementById('modalStop').textContent = '₹' + stop.toFixed(2);
+      updateModalTotals();
+      document.getElementById('quickTradeModal').classList.add('active');
+    }
+
+    function updateModalTotals() {
+      const qty = Number(document.getElementById('modalQty').value) || 0;
+      const total = qty * activeModalStock.price;
+      document.getElementById('modalRequiredCapital').textContent = '₹' + total.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    }
+
+    function closeModal() {
+      document.getElementById('quickTradeModal').classList.remove('active');
+    }
+
+    function closeQuickTrade(e) {
+      if (e.target.id === 'quickTradeModal') {
+        closeModal();
+      }
+    }
+
+    function executeMockOrder() {
+      alert('Order Executed Successfully! ' + document.getElementById('modalQty').value + ' shares of ' + activeModalStock.ticker + ' bought at ₹' + activeModalStock.price);
+      closeModal();
+    }
+  </script>
+</body>
+</html>

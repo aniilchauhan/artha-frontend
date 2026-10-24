@@ -1305,10 +1305,10 @@ export default function DashboardMain() {
                                       setSelectedTicker(stock.ticker);
                                       setActiveTab('dashboard');
                                     }}
-                                    className="p-1.5 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded-lg transition-colors cursor-pointer"
-                                    title="Inspect stock analysis"
+                                    className="p-1.5 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors"
+                                    title="Open deep-dive analytics"
                                   >
-                                    <ArrowUpRight className="h-4 w-4" />
+                                    <ExternalLink className="h-3.5 w-3.5" />
                                   </button>
                                 </div>
                               </td>
@@ -1319,163 +1319,290 @@ export default function DashboardMain() {
                     </table>
                   </div>
                 ) : (
-                  /* ─── Compact Visual Cards View ──────────────────────────── */
-                  <div className="space-y-2">
-                    {paginatedStocks.map((item) => {
-                      const { stock, detailed, returnMetrics } = item;
-                      const isUp = stock.change >= 0;
-                      const isWatchlisted = watchlist.includes(stock.ticker);
-                      const signal = detailed.suggestion;
+                  /* ─── Modern Bento Grid Spotlight View ───────────────────── */
+                  (() => {
+                    const heroItem = visiblePage === 1 && paginatedStocks.length > 0 ? paginatedStocks[0] : null;
+                    const regularItems = visiblePage === 1 && paginatedStocks.length > 0 ? paginatedStocks.slice(1) : paginatedStocks;
 
-                      // RVOL (Relative Volume vs benchmark)
-                      const rvol = stock.volume > 0 && maxVolume > 0 
-                        ? Number(((stock.volume / (maxVolume * 0.15)) + 0.6).toFixed(1)) 
-                        : 1.0;
+                    return (
+                      <div className="space-y-4">
+                        {/* 1. Spotlight Bento Hero Card (Top Conviction Setup) */}
+                        {heroItem && (() => {
+                          const { stock, detailed, returnMetrics } = heroItem;
+                          const isUp = stock.change >= 0;
+                          const isWatchlisted = watchlist.includes(stock.ticker);
+                          const signal = detailed.suggestion;
+                          const rvol = stock.volume > 0 && maxVolume > 0 
+                            ? Number(((stock.volume / (maxVolume * 0.15)) + 0.6).toFixed(1)) 
+                            : 1.0;
+                          const mcap = stock.marketCap || 1000;
+                          const tierLabel = mcap >= 20000 ? 'LARGE CAP' : mcap >= 5000 ? 'MID CAP' : 'SMALL CAP';
 
-                      // Market Cap Tier
-                      const mcap = stock.marketCap || 1000;
-                      const tierLabel = mcap >= 20000 ? 'LARGE' : mcap >= 5000 ? 'MID' : 'SMALL';
-                      const tierBadge = mcap >= 20000 
-                        ? 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-500/20' 
-                        : mcap >= 5000 
-                        ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20' 
-                        : 'bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/20';
+                          return (
+                            <div
+                              key={stock.ticker}
+                              className="group relative rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-indigo-950/70 via-slate-900/95 to-slate-950 border border-indigo-500/30 hover:border-indigo-500/60 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden"
+                            >
+                              <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-indigo-500/15 via-purple-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-                      const signalColor =
-                        signal === 'BUY' ? 'bg-emerald-500'
-                        : signal === 'SELL' ? 'bg-rose-500'
-                        : 'bg-amber-400';
+                              <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 mb-3">
+                                <div className="flex items-center gap-2">
+                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                                    <Sparkles className="h-3 w-3" />
+                                    #1 AI Conviction Spotlight
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30">
+                                    {returnMetrics.setupType}
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-800 text-slate-400 border border-slate-700/60">
+                                    {tierLabel}
+                                  </span>
+                                  {rvol >= 1.2 && (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30 flex items-center gap-1">
+                                      <Flame className="h-3 w-3 text-amber-500" />
+                                      {rvol}x RVOL
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-[10px] font-mono text-slate-400">
+                                  Institutional Risk Model
+                                </span>
+                              </div>
 
-                      const signalBadge =
-                        signal === 'BUY'
-                          ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/60'
-                          : signal === 'SELL'
-                          ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200/60 dark:border-rose-800/60'
-                          : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200/60 dark:border-amber-800/60';
+                              <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4">
+                                <div>
+                                  <div className="flex items-center gap-3">
+                                    <button
+                                      onClick={() => {
+                                        setSelectedTicker(stock.ticker);
+                                        setActiveTab('dashboard');
+                                      }}
+                                      className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-white hover:text-indigo-400 transition-colors cursor-pointer"
+                                    >
+                                      {stock.ticker}
+                                    </button>
+                                    <span className="px-2 py-0.5 rounded-lg text-xs font-mono font-bold bg-emerald-500 text-slate-950 uppercase shadow-xs">
+                                      {signal}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-slate-400 mt-1 font-medium">
+                                    {stock.name} {stock.sector ? `· ${stock.sector}` : ''} · NSE Equity
+                                  </p>
+                                </div>
 
-                      return (
-                        <div
-                          key={stock.ticker}
-                          className="group relative bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 hover:border-emerald-500/50 dark:hover:border-emerald-500/40 rounded-2xl p-3 sm:p-3.5 shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden"
-                        >
-                          {/* Signal Color Left Bar */}
-                          <div className={`absolute left-0 top-2.5 bottom-2.5 w-1 rounded-r-full ${signalColor} opacity-80`} />
+                                <div className="flex items-baseline gap-4 text-left md:text-right">
+                                  <div>
+                                    <div className="text-xs uppercase font-mono text-slate-400 font-semibold">CMP</div>
+                                    <div className="text-2xl sm:text-3xl font-black font-mono text-white">
+                                      ₹{stock.currentPrice.toFixed(2)}
+                                    </div>
+                                  </div>
+                                  <div className="font-mono">
+                                    <div className="text-xs uppercase text-slate-400 font-semibold">Projected Upside</div>
+                                    <div className="text-xl sm:text-2xl font-black text-emerald-400">
+                                      +{returnMetrics.projectedReturnPercent}%
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
 
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 pl-1.5">
-                            {/* Stock Info: Ticker, Badges, Name */}
-                            <div className="flex items-center gap-3 min-w-0">
-                              <div className="min-w-0">
-                                <div className="flex items-center gap-1.5 flex-wrap">
+                              <div className="relative z-10 bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 mb-4 backdrop-blur-md">
+                                <div className="flex justify-between text-[11px] font-mono font-semibold mb-2">
+                                  <span className="text-rose-400">STOP LOSS: ₹{returnMetrics.stopLossPrice.toFixed(2)}</span>
+                                  <span className="text-slate-300">CMP: ₹{stock.currentPrice.toFixed(2)}</span>
+                                  <span className="text-emerald-400 font-bold">TARGET: ₹{returnMetrics.targetPrice.toFixed(2)} (+{returnMetrics.projectedReturnPercent}%)</span>
+                                </div>
+                                <div className="h-2.5 rounded-full overflow-hidden bg-slate-800 flex">
+                                  <div className="bg-rose-500 h-full transition-all" style={{ width: '25%' }} />
+                                  <div className="bg-emerald-500 h-full transition-all" style={{ width: '75%' }} />
+                                </div>
+                                <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-2">
+                                  <span>Risk:Reward Ratio: <strong className="text-emerald-400">{returnMetrics.riskRewardRatio}x</strong></span>
+                                  <span>Expected Net Gain: <strong className="text-emerald-400">+₹{returnMetrics.expectedGainRupees.toLocaleString('en-IN')}</strong> on ₹1L</span>
+                                </div>
+                              </div>
+
+                              <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pt-2">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      handleQuickTrade({
+                                        ticker: stock.ticker,
+                                        name: stock.name,
+                                        currentPrice: stock.currentPrice,
+                                        targetPct: returnMetrics.projectedReturnPercent,
+                                        stopLossPct: Math.abs(((stock.currentPrice - returnMetrics.stopLossPrice) / stock.currentPrice) * 100) || 1.5,
+                                      });
+                                    }}
+                                    className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer hover:scale-[1.02] active:scale-95"
+                                  >
+                                    <Zap className="h-4 w-4" />
+                                    <span>Execute 1-Click Quick Trade</span>
+                                  </button>
                                   <button
                                     onClick={() => {
                                       setSelectedTicker(stock.ticker);
                                       setActiveTab('dashboard');
                                     }}
-                                    className="text-sm sm:text-base font-black font-mono tracking-tight text-slate-900 dark:text-white hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors cursor-pointer"
+                                    className="flex items-center gap-1.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 transition-all cursor-pointer"
                                   >
-                                    {stock.ticker}
+                                    <span>Analyze Full Chart</span>
+                                    <ArrowUpRight className="h-3.5 w-3.5" />
                                   </button>
-                                  <span className={`text-[9px] font-bold font-mono px-1.5 py-0.5 rounded uppercase border ${signalBadge}`}>
-                                    {signal}
-                                  </span>
-                                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                                    {returnMetrics.setupType}
-                                  </span>
-                                  <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${tierBadge}`}>
-                                    {tierLabel}
-                                  </span>
-                                  {rvol >= 1.2 && (
-                                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border border-amber-500/30 bg-amber-500/15 text-amber-700 dark:text-amber-400 flex items-center gap-0.5">
-                                      <Flame className="h-2.5 w-2.5 text-amber-500" />
-                                      <span>{rvol}x</span>
-                                    </span>
-                                  )}
                                 </div>
-                                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 font-medium max-w-[200px] sm:max-w-[260px]" title={stock.name}>
-                                  {stock.name} {stock.sector ? `· ${stock.sector}` : ''}
-                                </p>
-                              </div>
-                            </div>
 
-                            {/* Center: Sparkline & Key AI Prediction Metrics */}
-                            <div className="flex items-center gap-3.5 flex-wrap sm:flex-nowrap">
-                              <div className="hidden lg:block shrink-0">
-                                <MiniSparkline history={stock.history} isUp={isUp} id={stock.ticker} width={64} height={20} />
-                              </div>
-
-                              <div className="font-mono text-left md:text-right">
-                                <div className="flex items-center gap-1.5 text-xs">
-                                  <span className="text-[10px] uppercase text-slate-400 font-semibold">Target</span>
-                                  <span className="font-bold text-slate-900 dark:text-white">₹{returnMetrics.targetPrice.toFixed(2)}</span>
-                                  <span className="inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                                    <ArrowUpRight className="h-2.5 w-2.5" />
-                                    +{returnMetrics.projectedReturnPercent}%
-                                  </span>
-                                </div>
-                                <div className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
-                                  <span>SL: ₹{returnMetrics.stopLossPrice.toFixed(1)}</span>
-                                  <span>·</span>
-                                  <span className="text-teal-600 dark:text-teal-400 font-semibold">{returnMetrics.riskRewardRatio}x R:R</span>
-                                  <span>·</span>
-                                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-0.5">
-                                    <Sparkles className="h-2.5 w-2.5" />
-                                    {detailed.score}% AI
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Current Price & Actions */}
-                            <div className="flex items-center justify-between md:justify-end gap-3 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800 shrink-0">
-                              <div className="text-left md:text-right">
-                                <div className="text-sm sm:text-base font-black font-mono text-slate-900 dark:text-white">
-                                  ₹{stock.currentPrice.toFixed(2)}
-                                </div>
-                                <span className={`inline-flex items-center gap-0.5 text-[11px] font-bold font-mono ${
-                                  isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
-                                }`}>
-                                  {isUp ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                                  {isUp ? '+' : ''}{stock.changePercent.toFixed(2)}%
-                                </span>
-                              </div>
-
-                              <div className="flex items-center gap-1.5">
                                 <button
                                   onClick={() => toggleWatchlist(stock.ticker)}
-                                  aria-label={`Toggle ${stock.ticker} in watchlist`}
-                                  className={`p-1.5 rounded-xl border transition-all cursor-pointer active:scale-90 ${
+                                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
                                     isWatchlisted
-                                      ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 text-amber-500'
-                                      : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-amber-500'
+                                      ? 'bg-amber-500/15 border-amber-500/40 text-amber-400'
+                                      : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-amber-400'
                                   }`}
                                 >
                                   <Star className={`h-3.5 w-3.5 ${isWatchlisted ? 'fill-current' : ''}`} />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleQuickTrade({
-                                      ticker: stock.ticker,
-                                      name: stock.name,
-                                      currentPrice: stock.currentPrice,
-                                      targetPct: returnMetrics.projectedReturnPercent,
-                                      stopLossPct: Math.abs(((stock.currentPrice - returnMetrics.stopLossPrice) / stock.currentPrice) * 100) || 1.5,
-                                    });
-                                  }}
-                                  className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-xs transition-all cursor-pointer hover:scale-[1.02] active:scale-95"
-                                  title="Instant 1-Click Order Execution"
-                                >
-                                  <Zap className="h-3 w-3" />
-                                  <span>Trade</span>
+                                  <span>{isWatchlisted ? 'Watchlisted' : 'Add to Watchlist'}</span>
                                 </button>
                               </div>
                             </div>
-                          </div>
+                          );
+                        })()}
+
+                        {/* 2. Companion Bento Grid Tiles (Remaining Stocks) */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3.5">
+                          {regularItems.map((item) => {
+                            const { stock, detailed, returnMetrics } = item;
+                            const isUp = stock.change >= 0;
+                            const isWatchlisted = watchlist.includes(stock.ticker);
+                            const signal = detailed.suggestion;
+
+                            const rvol = stock.volume > 0 && maxVolume > 0 
+                              ? Number(((stock.volume / (maxVolume * 0.15)) + 0.6).toFixed(1)) 
+                              : 1.0;
+
+                            const mcap = stock.marketCap || 1000;
+                            const tierLabel = mcap >= 20000 ? 'LARGE' : mcap >= 5000 ? 'MID' : 'SMALL';
+                            const tierBadge = mcap >= 20000 
+                              ? 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-500/20' 
+                              : mcap >= 5000 
+                              ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20' 
+                              : 'bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/20';
+
+                            const signalBadge =
+                              signal === 'BUY'
+                                ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/60'
+                                : signal === 'SELL'
+                                ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200/60 dark:border-rose-800/60'
+                                : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200/60 dark:border-amber-800/60';
+
+                            return (
+                              <div
+                                key={stock.ticker}
+                                onClick={() => {
+                                  setSelectedTicker(stock.ticker);
+                                  setActiveTab('dashboard');
+                                }}
+                                className="group relative rounded-2xl p-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 hover:border-indigo-500/50 dark:hover:border-indigo-500/40 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer"
+                              >
+                                <div>
+                                  <div className="flex items-center justify-between gap-2 mb-2">
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                      <span className="font-mono text-sm font-black text-slate-900 dark:text-white group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
+                                        {stock.ticker}
+                                      </span>
+                                      <span className={`text-[9px] font-bold font-mono px-1.5 py-0.5 rounded uppercase border ${signalBadge}`}>
+                                        {signal}
+                                      </span>
+                                      <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${tierBadge}`}>
+                                        {tierLabel}
+                                      </span>
+                                      {rvol >= 1.2 && (
+                                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border border-amber-500/30 bg-amber-500/15 text-amber-500 flex items-center gap-0.5">
+                                          <Flame className="h-2.5 w-2.5 text-amber-500" />
+                                          {rvol}x
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    <div onClick={(e) => e.stopPropagation()} className="shrink-0">
+                                      <MiniSparkline history={stock.history} isUp={isUp} id={`bento-${stock.ticker}`} width={56} height={18} compact />
+                                    </div>
+                                  </div>
+
+                                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mb-3 font-medium">
+                                    {stock.name} {stock.sector ? `· ${stock.sector}` : ''}
+                                  </p>
+
+                                  <div className="flex items-baseline justify-between mb-3 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                                    <div>
+                                      <div className="text-[10px] uppercase font-mono text-slate-400">CMP</div>
+                                      <div className="text-sm font-black font-mono text-slate-900 dark:text-white">
+                                        ₹{stock.currentPrice.toFixed(2)}
+                                      </div>
+                                    </div>
+                                    <div className="text-right">
+                                      <div className="text-[10px] uppercase font-mono text-slate-400">Target</div>
+                                      <div className="text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                                        ₹{returnMetrics.targetPrice.toFixed(1)} (+{returnMetrics.projectedReturnPercent}%)
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="mb-3">
+                                    <div className="flex justify-between text-[10px] font-mono text-slate-400 mb-1">
+                                      <span className="text-rose-500">SL: ₹{returnMetrics.stopLossPrice.toFixed(1)}</span>
+                                      <span className="text-emerald-500 font-bold">{returnMetrics.riskRewardRatio}x R:R</span>
+                                    </div>
+                                    <div className="h-1.5 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-800 flex">
+                                      <div className="bg-rose-500 h-full" style={{ width: '25%' }} />
+                                      <div className="bg-emerald-500 h-full" style={{ width: '75%' }} />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800" onClick={(e) => e.stopPropagation()}>
+                                  <div className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                                    +₹{returnMetrics.expectedGainRupees.toLocaleString('en-IN')} gain
+                                  </div>
+
+                                  <div className="flex items-center gap-1.5">
+                                    <button
+                                      onClick={() => toggleWatchlist(stock.ticker)}
+                                      aria-label={`Toggle ${stock.ticker} in watchlist`}
+                                      className={`p-1.5 rounded-xl border transition-all cursor-pointer active:scale-90 ${
+                                        isWatchlisted
+                                          ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 text-amber-500'
+                                          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-amber-500'
+                                      }`}
+                                    >
+                                      <Star className={`h-3 w-3 ${isWatchlisted ? 'fill-current' : ''}`} />
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        handleQuickTrade({
+                                          ticker: stock.ticker,
+                                          name: stock.name,
+                                          currentPrice: stock.currentPrice,
+                                          targetPct: returnMetrics.projectedReturnPercent,
+                                          stopLossPct: Math.abs(((stock.currentPrice - returnMetrics.stopLossPrice) / stock.currentPrice) * 100) || 1.5,
+                                        });
+                                      }}
+                                      className="flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-xs transition-all cursor-pointer hover:scale-[1.02] active:scale-95"
+                                    >
+                                      <Zap className="h-3 w-3" />
+                                      <span>Trade</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                      );
-                    })}
-                  </div>
+                      </div>
+                    );
+                  })()
                 )}
 
                 {/* ─── Pagination Toolbar ─────────────────────────── */}
