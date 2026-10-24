@@ -29,6 +29,7 @@ import TaskOnboardingModal from './TaskOnboardingModal';
 import ThemeCustomizerModal from './ThemeCustomizerModal';
 import CommandPaletteModal from './CommandPaletteModal';
 import { THEMES } from '../lib/themes';
+import { SETTINGS_TOOLS_SECTIONS } from '../lib/navigation-items';
 
 export default function Header() {
   const {
@@ -531,6 +532,76 @@ export default function Header() {
                     </button>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* Extended Platform Tools Section (Moved from Sidepanel) */}
+            <div className="col-span-1 md:col-span-4 pt-5 border-t border-gray-100 dark:border-gray-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="p-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+                    <Compass className="h-4 w-4" />
+                  </div>
+                  <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-gray-800 dark:text-gray-200">
+                    Extended Workspace Tools & Radars
+                  </h4>
+                </div>
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                  Access tools and research modules moved from the sidebar
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {SETTINGS_TOOLS_SECTIONS.map((section) => (
+                  <div key={section.id} className="space-y-2.5">
+                    <div className="pb-1.5 border-b border-gray-100 dark:border-gray-800/80">
+                      <h5 className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                        {section.title}
+                      </h5>
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500">
+                        {section.description}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-1.5 max-h-[300px] overflow-y-auto pr-1">
+                      {section.items.map((item) => {
+                        const ItemIcon = item.icon;
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={() => {
+                              setShowSettings(false);
+                              setSelectedTicker(null);
+                            }}
+                            className="group flex items-center justify-between p-2 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700/60 bg-white/50 dark:bg-gray-800/40 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/30 transition-all text-xs"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 group-hover:scale-105 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-all shrink-0">
+                                <ItemIcon size={14} className={item.color} />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 truncate">
+                                  {item.name}
+                                </p>
+                                {item.description && (
+                                  <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate">
+                                    {item.description}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            {item.badge && (
+                              <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 shrink-0 ml-1">
+                                {item.badge}
+                              </span>
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
