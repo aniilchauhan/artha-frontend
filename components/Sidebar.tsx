@@ -321,7 +321,7 @@ export default function Sidebar() {
         aria-label="Mobile navigation"
         className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-slate-200/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl dark:border-slate-800/80 pb-safe shadow-lg"
       >
-        <div className="grid grid-cols-5 px-1.5 py-2">
+        <div className="grid grid-cols-6 px-1 py-1.5">
           {FOCUS_NAV_GROUP.items.map(item => {
             const active = pathname === item.href;
             const ItemIcon = item.icon;
@@ -331,7 +331,7 @@ export default function Sidebar() {
                 href={item.href}
                 onClick={clearSelection}
                 aria-current={active ? 'page' : undefined}
-                className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-2xl text-[10px] font-bold transition-all duration-200 ${
+                className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-2xl text-[9px] font-bold transition-all duration-200 ${
                   active ? 'text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-500 dark:text-slate-400'
                 }`}
               >
@@ -340,9 +340,9 @@ export default function Sidebar() {
                     active ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/30' : 'bg-slate-100 dark:bg-slate-800'
                   }`}
                 >
-                  <ItemIcon size={18} strokeWidth={active ? 2.5 : 2} />
+                  <ItemIcon size={16} strokeWidth={active ? 2.5 : 2} />
                 </div>
-                <span className="truncate max-w-[70px]">{item.name.replace(' Predictions', '').replace(' Picks', '')}</span>
+                <span className="truncate max-w-[56px] text-center">{item.name.replace(' Predictions', '').replace(' Picks', '').replace(' Radar', '')}</span>
               </Link>
             );
           })}

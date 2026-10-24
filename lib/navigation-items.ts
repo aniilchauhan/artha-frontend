@@ -73,6 +73,15 @@ export const FOCUS_NAV_GROUP: NavGroup = {
       description: 'Daily algorithmic small-cap momentum targets',
     },
     {
+      name: '10% Move Radar',
+      href: '/rapid-moves',
+      icon: Rocket,
+      badge: '10%',
+      badgeType: 'live',
+      color: 'text-cyan-500',
+      description: 'Rapid explosive move detection model (1–5D)',
+    },
+    {
       name: '2–5% Fall Predictions',
       href: '/fall-predictions',
       icon: TrendingDown,
