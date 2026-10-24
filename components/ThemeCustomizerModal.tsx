@@ -25,6 +25,16 @@ export default function ThemeCustomizerModal({ isOpen, onClose }: ThemeCustomize
   const { theme, setTheme } = useStockContext();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
+  React.useEffect(() => {
+    if (isOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const categories = ['All', 'Classic', 'Cyber', 'Financial', 'Vibrant', 'Minimal'];
@@ -37,7 +47,7 @@ export default function ThemeCustomizerModal({ isOpen, onClose }: ThemeCustomize
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto backdrop-blur-md bg-black/60 animate-fade-in"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto backdrop-blur-md bg-black/60 animate-fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}

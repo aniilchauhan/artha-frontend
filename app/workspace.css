@@ -251,9 +251,8 @@
 .workspace-tool-trigger, .workspace-back { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 38px; border-radius: .625rem; font-size: .75rem; font-weight: 600; white-space: nowrap; }
 .workspace-tool-trigger { padding: .5rem .75rem; border: 1px solid var(--workspace-border); color: var(--workspace-foreground); background: var(--workspace-surface); }
 .workspace-tool-trigger:hover, .workspace-icon-button:hover { background: rgb(99 102 241 / .08); }
-.workspace-back { color: var(--workspace-accent); }
-.workspace-tool-dialog { margin: auto; padding: 0; width: min(580px, calc(100vw - 24px)); max-height: min(720px, calc(100dvh - 32px)); border: 1px solid var(--workspace-border); border-radius: 1.25rem; color: var(--workspace-foreground); background: var(--workspace-surface); box-shadow: 0 24px 80px rgb(0 0 0 / .25); }
-.workspace-tool-dialog::backdrop { background: rgb(15 23 42 / .55); backdrop-filter: blur(4px); }
+.workspace-tool-dialog { position: fixed; inset: 0; z-index: 100; margin: auto; padding: 0; width: min(580px, calc(100vw - 24px)); max-height: min(720px, calc(100dvh - 32px)); border: 1px solid var(--workspace-border); border-radius: 1.25rem; color: var(--workspace-foreground); background: var(--workspace-surface); box-shadow: 0 24px 80px rgb(0 0 0 / .25); }
+.workspace-tool-dialog::backdrop { z-index: 99; background: rgb(15 23 42 / .55); backdrop-filter: blur(4px); }
 .workspace-dialog-content { display: flex; flex-direction: column; max-height: min(720px, calc(100dvh - 34px)); }
 .workspace-icon-button { display: inline-flex; align-items: center; justify-content: center; min-width: 40px; min-height: 40px; border: 1px solid var(--workspace-border); border-radius: .75rem; }
 .workspace-directory-input { width: 100%; height: 46px; padding: .75rem .75rem .75rem 2.5rem; background: transparent; border: 1px solid var(--workspace-border); border-radius: .75rem; font-size: .875rem; }

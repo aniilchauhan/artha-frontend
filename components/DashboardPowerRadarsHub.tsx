@@ -101,13 +101,16 @@ export default function DashboardPowerRadarsHub() {
       .filter(s => (s.marketCap ? s.marketCap < 25000 : true) && s.changePercent > 0)
       .sort((a, b) => b.changePercent - a.changePercent)
       .slice(0, 6)
-      .map(s => ({
-        ticker: s.ticker,
-        name: s.name,
-        currentPrice: s.price,
-        changePercent: s.changePercent,
-        score: Math.min(96, Math.max(70, Math.round(75 + s.changePercent * 3))),
-      }));
+      .map(s => {
+        const p = s.currentPrice || (s as any).price || 100;
+        return {
+          ticker: s.ticker,
+          name: s.name,
+          currentPrice: p,
+          changePercent: s.changePercent,
+          score: Math.min(96, Math.max(70, Math.round(75 + s.changePercent * 3))),
+        };
+      });
   }, [smallCapList, stocks]);
 
   const displayedFallList = useMemo(() => {
@@ -118,8 +121,8 @@ export default function DashboardPowerRadarsHub() {
       .sort((a, b) => a.changePercent - b.changePercent)
       .slice(0, 6)
       .map(s => {
+        const entryPrice = s.currentPrice || (s as any).price || 100;
         const dropPct = Math.min(5.0, Math.max(2.0, Math.abs(s.changePercent) * 1.5));
-        const entryPrice = s.price;
         const targetPrice = Number((entryPrice * (1 - dropPct / 100)).toFixed(2));
         const stopLoss = Number((entryPrice * 1.015).toFixed(2));
         return {

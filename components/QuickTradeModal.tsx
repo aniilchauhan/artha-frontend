@@ -94,6 +94,11 @@ export default function QuickTradeModal({
       setStopLossPct(initialStopLossPct);
       setExecutionReceipt(null);
       setErrorMsg(null);
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
     }
   }, [isOpen, initialTargetPct, initialStopLossPct, ticker]);
 
@@ -211,12 +216,17 @@ export default function QuickTradeModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/75 p-3 sm:p-4 backdrop-blur-md overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="trade-scenario-title"
-        className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-indigo-200/80 bg-white p-6 text-gray-900 shadow-2xl dark:border-indigo-900/60 dark:bg-gray-900 dark:text-white"
+        className="max-h-[90dvh] w-full max-w-xl overflow-y-auto rounded-3xl border border-indigo-200/80 bg-white p-4 sm:p-6 text-gray-900 shadow-2xl dark:border-indigo-900/60 dark:bg-gray-900 dark:text-white my-auto"
       >
         <div className="flex items-center justify-between border-b border-gray-100 pb-4 dark:border-gray-800">
           <div className="flex items-center gap-3">

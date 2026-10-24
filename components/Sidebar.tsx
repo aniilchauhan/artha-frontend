@@ -319,7 +319,7 @@ export default function Sidebar() {
       ───────────────────────────────────────────────────────────── */}
       <nav
         aria-label="Mobile navigation"
-        className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-slate-200/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl dark:border-slate-800/80 pb-safe shadow-lg"
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-slate-200/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl dark:border-slate-800/80 pb-safe shadow-lg"
       >
         <div className="grid grid-cols-6 px-1 py-1.5">
           {FOCUS_NAV_GROUP.items.map(item => {

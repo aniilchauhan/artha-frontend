@@ -47,6 +47,11 @@ export default function CommandPaletteModal({ isOpen, onClose }: CommandPaletteM
       setQuery('');
       setSelectedIndex(0);
       setTimeout(() => inputRef.current?.focus(), 50);
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
     }
   }, [isOpen]);
 
@@ -120,11 +125,16 @@ export default function CommandPaletteModal({ isOpen, onClose }: CommandPaletteM
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 p-4 bg-slate-950/80 backdrop-blur-xl animate-in fade-in duration-150">
+      <div
+        className="fixed inset-0 z-[100] flex items-start justify-center pt-8 sm:pt-20 p-3 sm:p-4 bg-slate-950/80 backdrop-blur-xl animate-in fade-in duration-150 overflow-y-auto"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
         <div
           role="dialog"
           aria-modal="true"
-          className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-indigo-500/40 bg-slate-900/95 shadow-[0_0_80px_rgba(99,102,241,0.25)] text-white backdrop-blur-2xl"
+          className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-indigo-500/40 bg-slate-900/95 shadow-[0_0_80px_rgba(99,102,241,0.25)] text-white backdrop-blur-2xl my-auto"
         >
           {/* Aceternity Style Animated Border Beam */}
           <BorderBeam duration={8} colorFrom="#6366f1" colorTo="#a855f7" borderWidth={1.5} />

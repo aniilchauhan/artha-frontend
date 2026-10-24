@@ -133,10 +133,6 @@ export default function TaskOnboardingModal({
     if (!isOpen) return;
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const previousOverflow = document.body.style.overflow;
-    const siblings = Array.from(document.body.children).filter((node): node is HTMLElement =>
-      node instanceof HTMLElement && node !== dialogRef.current && !node.contains(dialogRef.current));
-    const previousInert = siblings.map(node => node.inert);
-    siblings.forEach(node => { node.inert = true; });
     document.body.style.overflow = 'hidden';
     dialogRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
     function handleKeyDown(e: KeyboardEvent) {
@@ -162,7 +158,6 @@ export default function TaskOnboardingModal({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = previousOverflow;
-      siblings.forEach((node, index) => { node.inert = previousInert[index]; });
       previousFocus?.focus();
     };
   }, [isOpen, dismiss]);
