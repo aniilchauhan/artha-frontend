@@ -35,6 +35,14 @@ export default function LiveMarketHeatmapGrid({
   const filteredStocks = useMemo(() => {
     let pool = stocks || [];
 
+    // Filter out synthetic/mock BSE catalogue items that have dummy numeric suffixes (e.g., PTC3, INDRAPRASTHA5)
+    pool = pool.filter((s) => {
+      const sym = (s.symbol || s.ticker || '').replace(/\.(NS|BO)$/, '');
+      if (s.exchange === 'BSE' || s.ticker?.endsWith('.BO')) return false;
+      if (/\d+$/.test(sym)) return false;
+      return true;
+    });
+
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       pool = pool.filter(
@@ -47,20 +55,20 @@ export default function LiveMarketHeatmapGrid({
 
     switch (filterMode) {
       case 'small_cap': {
-        // Small caps (< ₹5,000 Cr or unclassified small equities) sorted by highest gainers
-        const smallCaps = pool.filter((s) => !s.marketCap || s.marketCap <= 5000);
-        const list = smallCaps.length > 0 ? smallCaps : pool;
-        return [...list].sort((a, b) => b.changePercent - a.changePercent);
+        // Genuine small caps (Market Cap between ₹100 Cr and ₹25,000 Cr) sorted by highest gainers
+        const smallCaps = pool.filter((s) => s.marketCap && s.marketCap >= 50 && s.marketCap <= 25000);
+        const list = smallCaps.length > 0 ? smallCaps : pool.filter((s) => !s.marketCap || s.marketCap <= 25000);
+        return [...list].sort((a, b) => (b.changePercent || 0) - (a.changePercent || 0));
       }
       case 'gainers':
-        return pool.filter((s) => s.changePercent >= 1.5).sort((a, b) => b.changePercent - a.changePercent);
+        return pool.filter((s) => (s.changePercent || 0) >= 1.0).sort((a, b) => b.changePercent - a.changePercent);
       case 'losers':
-        return pool.filter((s) => s.changePercent < 0).sort((a, b) => a.changePercent - b.changePercent);
+        return pool.filter((s) => (s.changePercent || 0) < 0).sort((a, b) => a.changePercent - b.changePercent);
       case 'high_volume':
-        return pool.filter((s) => (s.volume || 0) > 1_000_000).sort((a, b) => (b.volume || 0) - (a.volume || 0));
+        return pool.filter((s) => (s.volume || 0) > 100_000).sort((a, b) => (b.volume || 0) - (a.volume || 0));
       case 'radar':
         // Highlight stocks with positive momentum (>2%) or active breakout characteristics
-        return pool.filter((s) => s.changePercent >= 2.0 || s.changePercent <= -2.0);
+        return pool.filter((s) => (s.changePercent || 0) >= 2.0 || (s.changePercent || 0) <= -2.0);
       default:
         return pool;
     }
