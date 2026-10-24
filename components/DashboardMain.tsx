@@ -26,6 +26,7 @@ const WholeMarketForecast = dynamic(() => import('./WholeMarketForecast'), { ssr
 const NseSmartMoneyWidget = dynamic(() => import('./NseSmartMoneyWidget'), { ssr: false });
 const LiveMarketHeatmapGrid = dynamic(() => import('./LiveMarketHeatmapGrid'), { ssr: false });
 const DashboardPowerRadarsHub = dynamic(() => import('./DashboardPowerRadarsHub'), { ssr: false });
+const SentimentRadarWidget = dynamic(() => import('./SentimentRadarWidget'), { ssr: false });
 import QuickTradeModal from './QuickTradeModal';
 import RegulatoryDisclaimerFooter from './RegulatoryDisclaimerFooter';
 import { playTargetChime } from '../lib/sound-notifications';
@@ -722,6 +723,11 @@ export default function DashboardMain() {
 
       {/* ─── Top 3 Core Execution Radars: Small Cap 2%, 10% Screener, 2-5% Fall ─── */}
       <DashboardPowerRadarsHub />
+
+      {/* ─── Real-Time Sentiment & Signal Fusion Radar ─── */}
+      <div id="dashboard-sentiment-fusion-radar" className="scroll-mt-24">
+        <SentimentRadarWidget initialTicker={selectedTicker ? (selectedTicker.includes('.') ? selectedTicker : `${selectedTicker}.NS`) : 'RELIANCE.NS'} />
+      </div>
 
       {/* ─── Live Intraday Small-Cap Multi-Indicator Heatmap Grid (Top Priority) ── */}
       <LiveMarketHeatmapGrid customStocks={effectiveStocks} />

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useTransition } from 'react';
+import React, { useState, useEffect, useMemo, useTransition } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Sparkles,
@@ -58,6 +58,7 @@ interface FusedSignal {
   compositeAction: string;
   compositeScore: number;
   confidencePct: number;
+  confidence: number;
   technicalScore: number;
   sentimentScore: number;
   weights: {
@@ -80,7 +81,9 @@ export default function SentimentRadarWidget({
   initialRsi = 28.5,
   initialMacd = 0.45,
 }: SentimentRadarWidgetProps) {
-  const [ticker, setTicker] = useState<string>(initialTicker);
+  const [ticker, setTicker] = useState<string>(() => {
+    return initialTicker.includes('.') ? initialTicker : `${initialTicker}.NS`;
+  });
   const [rsi, setRsi] = useState<number>(initialRsi);
   const [macdHist, setMacdHist] = useState<number>(initialMacd);
   const [smaTrend, setSmaTrend] = useState<string>('BULLISH');
@@ -92,7 +95,7 @@ export default function SentimentRadarWidget({
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isPending, startTransition] = useTransition();
 
-  const monitoredTickers = [
+  const monitoredTickers = useMemo(() => [
     { symbol: 'RELIANCE.NS', name: 'Reliance Industries' },
     { symbol: 'TCS.NS', name: 'Tata Consultancy Services' },
     { symbol: 'INFY.NS', name: 'Infosys' },
@@ -100,7 +103,25 @@ export default function SentimentRadarWidget({
     { symbol: 'ICICIBANK.NS', name: 'ICICI Bank' },
     { symbol: 'SBIN.NS', name: 'State Bank of India' },
     { symbol: 'TATAMOTORS.NS', name: 'Tata Motors' },
-  ];
+  ], []);
+
+  // Sync when initialTicker changes from dashboard selection
+  useEffect(() => {
+    if (initialTicker) {
+      const normalized = initialTicker.includes('.') ? initialTicker : `${initialTicker}.NS`;
+      if (normalized !== ticker) {
+        setTicker(normalized);
+      }
+    }
+  }, [initialTicker]);
+
+  const allTickers = useMemo(() => {
+    if (ticker && !monitoredTickers.some(t => t.symbol === ticker)) {
+      const cleanName = ticker.replace('.NS', '').replace('.BO', '');
+      return [{ symbol: ticker, name: cleanName }, ...monitoredTickers];
+    }
+    return monitoredTickers;
+  }, [ticker, monitoredTickers]);
 
   const fetchSentimentAndFusion = async (targetTicker: string, force = false) => {
     setIsRefreshing(true);
@@ -255,7 +276,7 @@ export default function SentimentRadarWidget({
             onChange={(e) => startTransition(() => setTicker(e.target.value))}
             className="px-3 py-1.5 text-xs font-mono rounded-lg bg-slate-900 border border-slate-700 text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors"
           >
-            {monitoredTickers.map((t) => (
+            {allTickers.map((t) => (
               <option key={t.symbol} value={t.symbol}>
                 {t.symbol} ({t.name})
               </option>
