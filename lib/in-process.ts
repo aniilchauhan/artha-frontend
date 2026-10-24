@@ -22,6 +22,11 @@ export function axionLocalPath(path: string): string {
 
 export function axionApiPath(path: string): string {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  // In the browser (client-side), ALWAYS route through the same-origin Next.js proxy (/api/...)
+  // to prevent CORS errors, edge gateway 502 drops, and to leverage server-side fallback snapshots.
+  if (typeof window !== 'undefined') {
+    return axionAppPath(normalizedPath);
+  }
   if (backendApiUrl && backendApiUrl.startsWith('http')) {
     return `${backendApiUrl}${normalizedPath}`;
   }

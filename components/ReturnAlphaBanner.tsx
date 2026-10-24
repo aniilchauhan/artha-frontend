@@ -295,7 +295,7 @@ export default function ReturnAlphaBanner({
           </Link>
 
           <Link
-            href={axionAppPath("/backtest")}
+            href={axionAppPath("/research-backtests")}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-violet-500/15 hover:bg-violet-500/25 border border-violet-500/30 text-violet-300 font-bold transition-all hover:scale-[1.02]"
           >
             <span>Quant Backtester</span>

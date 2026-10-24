@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Axion · Next-Gen Dashboard UI/UX Studio · Detailed & Animated</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Dark Theme (Default) */
+      --bg-canvas: #07090e;
+      --bg-surface: #0e121c;
+      --bg-card: #141824;
+      --bg-card-hover: #1b2133;
+      --bg-muted: #1c2236;
+      --border: #232a3f;
+      --border-accent: #3b4668;
+      --text-main: #f3f6fb;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      /* Accents */
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.35);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.25);
+      --rose: #f43f5e;
+      --rose-glow: rgba(244, 63, 94, 0.25);
+      --amber: #f59e0b;
+      --cyan: #06b6d4;
+      --purple: #a855f7;
+    }
+
+    .light-theme {
+      --bg-canvas: #f6f8fc;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-muted: #e2e8f0;
+      --border: #e2e8f0;
+      --border-accent: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      --primary: #4f46e5;
+      --primary-glow: rgba(79, 70, 229, 0.15);
+      --emerald-glow: rgba(16, 185, 129, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 110px; /* space for bottom execution dock */
+      overflow-x: hidden;
+    }
+
+    /* ─── STUDIO NAVIGATION HEADER ───────────────────────────── */
+    .studio-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(14, 18, 28, 0.9);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 900;
+      font-size: 15px;
+      box-shadow: 0 0 20px var(--primary-glow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-logo::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
+      animation: logo-shine 3.5s infinite;
+    }
+
+    @keyframes logo-shine {
+      0% { transform: translateX(-100%); }
+      20%, 100% { transform: translateX(100%); }
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    .toggles-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .feature-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+
+    .feature-toggle:hover {
+      border-color: var(--primary);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    .feature-toggle.active {
+      background: rgba(99, 102, 241, 0.16);
+      border-color: var(--primary);
+      color: #818cf8;
+      box-shadow: 0 0 14px rgba(99, 102, 241, 0.25);
+    }
+
+    .feature-toggle input {
+      display: none;
+    }
+
+    .toggle-num {
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: var(--bg-muted);
+      font-size: 9px;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      transition: all 0.2s;
+    }
+
+    .feature-toggle.active .toggle-num {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .theme-btn {
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .theme-btn:hover {
+      background: var(--bg-muted);
+    }
+
+    /* ─── EXPLANATION TOOLTIP HELPER ─────────────────────────── */
+    .has-tooltip {
+      position: relative;
+      cursor: help;
+      border-bottom: 1px dotted var(--text-dim);
+    }
+
+    .info-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-dim);
+      font-size: 9px;
+      font-family: var(--font-mono);
+      margin-left: 3px;
+      vertical-align: middle;
+      cursor: help;
+      transition: all 0.2s;
+    }
+
+    .has-tooltip:hover .info-icon {
+      background: var(--primary);
+      color: white;
+    }
+
+    .tooltip-content {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      width: 250px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #0f1320;
+      border: 1px solid var(--border-accent);
+      color: #f1f5f9;
+      font-size: 11px;
+      font-family: var(--font-sans);
+      font-weight: 400;
+      line-height: 1.4;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.6), 0 0 20px rgba(99,102,241,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 120;
+      text-align: left;
+    }
+
+    .tooltip-content::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: #0f1320;
+    }
+
+    .has-tooltip:hover .tooltip-content {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* ─── SUGGESTION 1: MARKET PULSE & SESSION HUD (STICKY TOP) ─ */
+    .market-pulse-hud {
+      position: sticky;
+      top: 57px;
+      z-index: 90;
+      background: rgba(14, 18, 28, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      overflow-x: auto;
+      transition: all 0.3s ease;
+    }
+
+    .market-pulse-hud.hidden {
+      display: none;
+    }
+
+    .indices-strip {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .index-ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .index-ticker-item:hover {
+      background: var(--bg-card);
+      border-color: var(--border);
+    }
+
+    .index-name {
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .index-value {
+      font-weight: 800;
+      color: var(--text-main);
+      transition: color 0.3s;
+    }
+
+    .index-value.flash-up {
+      color: #34d399;
+      text-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+    }
+
+    .index-change {
+      font-weight: 700;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .index-change.up {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald);
+    }
+
+    .index-change.down {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--rose);
+    }
+
+    .breadth-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      border-radius: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+
+    .breadth-bar {
+      width: 75px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--rose);
+      overflow: hidden;
+      display: flex;
+    }
+
+    .breadth-fill-green {
+      background: var(--emerald);
+      height: 100%;
+      width: 68%;
+      transition: width 1s ease-in-out;
+    }
+
+    .market-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--emerald);
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      white-space: nowrap;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+      animation: pulse-ring 2s infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.8; }
+    }
+
+    /* ─── MAIN CONTAINER ─────────────────────────────────────── */
+    .dashboard-container {
+      max-width: 1540px;
+      margin: 0 auto;
+      padding: 24px 28px;
+    }
+
+    /* ─── SUGGESTION 2: WORKSPACE MODES ──────────────────────── */
+    .workspace-modes-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 8px 12px;
+      border-radius: 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .workspace-modes-bar.hidden {
+      display: none;
+    }
+
+    .modes-segmented-control {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-card);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .mode-tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mode-tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .mode-tab-btn.active {
+      color: #fff;
+      background: var(--primary);
+      box-shadow: 0 2px 12px var(--primary-glow);
+    }
+
+    .mode-badge {
+      font-size: 9px;
+      font-family: var(--font-mono);
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* ─── RADARS SECTION WITH SCANNING RADAR ANIMATION ───────── */
+    .radars-section {
+      margin-bottom: 24px;
+    }
+
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .radars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 1024px) {
+      .radars-grid { grid-template-columns: 1fr; }
+    }
+
+    .radar-card {
+      border-radius: 18px;
+      padding: 16px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .radar-card:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
+    }
+
+    /* Animated radar sweep line */
+    .radar-sweep-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.8), transparent);
+      animation: radar-sweep 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes radar-sweep {
+      0% { transform: translateY(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(180px); opacity: 0; }
+    }
+
+    .radar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .radar-badge {
+      font-size: 10px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .radar-badge.green {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .radar-badge.amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .radar-badge.rose {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--rose);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    .radar-mini-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .radar-stock-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--bg-surface);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+
+    .radar-stock-item:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateX(3px);
+    }
+
+    .stock-sym {
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    /* ─── SUGGESTION 3: STRATEGY FILTER CHIPS ─────────────────── */
+    .strategy-chips-bar {
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .strategy-chips-bar.hidden {
+      display: none;
+    }
+
+    .chips-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    .strategy-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+
+    .strategy-chip:hover {
+      border-color: var(--border-accent);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    .strategy-chip.active {
+      background: rgba(99, 102, 241, 0.22);
+      border-color: var(--primary);
+      color: #a5b4fc;
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.3);
+    }
+
+    .chip-count {
+      font-size: 9px;
+      font-family: var(--font-mono);
+      padding: 1px 6px;
+      border-radius: 8px;
+      background: var(--bg-muted);
+      color: var(--text-dim);
+    }
+
+    .strategy-chip.active .chip-count {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* ─── HERO BENTO SPOTLIGHT CARD ──────────────────────────── */
+    .bento-section {
+      margin-bottom: 30px;
+    }
+
+    .bento-hero {
+      position: relative;
+      border-radius: 24px;
+      padding: 24px 28px;
+      background: linear-gradient(135deg, rgba(30, 27, 75, 0.8) 0%, rgba(15, 23, 42, 0.96) 50%, rgba(2, 6, 23, 0.98) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 30px rgba(99, 102, 241, 0.15);
+      margin-bottom: 18px;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .bento-hero:hover {
+      border-color: rgba(99, 102, 241, 0.7);
+      box-shadow: 0 25px 55px -12px rgba(0, 0, 0, 0.75), 0 0 45px rgba(99, 102, 241, 0.25);
+    }
+
+    .hero-glow-orb {
+      position: absolute;
+      top: -70px;
+      right: -70px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, rgba(168, 85, 247, 0.15) 50%, transparent 70%);
+      filter: blur(50px);
+      pointer-events: none;
+      animation: orb-breathe 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes orb-breathe {
+      0% { transform: scale(1); opacity: 0.7; }
+      100% { transform: scale(1.15); opacity: 1; }
+    }
+
+    .hero-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 2;
+      flex-wrap: wrap;
+    }
+
+    .hero-badge-spotlight {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-content-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 24px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    @media (max-width: 900px) {
+      .hero-content-grid { grid-template-columns: 1fr; gap: 16px; }
+    }
+
+    .hero-ticker-name {
+      font-size: 26px;
+      font-weight: 900;
+      font-family: var(--font-mono);
+      letter-spacing: -0.02em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-company-name {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    .hero-metrics-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hero-metric-label {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .hero-metric-val {
+      font-size: 18px;
+      font-weight: 900;
+      font-family: var(--font-mono);
+      color: #fff;
+    }
+
+    .hero-target-val {
+      font-size: 16px;
+      font-weight: 900;
+      font-family: var(--font-mono);
+      color: var(--emerald);
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-trade {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 11px 22px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      font-size: 12px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-trade:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 22px rgba(16, 185, 129, 0.55);
+    }
+
+    .btn-trade:active {
+      transform: scale(0.97);
+    }
+
+    .btn-icon {
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+      color: var(--amber);
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    /* ─── ANIMATED "WHY THIS TRADE?" CATALYST DRAWER ─────────── */
+    .btn-why-trade {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #a5b4fc;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 14px;
+    }
+
+    .btn-why-trade:hover {
+      background: rgba(99, 102, 241, 0.3);
+      color: #fff;
+    }
+
+    .catalyst-drawer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+      opacity: 0;
+      background: rgba(14, 18, 28, 0.7);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      margin-top: 0;
+    }
+
+    .catalyst-drawer.open {
+      max-height: 400px;
+      opacity: 1;
+      margin-top: 14px;
+      padding: 16px 20px;
+    }
+
+    .catalyst-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      font-size: 11px;
+    }
+
+    @media (max-width: 800px) {
+      .catalyst-grid { grid-template-columns: 1fr; }
+    }
+
+    .catalyst-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .catalyst-header {
+      font-weight: 800;
+      font-size: 11px;
+      color: #c7d2fe;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .catalyst-body {
+      color: var(--text-muted);
+      line-height: 1.4;
+      font-size: 11px;
+    }
+
+    /* ─── BENTO GRID TILES ───────────────────────────────────── */
+    .bento-tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 1024px) {
+      .bento-tiles-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .bento-tiles-grid { grid-template-columns: 1fr; }
+    }
+
+    .bento-tile {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .bento-tile:hover {
+      border-color: rgba(99, 102, 241, 0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.45);
+    }
+
+    .tile-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .tile-ticker {
+      font-size: 15px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--text-main);
+    }
+
+    .tile-badge {
+      font-size: 9px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .tile-badge.buy {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .tile-company {
+      font-size: 11px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 12px;
+    }
+
+    .tile-price-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .tile-cmp {
+      font-size: 13px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+    }
+
+    .tile-target {
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--emerald);
+    }
+
+    .rr-bar-container {
+      margin-bottom: 12px;
+    }
+
+    .rr-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      margin-bottom: 4px;
+    }
+
+    .rr-bar {
+      height: 5px;
+      border-radius: 3px;
+      background: var(--bg-muted);
+      display: flex;
+      overflow: hidden;
+    }
+
+    .rr-fill-sl {
+      background: var(--rose);
+      width: 25%;
+    }
+
+    .rr-fill-target {
+      background: var(--emerald);
+      width: 75%;
+    }
+
+    .tile-why-summary {
+      font-size: 10px;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .tile-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .gain-tag {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--emerald);
+    }
+
+    .btn-key-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 9px;
+      font-family: var(--font-mono);
+      padding: 1px 4px;
+      border-radius: 3px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e2e8f0;
+      margin-left: 4px;
+    }
+
+    .hotkey-badges-disabled .btn-key-badge {
+      display: none !important;
+    }
+
+    /* ─── SUGGESTION 5: FLOATING EXECUTION DOCK (STICKY BOTTOM) ─ */
+    .execution-dock-wrap {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 80;
+      width: 90%;
+      max-width: 960px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .execution-dock-wrap.hidden {
+      display: none;
+    }
+
+    .execution-dock {
+      background: rgba(14, 18, 28, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-accent);
+      border-radius: 20px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.7), 0 0 24px rgba(99, 102, 241, 0.15);
+      flex-wrap: wrap;
+    }
+
+    .dock-metric {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pnl-bubble {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dock-label {
+      font-size: 9px;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .dock-val {
+      font-size: 13px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--emerald);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .capital-pills {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-surface);
+      padding: 3px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .cap-btn {
+      padding: 4px 8px;
+      border-radius: 7px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-muted);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .cap-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .positions-trigger-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .positions-trigger-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .open-pos-badge {
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--emerald);
+      font-size: 10px;
+      font-family: var(--font-mono);
+    }
+
+    /* ─── MODAL ──────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(10px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      width: 90%;
+      max-width: 480px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(99, 102, 241, 0.2);
+      transform: scale(0.95);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-overlay.open .modal-box {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .kbd {
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: var(--bg-muted);
+      border: 1px solid var(--border-accent);
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 10px;
+      font-family: var(--font-mono);
+    }
+
+    /* Hotkey Toast Notification */
+    .hotkey-toast {
+      position: fixed;
+      bottom: 85px;
+      right: 24px;
+      z-index: 150;
+      padding: 9px 18px;
+      border-radius: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-accent);
+      color: var(--text-main);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    .hotkey-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Studio Navigation & Feature Toggles ─── -->
+  <header class="studio-header">
+    <div class="brand">
+      <div class="brand-logo">AX</div>
+      <div>
+        <div class="brand-title">Axion · Next-Gen Dashboard UI/UX Studio</div>
+        <div class="brand-subtitle">Rich Details · Explanations · Micro-Animations</div>
+      </div>
+    </div>
+
+    <!-- 5 Feature Toggles -->
+    <div class="toggles-bar">
+      <label class="feature-toggle active" id="toggle-s1">
+        <input type="checkbox" checked onchange="toggleFeature('s1', this.checked)">
+        <span class="toggle-num">1</span>
+        <span>Market Pulse HUD</span>
+      </label>
+      <label class="feature-toggle active" id="toggle-s2">
+        <input type="checkbox" checked onchange="toggleFeature('s2', this.checked)">
+        <span class="toggle-num">2</span>
+        <span>Workspace Modes</span>
+      </label>
+      <label class="feature-toggle active" id="toggle-s3">
+        <input type="checkbox" checked onchange="toggleFeature('s3', this.checked)">
+        <span class="toggle-num">3</span>
+        <span>Strategy Chips</span>
+      </label>
+      <label class="feature-toggle active" id="toggle-s4">
+        <input type="checkbox" checked onchange="toggleFeature('s4', this.checked)">
+        <span class="toggle-num">4</span>
+        <span>Hotkeys [T, W, /]</span>
+      </label>
+      <label class="feature-toggle active" id="toggle-s5">
+        <input type="checkbox" checked onchange="toggleFeature('s5', this.checked)">
+        <span class="toggle-num">5</span>
+        <span>Execution Dock</span>
+      </label>
+
+      <button class="theme-btn" onclick="toggleTheme()">
+        <span id="theme-icon">☀️</span> Light/Dark
+      </button>
+    </div>
+  </header>
+
+  <!-- ─── SUGGESTION 1: MARKET PULSE & SESSION HUD (STICKY TOP) ─ -->
+  <div class="market-pulse-hud" id="feature-s1">
+    <div class="indices-strip">
+      <div class="index-ticker-item">
+        <span class="index-name">NIFTY 50</span>
+        <span class="index-value" id="val-nifty">24,852.15</span>
+        <span class="index-change up">+0.64%</span>
+      </div>
+      <div class="index-ticker-item">
+        <span class="index-name">BANK NIFTY</span>
+        <span class="index-value" id="val-bnifty">52,140.80</span>
+        <span class="index-change up">+0.82%</span>
+      </div>
+      <div class="index-ticker-item">
+        <span class="index-name">INDIA VIX</span>
+        <span class="index-value">12.45</span>
+        <span class="index-change down">-2.10%</span>
+      </div>
+      <div class="index-ticker-item">
+        <span class="index-name">GIFT NIFTY</span>
+        <span class="index-value">24,910.00</span>
+        <span class="index-change up">+0.71%</span>
+      </div>
+    </div>
+
+    <!-- Breadth & Session Clock with Helper Tooltips -->
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <div class="breadth-pill has-tooltip">
+        <span style="color: var(--emerald); font-weight: 700;">▲ 1,512</span>
+        <div class="breadth-bar">
+          <div class="breadth-fill-green"></div>
+        </div>
+        <span style="color: var(--rose); font-weight: 700;">▼ 724</span>
+        <span class="info-icon">?</span>
+        <div class="tooltip-content">
+          <strong>Market Breadth Ratio (2.1 : 1)</strong><br>
+          1,512 stocks advancing vs 724 declining. Signals broad-based institutional buying strength across mid & small caps.
+        </div>
+      </div>
+
+      <div class="market-status-badge">
+        <span class="pulse-dot"></span>
+        <span>NSE LIVE · 02h 45m LEFT</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── MAIN DASHBOARD CONTENT ─────────────────────────────── -->
+  <main class="dashboard-container">
+
+    <!-- ─── SUGGESTION 2: WORKSPACE MODES (COMMAND CENTER) ──── -->
+    <div class="workspace-modes-bar" id="feature-s2">
+      <div class="modes-segmented-control">
+        <button class="mode-tab-btn active" onclick="switchWorkspaceMode('execution', this)">
+          <span>⚡ Fast Execution</span>
+          <span class="mode-badge">Active</span>
+        </button>
+        <button class="mode-tab-btn" onclick="switchWorkspaceMode('analytics', this)">
+          <span>📊 Deep Analytics</span>
+          <span class="mode-badge">4 Hubs</span>
+        </button>
+        <button class="mode-tab-btn" onclick="switchWorkspaceMode('ai', this)">
+          <span>🤖 AI & Quant Lab</span>
+          <span class="mode-badge">Signals</span>
+        </button>
+        <button class="mode-tab-btn" onclick="switchWorkspaceMode('full', this)">
+          <span>👁️ All Widgets</span>
+        </button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px; font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);">
+        <span>Press <span class="kbd">1</span>, <span class="kbd">2</span>, <span class="kbd">3</span> to switch modes</span>
+        <span>·</span>
+        <span>Search <span class="kbd">/</span></span>
+      </div>
+    </div>
+
+    <!-- Power Radars (Top Execution Hubs with Animated Radar Sweeps) -->
+    <section class="radars-section" id="mode-radars-block">
+      <div class="section-title-row">
+        <div class="section-title">
+          <span>⚡ Live Algorithmic Execution Radars</span>
+          <span class="has-tooltip" style="font-size: 11px; color: var(--text-dim); font-weight: 500;">
+            · Scanning 5,055 Indian Equities <span class="info-icon">?</span>
+            <span class="tooltip-content">
+              Algorithmic scanning engines running intraday rule checks: 2% small-cap momentum surges, 10% volume breakout triggers, and distribution pullbacks.
+            </span>
+          </span>
+        </div>
+        <div style="font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);">
+          Auto-refreshed every 10s
+        </div>
+      </div>
+
+      <div class="radars-grid">
+        <!-- 1. Small Cap 2% Target -->
+        <div class="radar-card">
+          <div class="radar-sweep-bar"></div>
+          <div class="radar-header">
+            <span class="radar-badge green">🚀 Small-Cap 2% Intraday</span>
+            <span style="font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);">3 Setups</span>
+          </div>
+          <div class="radar-mini-list">
+            <div class="radar-stock-item" onclick="openTradeModal('KALYANKJIL', 712.50, 2.2, 0.9)">
+              <div>
+                <span class="stock-sym">KALYANKJIL</span>
+                <span style="font-size: 10px; color: var(--text-dim); margin-left: 4px;">Kalyan Jewellers</span>
+              </div>
+              <div style="text-align: right;">
+                <div style="color: var(--text-main); font-family: var(--font-mono); font-weight: 700;">₹712.50</div>
+                <div style="color: var(--emerald); font-weight: 700; font-size: 10px;">+2.2% Target</div>
+              </div>
+            </div>
+            <div class="radar-stock-item" onclick="openTradeModal('HUDCO', 248.80, 2.4, 0.8)">
+              <div>
+                <span class="stock-sym">HUDCO</span>
+                <span style="font-size: 10px; color: var(--text-dim); margin-left: 4px;">Housing Dev</span>
+              </div>
+              <div style="text-align: right;">
+                <div style="color: var(--text-main); font-family: var(--font-mono); font-weight: 700;">₹248.80</div>
+                <div style="color: var(--emerald); font-weight: 700; font-size: 10px;">+2.4% Target</div>
+              </div>
+            </div>
+            <div class="radar-stock-item" onclick="openTradeModal('SUZLON', 64.20, 2.8, 1.1)">
+              <div>
+                <span class="stock-sym">SUZLON</span>
+                <span style="font-size: 10px; color: var(--text-dim); margin-left: 4px;">Suzlon Energy</span>
+              </div>
+              <div style="text-align: right;">
+                <div style="color: var(--text-main); font-family: var(--font-mono); font-weight: 700;">₹64.20</div>
+                <div style="color: var(--emerald); font-weight: 700; font-size: 10px;">+2.8% Target</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 10% Rapid Moves Screener -->
+        <div class="radar-card">
+          <div class="radar-sweep-bar" style="animation-delay: 1s;"></div>
+          <div class="radar-header">
+            <span class="radar-badge amber">🔥 10% Rapid Breakout Scan</span>
+            <span style="font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);">2 Setups</span>
+          </div>
+          <div class="radar-mini-list">
+            <div class="radar-stock-item" onclick="openTradeModal('ZOMATO', 278.40, 7.8, 2.2)">
+              <div>
+                <span class="stock-sym">ZOMATO</span>
+                <span style="font-size: 10px; color: var(--text-dim); margin-left: 4px;">Zomato Ltd</span>
+              </div>
+              <div style="text-align: right;">
+                <div style="color: var(--text-main); font-family: var(--font-mono); font-weight: 700;">₹278.40</div>
+                <div style="color: var(--amber); font-weight: 700; font-size: 10px;">RVOL 3.4x 🚀</div>
+              </div>
+            </div>
+            <div class="radar-stock-item" onclick="openTradeModal('TRENT', 7420.00, 6.5, 1.8)">
+              <div>
+                <span class="stock-sym">TRENT</span>
+                <span style="font-size: 10px; color: var(--text-dim); margin-left: 4px;">Trent Ltd</span>
+              </div>
+              <div style="text-align: right;">
+                <div style="color: var(--text-main); font-family: var(--font-mono); font-weight: 700;">₹7,420.00</div>
+                <div style="color: var(--amber); font-weight: 700; font-size: 10px;">RVOL 2.8x 🚀</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. 2-5% Fall Prediction (Shorts/Hedges) -->
+        <div class="radar-card">
+          <div class="radar-sweep-bar" style="animation-delay: 2s;"></div>
+          <div class="radar-header">
+            <span class="radar-badge rose">📉 2-5% Distribution Alert</span>
+            <span style="font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);">2 Setups</span>
+          </div>
+          <div class="radar-mini-list">
+            <div class="radar-stock-item" onclick="openTradeModal('BAJFINANCE', 6840.00, -3.2, 1.2)">
+              <div>
+                <span class="stock-sym">BAJFINANCE</span>
+                <span style="font-size: 10px; color: var(--text-dim); margin-left: 4px;">Bajaj Finance</span>
+              </div>
+              <div style="text-align: right;">
+                <div style="color: var(--text-main); font-family: var(--font-mono); font-weight: 700;">₹6,840.00</div>
+                <div style="color: var(--rose); font-weight: 700; font-size: 10px;">-3.2% Pullback</div>
+              </div>
+            </div>
+            <div class="radar-stock-item" onclick="openTradeModal('INDUSINDBK', 1345.00, -2.8, 1.0)">
+              <div>
+                <span class="stock-sym">INDUSINDBK</span>
+                <span style="font-size: 10px; color: var(--text-dim); margin-left: 4px;">IndusInd Bank</span>
+              </div>
+              <div style="text-align: right;">
+                <div style="color: var(--text-main); font-family: var(--font-mono); font-weight: 700;">₹1,345.00</div>
+                <div style="color: var(--rose); font-weight: 700; font-size: 10px;">-2.8% Pullback</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── SUGGESTION 3: STRATEGY FILTER CHIPS ─────────────── -->
+    <div class="strategy-chips-bar" id="feature-s3">
+      <span class="chips-label">🎯 Quick Strategy Filters:</span>
+      <button class="strategy-chip active" onclick="applyStrategyFilter('all', this)">
+        <span>All Setups</span>
+        <span class="chip-count" id="count-all">6</span>
+      </button>
+      <button class="strategy-chip" onclick="applyStrategyFilter('rvol', this)">
+        <span>🔥 High RVOL (> 2x)</span>
+        <span class="chip-count">3</span>
+      </button>
+      <button class="strategy-chip" onclick="applyStrategyFilter('rr', this)">
+        <span>🎯 Asymmetric R:R (> 3x)</span>
+        <span class="chip-count">4</span>
+      </button>
+      <button class="strategy-chip" onclick="applyStrategyFilter('largecap', this)">
+        <span>💎 Large Cap Leaders</span>
+        <span class="chip-count">2</span>
+      </button>
+      <button class="strategy-chip" onclick="applyStrategyFilter('smallcap', this)">
+        <span>🚀 Small-Cap Momentum</span>
+        <span class="chip-count">3</span>
+      </button>
+      <button class="strategy-chip" onclick="applyStrategyFilter('dip', this)">
+        <span>📉 Oversold Dip Buy</span>
+        <span class="chip-count">1</span>
+      </button>
+    </div>
+
+    <!-- ─── BENTO GRID OPPORTUNITIES ─────────────────────────── -->
+    <section class="bento-section">
+      <!-- 1. Hero Bento Spotlight Card -->
+      <div class="bento-hero" id="hero-card" data-tags="rvol rr largecap">
+        <div class="hero-glow-orb"></div>
+        <div class="hero-top-row">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="hero-badge-spotlight">✨ #1 AI Conviction Spotlight</span>
+            <span class="has-tooltip" style="font-size: 11px; font-family: var(--font-mono); color: #818cf8; background: rgba(99, 102, 241, 0.2); padding: 2px 8px; border-radius: 6px;">
+              LARGE CAP · RVOL 3.2x <span class="info-icon">?</span>
+              <span class="tooltip-content">
+                <strong>Relative Volume (RVOL) = 3.2x</strong><br>
+                Trading at 320% of its normal 20-day volume average. Confirms massive institutional interest, not retail noise.
+              </span>
+            </span>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 11px; font-family: var(--font-mono); color: var(--text-dim);">
+              Hover + press <kbd class="kbd">T</kbd> to trade
+            </span>
+          </div>
+        </div>
+
+        <div class="hero-content-grid">
+          <div>
+            <div class="hero-ticker-name">
+              <span>RELIANCE</span>
+              <span class="has-tooltip" style="font-size: 12px; font-weight: 700; color: var(--emerald); background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 6px;">
+                BUY · Score 94/100 <span class="info-icon">?</span>
+                <span class="tooltip-content">
+                  <strong>AI Conviction: 94/100</strong><br>
+                  Evaluates 24 indicators (EMA ribbons, Supertrend, Delivery Volume, RSI momentum) all pointing to bullish continuation.
+                </span>
+              </span>
+            </div>
+            <div class="hero-company-name">Reliance Industries Ltd · Energy & Conglomerate</div>
+          </div>
+
+          <div class="hero-metrics-box">
+            <div>
+              <div class="hero-metric-label">Current Price</div>
+              <div class="hero-metric-val">₹2,945.50</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="hero-metric-label">Target (+5.2%)</div>
+              <div class="hero-target-val">₹3,098.00</div>
+            </div>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn-icon" onclick="toggleWatchlist('RELIANCE')" title="Toggle Watchlist [W]">
+              ⭐ <span class="btn-key-badge">W</span>
+            </button>
+            <button class="btn-trade" onclick="openTradeModal('RELIANCE', 2945.50, 5.2, 1.4)">
+              <span>Execute Trade</span>
+              <span class="btn-key-badge">T</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Visual Risk Reward Bracket Bar -->
+        <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; font-family: var(--font-mono); margin-bottom: 6px;">
+            <span style="color: var(--rose);">Stop Loss: ₹2,904.00 (-1.4%)</span>
+            <span class="has-tooltip" style="color: #cbd5e1; font-weight: 600;">
+              Risk-Reward: <strong style="color: var(--emerald);">3.7x</strong> · Est. Profit on <span class="capital-label-live">₹1,00,000</span>: <strong style="color: var(--emerald);">+₹5,200</strong>
+              <span class="info-icon">?</span>
+              <span class="tooltip-content">
+                <strong>Risk-to-Reward: 3.7x</strong><br>
+                For every ₹1 you risk on your stop-loss (₹1,400 on ₹1L), you expect to gain ₹3.70 (₹5,200 gain on target). Highly favorable asymmetry!
+              </span>
+            </span>
+            <span style="color: var(--emerald);">Target 1: ₹3,098.00 (+5.2%)</span>
+          </div>
+          <div class="rr-bar" style="height: 6px;">
+            <div class="rr-fill-sl" style="width: 21%;"></div>
+            <div class="rr-fill-target" style="width: 79%;"></div>
+          </div>
+        </div>
+
+        <!-- "Why This Trade?" Catalyst Explanation Accordion -->
+        <button class="btn-why-trade" onclick="toggleCatalystDrawer('hero-catalyst', this)">
+          <span>✨ Why This Trade? (Detailed Catalyst Breakdown)</span>
+          <span id="hero-arrow">▼</span>
+        </button>
+
+        <div class="catalyst-drawer" id="hero-catalyst">
+          <div class="catalyst-grid">
+            <div class="catalyst-item">
+              <span class="catalyst-header">📈 Technical Trigger</span>
+              <span class="catalyst-body">Confirmed 200 EMA breakout on 15m chart with RSI momentum at 62. Forming a bullish cup-and-handle base.</span>
+            </div>
+            <div class="catalyst-item">
+              <span class="catalyst-header">💧 Institutional Flow</span>
+              <span class="catalyst-body">3.2x daily average volume with 64% delivery volume. Multiple block deals recorded at ₹2,935 support.</span>
+            </div>
+            <div class="catalyst-item">
+              <span class="catalyst-header">🛡️ Position Sizing (₹1L)</span>
+              <span class="catalyst-body">Buy <strong>33 shares</strong>. Max risk capped at ₹1,400 (-1.4%). Projected upside is ₹5,200 (+5.2%).</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Companion Bento Tiles Grid with Built-in Explanations -->
+      <div class="bento-tiles-grid" id="bento-tiles-container">
+
+        <!-- Card 1: TRENT -->
+        <div class="bento-tile" data-tags="rvol rr largecap" onclick="openTradeModal('TRENT', 7420, 6.5, 1.8)">
+          <div>
+            <div class="tile-top-row">
+              <span class="tile-ticker">TRENT</span>
+              <span class="tile-badge buy">BUY · 91</span>
+              <span class="has-tooltip" style="font-size: 9px; font-family: var(--font-mono); color: var(--amber); background: rgba(245, 158, 11, 0.15); padding: 1px 4px; border-radius: 4px;">
+                2.8x RVOL <span class="info-icon">?</span>
+                <span class="tooltip-content">Retail expansion catalyst. Volume 180% higher than 20-day median.</span>
+              </span>
+            </div>
+            <div class="tile-company">Trent Limited · Retail & Fashion (Tata Group)</div>
+
+            <div class="tile-price-box">
+              <div>
+                <div style="font-size: 9px; color: var(--text-dim); font-family: var(--font-mono);">CMP</div>
+                <div class="tile-cmp">₹7,420.00</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 9px; color: var(--text-dim); font-family: var(--font-mono);">TARGET</div>
+                <div class="tile-target">₹7,902 (+6.5%)</div>
+              </div>
+            </div>
+
+            <div class="tile-why-summary">
+              <strong>Catalyst:</strong> Bullish consolidation above 20 EMA with rising delivery volume. Tata retail earnings momentum.
+            </div>
+
+            <div class="rr-bar-container">
+              <div class="rr-bar-labels">
+                <span style="color: var(--rose);">SL: ₹7,286 (-1.8%)</span>
+                <span style="color: var(--emerald); font-weight: 700;">3.6x R:R</span>
+              </div>
+              <div class="rr-bar">
+                <div class="rr-fill-sl" style="width: 22%;"></div>
+                <div class="rr-fill-target" style="width: 78%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tile-footer">
+            <span class="gain-tag">+₹6,500 exp. gain</span>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn-icon" style="padding: 4px 8px; font-size: 11px;" onclick="event.stopPropagation(); toggleWatchlist('TRENT')">⭐</button>
+              <button class="btn-trade" style="padding: 4px 12px; font-size: 11px;" onclick="event.stopPropagation(); openTradeModal('TRENT', 7420, 6.5, 1.8)">
+                Trade <span class="btn-key-badge">T</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: KALYANKJIL -->
+        <div class="bento-tile" data-tags="smallcap rr" onclick="openTradeModal('KALYANKJIL', 712.50, 4.8, 1.3)">
+          <div>
+            <div class="tile-top-row">
+              <span class="tile-ticker">KALYANKJIL</span>
+              <span class="tile-badge buy">BUY · 88</span>
+              <span style="font-size: 9px; font-family: var(--font-mono); color: #818cf8; background: rgba(99, 102, 241, 0.15); padding: 1px 4px; border-radius: 4px;">SMALL CAP</span>
+            </div>
+            <div class="tile-company">Kalyan Jewellers India · Consumer Gems</div>
+
+            <div class="tile-price-box">
+              <div>
+                <div style="font-size: 9px; color: var(--text-dim); font-family: var(--font-mono);">CMP</div>
+                <div class="tile-cmp">₹712.50</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 9px; color: var(--text-dim); font-family: var(--font-mono);">TARGET</div>
+                <div class="tile-target">₹746.70 (+4.8%)</div>
+              </div>
+            </div>
+
+            <div class="tile-why-summary">
+              <strong>Catalyst:</strong> Festive demand volume surge. Gold price hedging margin expansion reported in latest filings.
+            </div>
+
+            <div class="rr-bar-container">
+              <div class="rr-bar-labels">
+                <span style="color: var(--rose);">SL: ₹703.20 (-1.3%)</span>
+                <span style="color: var(--emerald); font-weight: 700;">3.7x R:R</span>
+              </div>
+              <div class="rr-bar">
+                <div class="rr-fill-sl" style="width: 21%;"></div>
+                <div class="rr-fill-target" style="width: 79%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tile-footer">
+            <span class="gain-tag">+₹4,800 exp. gain</span>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn-icon" style="padding: 4px 8px; font-size: 11px;" onclick="event.stopPropagation(); toggleWatchlist('KALYANKJIL')">⭐</button>
+              <button class="btn-trade" style="padding: 4px 12px; font-size: 11px;" onclick="event.stopPropagation(); openTradeModal('KALYANKJIL', 712.50, 4.8, 1.3)">
+                Trade <span class="btn-key-badge">T</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: HUDCO -->
+        <div class="bento-tile" data-tags="smallcap rvol" onclick="openTradeModal('HUDCO', 248.80, 5.5, 1.5)">
+          <div>
+            <div class="tile-top-row">
+              <span class="tile-ticker">HUDCO</span>
+              <span class="tile-badge buy">BUY · 87</span>
+              <span style="font-size: 9px; font-family: var(--font-mono); color: var(--amber); background: rgba(245, 158, 11, 0.15); padding: 1px 4px; border-radius: 4px;">2.1x RVOL</span>
+            </div>
+            <div class="tile-company">Housing & Urban Dev Corp · Finance & Infra</div>
+
+            <div class="tile-price-box">
+              <div>
+                <div style="font-size: 9px; color: var(--text-dim); font-family: var(--font-mono);">CMP</div>
+                <div class="tile-cmp">₹248.80</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 9px; color: var(--text-dim); font-family: var(--font-mono);">TARGET</div>
+                <div class="tile-target">₹262.50 (+5.5%)</div>
+              </div>
+            </div>
+
+            <div class="tile-why-summary">
+              <strong>Catalyst:</strong> Affordable housing budget disbursement trigger. Institutional buying detected on 5-min chart.
+            </div>
+
+            <div class="rr-bar-container">
+              <div class="rr-bar-labels">
+                <span style="color: var(--rose);">SL: ₹245.00 (-1.5%)</span>
+                <span style="color: var(--emerald); font-weight: 700;">3.6x R:R</span>
+              </div>
+              <div class="rr-bar">
+                <div class="rr-fill-sl" style="width: 22%;"></div>
+                <div class="rr-fill-target" style="width: 78%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tile-footer">
+            <span class="gain-tag">+₹5,500 exp. gain</span>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn-icon" style="padding: 4px 8px; font-size: 11px;" onclick="event.stopPropagation(); toggleWatchlist('HUDCO')">⭐</button>
+              <button class="btn-trade" style="padding: 4px 12px; font-size: 11px;" onclick="event.stopPropagation(); openTradeModal('HUDCO', 248.80, 5.5, 1.5)">
+                Trade <span class="btn-key-badge">T</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: ZOMATO -->
+        <div class="bento-tile" data-tags="rvol rr" onclick="openTradeModal('ZOMATO', 278.40, 6.2, 1.7)">
+          <div>
+            <div class="tile-top-row">
+              <span class="tile-ticker">ZOMATO</span>
+              <span class="tile-badge buy">BUY · 89</span>
+              <span style="font-size: 9px; font-family: var(--font-mono); color: var(--amber); background: rgba(245, 158, 11, 0.15); padding: 1px 4px; border-radius: 4px;">3.4x RVOL</span>
+            </div>
+            <div class="tile-company">Zomato Limited · Tech & Quick Commerce</div>
+
+            <div class="tile-price-box">
+              <div>
+                <div style="font-size: 9px; color: var(--text-dim); font-family: var(--font-mono);">CMP</div>
+                <div class="tile-cmp">₹278.40</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 9px; color: var(--text-dim); font-family: var(--font-mono);">TARGET</div>
+                <div class="tile-target">₹295.60 (+6.2%)</div>
+              </div>
+            </div>
+
+            <div class="tile-why-summary">
+              <strong>Catalyst:</strong> Blinkit dark store expansion accelerating gross order value. Breakout to fresh multi-year highs.
+            </div>
+
+            <div class="rr-bar-container">
+              <div class="rr-bar-labels">
+                <span style="color: var(--rose);">SL: ₹273.60 (-1.7%)</span>
+                <span style="color: var(--emerald); font-weight: 700;">3.6x R:R</span>
+              </div>
+              <div class="rr-bar">
+                <div class="rr-fill-sl" style="width: 21%;"></div>
+                <div class="rr-fill-target" style="width: 79%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tile-footer">
+            <span class="gain-tag">+₹6,200 exp. gain</span>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn-icon" style="padding: 4px 8px; font-size: 11px;" onclick="event.stopPropagation(); toggleWatchlist('ZOMATO')">⭐</button>
+              <button class="btn-trade" style="padding: 4px 12px; font-size: 11px;" onclick="event.stopPropagation(); openTradeModal('ZOMATO', 278.40, 6.2, 1.7)">
+                Trade <span class="btn-key-badge">T</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5: TATASTEEL (Dip Buy Setup) -->
+        <div class="bento-tile" data-tags="dip rr" onclick="openTradeModal('TATASTEEL', 148.20, 4.2, 1.1)">
+          <div>
+            <div class="tile-top-row">
+              <span class="tile-ticker">TATASTEEL</span>
+              <span class="tile-badge buy">BUY · 85</span>
+              <span style="font-size: 9px; font-family: var(--font-mono); color: #06b6d4; background: rgba(6, 182, 212, 0.15); padding: 1px 4px; border-radius: 4px;">RSI 32 DIP</span>
+            </div>
+            <div class="tile-company">Tata Steel Limited · Metals & Mining</div>
+
+            <div class="tile-price-box">
+              <div>
+                <div style="font-size: 9px; color: var(--text-dim); font-family: var(--font-mono);">CMP</div>
+                <div class="tile-cmp">₹148.20</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 9px; color: var(--text-dim); font-family: var(--font-mono);">TARGET</div>
+                <div class="tile-target">₹154.40 (+4.2%)</div>
+              </div>
+            </div>
+
+            <div class="tile-why-summary">
+              <strong>Catalyst:</strong> Oversold bounce off historical ₹146 support. Global metal prices rebounding on China stimulus.
+            </div>
+
+            <div class="rr-bar-container">
+              <div class="rr-bar-labels">
+                <span style="color: var(--rose);">SL: ₹146.50 (-1.1%)</span>
+                <span style="color: var(--emerald); font-weight: 700;">3.8x R:R</span>
+              </div>
+              <div class="rr-bar">
+                <div class="rr-fill-sl" style="width: 20%;"></div>
+                <div class="rr-fill-target" style="width: 80%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tile-footer">
+            <span class="gain-tag">+₹4,200 exp. gain</span>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn-icon" style="padding: 4px 8px; font-size: 11px;" onclick="event.stopPropagation(); toggleWatchlist('TATASTEEL')">⭐</button>
+              <button class="btn-trade" style="padding: 4px 12px; font-size: 11px;" onclick="event.stopPropagation(); openTradeModal('TATASTEEL', 148.20, 4.2, 1.1)">
+                Trade <span class="btn-key-badge">T</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── CONDITIONAL SECTION: ANALYTICS HUBS ─────────────────── -->
+    <section id="analytics-section" style="display: none; margin-bottom: 30px;">
+      <div class="section-title-row">
+        <div class="section-title">
+          <span>📊 Institutional Market Analytics & Breadth</span>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; padding: 20px;">
+          <h4 style="font-size: 13px; font-weight: 800; margin-bottom: 10px;">Sector Flow & FII/DII Smart Money</h4>
+          <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Net institutional inflow: +₹2,480 Cr into Private Banks & IT.</p>
+          <div style="height: 120px; background: var(--bg-surface); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);">
+            [Interactive Sector Treemap & FII Liquidity Velocity]
+          </div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; padding: 20px;">
+          <h4 style="font-size: 13px; font-weight: 800; margin-bottom: 10px;">Market Mood Index</h4>
+          <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Extreme Greed (68/100) — Healthy Expansion.</p>
+          <div style="height: 120px; background: var(--bg-surface); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--emerald); font-weight: 700;">
+            Bullish Continuation Zone
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ─── SUGGESTION 5: FLOATING EXECUTION DOCK (STICKY BOTTOM) ─ -->
+  <div class="execution-dock-wrap" id="feature-s5">
+    <div class="execution-dock">
+      <!-- 1. Real-time Session Paper P&L -->
+      <div class="dock-metric">
+        <div class="pulse-dot"></div>
+        <div class="pnl-bubble">
+          <div class="dock-label">Today's Paper P&L</div>
+          <div class="dock-val">+₹14,850.00 (+2.97%)</div>
+        </div>
+      </div>
+
+      <!-- 2. Fast Capital Allocation Selector -->
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="dock-label">Active Capital:</span>
+        <div class="capital-pills">
+          <button class="cap-btn" onclick="selectCapital(50000, this)">₹50K</button>
+          <button class="cap-btn active" onclick="selectCapital(100000, this)">₹1L</button>
+          <button class="cap-btn" onclick="selectCapital(500000, this)">₹5L</button>
+          <button class="cap-btn" onclick="selectCapital(1000000, this)">₹10L</button>
+        </div>
+      </div>
+
+      <!-- 3. Open Positions Drawer Trigger -->
+      <button class="positions-trigger-btn" onclick="showToast('Open Positions: 2 active trades (RELIANCE +2.1%, TRENT +3.4%)')">
+        <span>Active Trades</span>
+        <span class="open-pos-badge">2 Running</span>
+      </button>
+
+      <!-- 4. Quick Order Trigger -->
+      <button class="btn-trade" onclick="openTradeModal('RELIANCE', 2945.50, 5.2, 1.4)" style="padding: 7px 16px;">
+        <span>⚡ Quick Trade</span>
+        <span class="btn-key-badge">T</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── QUICK TRADE POPUP MODAL (SIMULATOR) ────────────────── -->
+  <div class="modal-overlay" id="trade-modal" onclick="closeTradeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>⚡ Instant 1-Click Order Execution</span>
+        </div>
+        <button class="close-btn" onclick="closeTradeModal()">✕</button>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between;">
+          <h2 id="modal-ticker" style="font-size: 24px; font-weight: 900; font-family: var(--font-mono);">RELIANCE</h2>
+          <span id="modal-cmp" style="font-size: 18px; font-weight: 800; font-family: var(--font-mono);">₹2,945.50</span>
+        </div>
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">NSE Cash Market Order · Instant Paper Simulation</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 10px;">
+          <div style="font-size: 10px; color: var(--text-dim); font-family: var(--font-mono);">TARGET LEVEL</div>
+          <div id="modal-target" style="font-size: 14px; font-weight: 800; font-family: var(--font-mono); color: var(--emerald);">₹3,098.00 (+5.2%)</div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 10px;">
+          <div style="font-size: 10px; color: var(--text-dim); font-family: var(--font-mono);">STOP LOSS</div>
+          <div id="modal-sl" style="font-size: 14px; font-weight: 800; font-family: var(--font-mono); color: var(--rose);">₹2,904.00 (-1.4%)</div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 10px 14px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 12px;">
+        <span style="font-size: 11px; color: #a5b4fc; font-weight: 600;">Allocated Capital:</span>
+        <span class="capital-label-live" style="font-size: 13px; font-weight: 800; font-family: var(--font-mono); color: #fff;">₹1,00,000</span>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-trade" style="flex: 1; justify-content: center; padding: 12px;" onclick="executeMockTrade()">
+          🚀 Confirm Buy Order
+        </button>
+        <button class="positions-trigger-btn" style="padding: 12px 18px;" onclick="closeTradeModal()">
+          Cancel <span class="kbd">Esc</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hotkey Toast Notification -->
+  <div class="hotkey-toast" id="hotkey-toast">
+    <span id="toast-text">Toast message</span>
+  </div>
+
+  <!-- ─── JAVASCRIPT LOGIC ────────────────────────────────────── -->
+  <script>
+    let activeCapital = 100000;
+    let hoveredTicker = 'RELIANCE';
+
+    // Track mouse hover over cards to enable hotkeys
+    document.addEventListener('mouseover', (e) => {
+      const tile = e.target.closest('.bento-tile, .bento-hero');
+      if (tile) {
+        const tickerEl = tile.querySelector('.tile-ticker, .hero-ticker-name span');
+        if (tickerEl) hoveredTicker = tickerEl.textContent.trim();
+      }
+    });
+
+    // 1. Feature Toggle System
+    function toggleFeature(id, isChecked) {
+      const el = document.getElementById(`feature-${id}`);
+      const btn = document.getElementById(`toggle-${id}`);
+      
+      if (isChecked) {
+        if (el) el.classList.remove('hidden');
+        if (btn) btn.classList.add('active');
+        if (id === 's4') document.body.classList.remove('hotkey-badges-disabled');
+        showToast(`Suggestion ${id.toUpperCase()} Activated`);
+      } else {
+        if (el) el.classList.add('hidden');
+        if (btn) btn.classList.remove('active');
+        if (id === 's4') document.body.classList.add('hotkey-badges-disabled');
+        showToast(`Suggestion ${id.toUpperCase()} Deactivated`);
+      }
+    }
+
+    // 2. Toggle Catalyst Drawer with Smooth Animation
+    function toggleCatalystDrawer(drawerId, btnEl) {
+      const drawer = document.getElementById(drawerId);
+      const arrow = document.getElementById('hero-arrow');
+      if (!drawer) return;
+
+      const isOpen = drawer.classList.toggle('open');
+      if (arrow) arrow.textContent = isOpen ? '▲' : '▼';
+      if (btnEl) {
+        btnEl.style.background = isOpen ? 'rgba(99, 102, 241, 0.35)' : 'rgba(99, 102, 241, 0.15)';
+      }
+      showToast(isOpen ? '✨ Catalyst Breakdown Unfolded' : 'Catalyst Breakdown Folded');
+    }
+
+    // 3. Switch Workspace Modes
+    function switchWorkspaceMode(mode, btnEl) {
+      document.querySelectorAll('.mode-tab-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+
+      const radars = document.getElementById('mode-radars-block');
+      const bento = document.querySelector('.bento-section');
+      const chips = document.getElementById('feature-s3');
+      const analytics = document.getElementById('analytics-section');
+
+      if (mode === 'execution') {
+        radars.style.display = 'block';
+        bento.style.display = 'block';
+        chips.style.display = 'flex';
+        analytics.style.display = 'none';
+        showToast('⚡ Mode: Fast Execution Cockpit');
+      } else if (mode === 'analytics') {
+        radars.style.display = 'none';
+        bento.style.display = 'none';
+        chips.style.display = 'none';
+        analytics.style.display = 'block';
+        showToast('📊 Mode: Deep Analytics & Macro');
+      } else if (mode === 'ai') {
+        radars.style.display = 'block';
+        bento.style.display = 'block';
+        chips.style.display = 'flex';
+        analytics.style.display = 'none';
+        showToast('🤖 Mode: AI & Quant Lab');
+      } else {
+        radars.style.display = 'block';
+        bento.style.display = 'block';
+        chips.style.display = 'flex';
+        analytics.style.display = 'block';
+        showToast('👁️ Mode: Full Terminal Overview');
+      }
+    }
+
+    // 4. Apply Strategy Filter Chips
+    function applyStrategyFilter(tag, btnEl) {
+      document.querySelectorAll('.strategy-chip').forEach(c => c.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+
+      const hero = document.getElementById('hero-card');
+      const tiles = document.querySelectorAll('.bento-tile');
+      let visibleCount = 0;
+
+      if (tag === 'all') {
+        hero.style.display = 'block';
+        tiles.forEach(t => t.style.display = 'flex');
+        visibleCount = 6;
+      } else {
+        if (hero.getAttribute('data-tags').includes(tag)) {
+          hero.style.display = 'block';
+          visibleCount++;
+        } else {
+          hero.style.display = 'none';
+        }
+
+        tiles.forEach(t => {
+          if (t.getAttribute('data-tags').includes(tag)) {
+            t.style.display = 'flex';
+            visibleCount++;
+          } else {
+            t.style.display = 'none';
+          }
+        });
+      }
+
+      showToast(`Filter Applied: ${visibleCount} Setups Found`);
+    }
+
+    // 5. Select Capital
+    function selectCapital(amt, btnEl) {
+      activeCapital = amt;
+      document.querySelectorAll('.cap-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+
+      const label = `₹${amt.toLocaleString('en-IN')}`;
+      document.querySelectorAll('.capital-label-live').forEach(el => el.textContent = label);
+      showToast(`Simulated Capital Updated to ${label}`);
+    }
+
+    // Modal Operations
+    function openTradeModal(ticker, cmp, targetPct, slPct) {
+      document.getElementById('modal-ticker').textContent = ticker;
+      document.getElementById('modal-cmp').textContent = `₹${cmp.toFixed(2)}`;
+      const targetVal = cmp * (1 + targetPct / 100);
+      const slVal = cmp * (1 - slPct / 100);
+      document.getElementById('modal-target').textContent = `₹${targetVal.toFixed(1)} (+${targetPct}%)`;
+      document.getElementById('modal-sl').textContent = `₹${slVal.toFixed(1)} (-${slPct}%)`;
+      document.getElementById('trade-modal').classList.add('open');
+    }
+
+    function closeTradeModal() {
+      document.getElementById('trade-modal').classList.remove('open');
+    }
+
+    function executeMockTrade() {
+      closeTradeModal();
+      showToast('🚀 Order Placed: Buy simulation executed on NSE cash');
+    }
+
+    function toggleWatchlist(ticker) {
+      showToast(`⭐ ${ticker} Watchlist Toggled`);
+    }
+
+    // Hotkey Listeners
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      if (e.key === 'Escape') {
+        closeTradeModal();
+      } else if (e.key === 't' || e.key === 'T') {
+        e.preventDefault();
+        openTradeModal(hoveredTicker, 2945.50, 5.2, 1.4);
+      } else if (e.key === 'w' || e.key === 'W') {
+        e.preventDefault();
+        toggleWatchlist(hoveredTicker);
+      } else if (e.key === '1') {
+        switchWorkspaceMode('execution', document.querySelectorAll('.mode-tab-btn')[0]);
+      } else if (e.key === '2') {
+        switchWorkspaceMode('analytics', document.querySelectorAll('.mode-tab-btn')[1]);
+      } else if (e.key === '3') {
+        switchWorkspaceMode('ai', document.querySelectorAll('.mode-tab-btn')[2]);
+      } else if (e.key === '/') {
+        e.preventDefault();
+        showToast('🔍 Universal Search Focused [Ctrl+K]');
+      }
+    });
+
+    // Theme Toggle
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      if (!isDark) {
+        document.documentElement.classList.add('light-theme');
+        document.getElementById('theme-icon').textContent = '🌙';
+      } else {
+        document.documentElement.classList.remove('light-theme');
+        document.getElementById('theme-icon').textContent = '☀️';
+      }
+    }
+
+    // Toast Utility
+    let toastTimer;
+    function showToast(msg) {
+      const toast = document.getElementById('hotkey-toast');
+      document.getElementById('toast-text').textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2400);
+    }
+
+    // Simulated Live Index Ticks with Flash Glow Effect
+    setInterval(() => {
+      const niftyEl = document.getElementById('val-nifty');
+      if (niftyEl) {
+        const base = 24852.15;
+        const delta = (Math.random() * 4 - 2).toFixed(2);
+        niftyEl.textContent = (base + parseFloat(delta)).toFixed(2);
+        niftyEl.classList.add('flash-up');
+        setTimeout(() => niftyEl.classList.remove('flash-up'), 600);
+      }
+    }, 3200);
+  </script>
+</body>
+</html>

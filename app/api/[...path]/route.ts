@@ -73,9 +73,10 @@ async function handleProxy(
     // If backend returned a server failure, handle gracefully for critical dashboard paths
     if (!res.ok && res.status >= 500) {
       const fallback = getFallbackPayload(subPath);
-      if (fallback) {
-        return NextResponse.json(fallback, { status: 200, headers: getCORSHeaders() });
-      }
+      return NextResponse.json(
+        fallback || { success: false, status: "degraded", message: "Service is warming up", path: subPath },
+        { status: 200, headers: getCORSHeaders() }
+      );
     }
 
     const responseHeaders = new Headers();
@@ -167,6 +168,17 @@ function getFallbackPayload(subPath: string): any | null {
       success: true,
       candidates: [],
       stocks: [],
+    };
+  }
+
+  if (subPath === "forward-picks") {
+    return {
+      success: true,
+      data: {
+        picks: [],
+        timestamp: new Date().toISOString(),
+      },
+      picks: [],
     };
   }
 
