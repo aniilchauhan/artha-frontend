@@ -1,6 +1,6 @@
 import { quoteStatus } from './market-quote';
 
-export type DataQualityStatus = 'live' | 'mixed' | 'simulated' | 'unavailable';
+export type DataQualityStatus = 'live' | 'mixed' | 'cached' | 'simulated' | 'unavailable';
 
 export function deriveDataQualityStatus(
   apiSource: string | null,
@@ -15,6 +15,7 @@ export function deriveDataQualityStatus(
   now = Date.now(),
 ): DataQualityStatus {
   if (apiSource === 'simulated') return 'simulated';
+  if (apiSource === 'cached-snapshot') return 'cached';
   if (!apiSource) return 'unavailable';
   if (stocks.length === 0) return 'unavailable';
   if (apiSource === 'unavailable') return 'mixed';

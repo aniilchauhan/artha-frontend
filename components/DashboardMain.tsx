@@ -27,6 +27,7 @@ const NseSmartMoneyWidget = dynamic(() => import('./NseSmartMoneyWidget'), { ssr
 const LiveMarketHeatmapGrid = dynamic(() => import('./LiveMarketHeatmapGrid'), { ssr: false });
 const DashboardPowerRadarsHub = dynamic(() => import('./DashboardPowerRadarsHub'), { ssr: false });
 import QuickTradeModal from './QuickTradeModal';
+import RegulatoryDisclaimerFooter from './RegulatoryDisclaimerFooter';
 import { playTargetChime } from '../lib/sound-notifications';
 import {
   Star, ArrowUpRight, ArrowDownRight, ArrowRight, Loader2, AlertCircle,
@@ -298,28 +299,31 @@ const INITIAL_POST_IPO = [
 /* ─── Main Dashboard ─────────────────────────────────────── */
 export default function DashboardMain() {
   const {
-    stocks, watchlist, toggleWatchlist, selectedTicker, setSelectedTicker, setActiveTab,
+    stocks, watchlist, toggleWatchlist, loadStarterWatchlist, selectedTicker, setSelectedTicker, setActiveTab,
     isFetching, isLoading, pollingError, dataQualityStatus, addCustomTicker
   } = useStockContext();
 
   const dataStatusLabel = {
     live: 'Recent provider quotes',
     mixed: 'Delayed / mixed quotes',
+    cached: 'Cached snapshot · Syncing live feed',
     simulated: 'Simulated demo feed',
-    unavailable: 'Market data unavailable',
-  }[dataQualityStatus];
+    unavailable: 'Market data offline · Retrying',
+  }[dataQualityStatus] || 'Live snapshot stream';
   const dataStatusTone = {
     live: 'border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
     mixed: 'border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+    cached: 'border-indigo-500/25 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
     simulated: 'border-slate-400/30 bg-slate-500/10 text-slate-600 dark:text-slate-300',
     unavailable: 'border-rose-500/25 bg-rose-500/10 text-rose-700 dark:text-rose-300',
-  }[dataQualityStatus];
+  }[dataQualityStatus] || 'border-slate-500/25 bg-slate-500/10 text-slate-400';
   const dataStatusDotTone = {
     live: 'bg-emerald-500',
     mixed: 'bg-amber-500',
+    cached: 'bg-indigo-500 animate-pulse',
     simulated: 'bg-slate-500',
     unavailable: 'bg-rose-500',
-  }[dataQualityStatus];
+  }[dataQualityStatus] || 'bg-slate-500';
 
   const [activeCategory, setActiveCategory] = useState<FilterCategory>('breakout');
   const [selectedCapital, setSelectedCapital] = useState<number>(50000);
@@ -683,13 +687,25 @@ export default function DashboardMain() {
             <Search className="h-3.5 w-3.5" />
             <span>Find Stock</span>
           </Link>
-          <Link
-            href={axionAppPath("/watchlist")}
-            className="rounded-xl border border-slate-200/80 dark:border-slate-800 px-3.5 py-2 text-xs font-bold bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5"
-          >
-            <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500/30" />
-            <span>Watchlist ({watchlist.length})</span>
-          </Link>
+          {watchlist.length === 0 ? (
+            <button
+              type="button"
+              onClick={loadStarterWatchlist}
+              className="rounded-xl border border-amber-500/40 px-3.5 py-2 text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5 cursor-pointer"
+              title="Click to load Nifty 50 Leaders starter pack"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Load Starter Watchlist</span>
+            </button>
+          ) : (
+            <Link
+              href={axionAppPath("/watchlist")}
+              className="rounded-xl border border-slate-200/80 dark:border-slate-800 px-3.5 py-2 text-xs font-bold bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5"
+            >
+              <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500/30" />
+              <span>Watchlist ({watchlist.length})</span>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -1398,7 +1414,7 @@ export default function DashboardMain() {
                                     </div>
                                   </div>
                                   <div className="font-mono">
-                                    <div className="text-xs uppercase text-slate-400 font-semibold">Projected Upside</div>
+                                    <div className="text-xs uppercase text-slate-400 font-semibold">Modeled Expansion</div>
                                     <div className="text-xl sm:text-2xl font-black text-emerald-400">
                                       +{returnMetrics.projectedReturnPercent}%
                                     </div>
@@ -1410,16 +1426,19 @@ export default function DashboardMain() {
                                 <div className="flex justify-between text-[11px] font-mono font-semibold mb-2">
                                   <span className="text-rose-400">STOP LOSS: ₹{returnMetrics.stopLossPrice.toFixed(2)}</span>
                                   <span className="text-slate-300">CMP: ₹{stock.currentPrice.toFixed(2)}</span>
-                                  <span className="text-emerald-400 font-bold">TARGET: ₹{returnMetrics.targetPrice.toFixed(2)} (+{returnMetrics.projectedReturnPercent}%)</span>
+                                  <span className="text-emerald-400 font-bold">SCENARIO LEVEL 1: ₹{returnMetrics.targetPrice.toFixed(2)} (+{returnMetrics.projectedReturnPercent}%)</span>
                                 </div>
                                 <div className="h-2.5 rounded-full overflow-hidden bg-slate-800 flex">
                                   <div className="bg-rose-500 h-full transition-all" style={{ width: '25%' }} />
                                   <div className="bg-emerald-500 h-full transition-all" style={{ width: '75%' }} />
                                 </div>
                                 <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-2">
-                                  <span>Risk:Reward Ratio: <strong className="text-emerald-400">{returnMetrics.riskRewardRatio}x</strong></span>
-                                  <span>Expected Net Gain: <strong className="text-emerald-400">+₹{returnMetrics.expectedGainRupees.toLocaleString('en-IN')}</strong> on ₹1L</span>
+                                  <span>Modeled R:R: <strong className="text-emerald-400">{returnMetrics.riskRewardRatio}x</strong></span>
+                                  <span>Simulated Gain: <strong className="text-emerald-400">+₹{returnMetrics.expectedGainRupees.toLocaleString('en-IN')}</strong> on ₹1L</span>
                                 </div>
+                                <p className="text-[10px] text-slate-500 font-mono mt-1 text-center">
+                                  *Hypothetical technical setup for educational simulation. Not SEBI-registered investment advice.
+                                </p>
                               </div>
 
                               <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pt-2">
@@ -1541,7 +1560,7 @@ export default function DashboardMain() {
                                       </div>
                                     </div>
                                     <div className="text-right">
-                                      <div className="text-[10px] uppercase font-mono text-slate-400">Target</div>
+                                      <div className="text-[10px] uppercase font-mono text-slate-400">Scenario 1</div>
                                       <div className="text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400">
                                         ₹{returnMetrics.targetPrice.toFixed(1)} (+{returnMetrics.projectedReturnPercent}%)
                                       </div>
@@ -1562,7 +1581,7 @@ export default function DashboardMain() {
 
                                 <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800" onClick={(e) => e.stopPropagation()}>
                                   <div className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                                    +₹{returnMetrics.expectedGainRupees.toLocaleString('en-IN')} gain
+                                    +₹{returnMetrics.expectedGainRupees.toLocaleString('en-IN')} modeled
                                   </div>
 
                                   <div className="flex items-center gap-1.5">
@@ -1609,12 +1628,12 @@ export default function DashboardMain() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 px-1 text-xs text-slate-500 dark:text-slate-400">
                   <div className="flex items-center gap-2">
                     <span>
-                      Showing <strong className="text-slate-800 dark:text-slate-200">{filteredStocks.length === 0 ? 0 : (visiblePage - 1) * pageSize + 1}</strong> to <strong className="text-slate-800 dark:text-slate-200">{Math.min(visiblePage * pageSize, filteredStocks.length)}</strong> of <strong className="text-slate-800 dark:text-slate-200">{filteredStocks.length}</strong> active equities ({effectiveStocks.length} Master Universe)
+                      Showing <strong className="text-slate-800 dark:text-slate-200">{filteredStocks.length === 0 ? 0 : (visiblePage - 1) * pageSize + 1}</strong> to <strong className="text-slate-800 dark:text-slate-200">{Math.min(visiblePage * pageSize, filteredStocks.length)}</strong> of <strong className="text-slate-800 dark:text-slate-200">{filteredStocks.length}</strong> active stream equities ({effectiveStocks.length} Live Liquid Stream)
                     </span>
                     <span className="text-slate-300 dark:text-slate-700">|</span>
                     <Link href={axionAppPath("/database")} className="text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-semibold">
                       <Database className="h-3 w-3" />
-                      Browse 5,055 Database
+                      Browse 5,055 Master Database
                     </Link>
                   </div>
 
@@ -2101,7 +2120,7 @@ export default function DashboardMain() {
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-                  Calibrated predictive models for 2023–2024 listed equities tracking Listing-Day Highs, flipper washout, and 30D/90D unlocks
+                  Quantitative microstructure research for recent IPO listings tracking Listing-Day Highs, flipper absorption, and lockin unlock patterns
                 </p>
               </div>
             </div>
@@ -2192,11 +2211,11 @@ export default function DashboardMain() {
                         <span className="text-xs font-mono font-black text-slate-900 dark:text-white">₹{cmp.toFixed(1)}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-400 font-bold">Stage-1 Target</span>
+                        <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-400 font-bold">Stage-1 Scenario</span>
                         <span className="text-xs font-mono font-black text-indigo-700 dark:text-indigo-300">₹{target1.toFixed(1)}</span>
                       </div>
                       <div className="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800/60">
-                        <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-400 font-bold">Projected ROI</span>
+                        <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-400 font-bold">Modeled Expansion</span>
                         <span className="text-xs font-mono font-black text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5">
                           <ArrowUpRight className="h-3 w-3" />
                           +{upsidePct}%
@@ -2273,6 +2292,9 @@ export default function DashboardMain() {
           initialStopLossPct={quickTradeStock.stopLossPct ?? 1.0}
         />
       )}
+
+      {/* Global SEBI Regulatory Compliance Disclaimer & Legal Safe-Harbor */}
+      <RegulatoryDisclaimerFooter />
 
     </div>
   );

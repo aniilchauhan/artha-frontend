@@ -79,9 +79,12 @@ interface StockContextType extends ReturnType<typeof usePortfolioSync> {
   holdings: Record<string, PortfolioHolding>;
   updateHoldings: (newHoldings: Record<string, PortfolioHolding>) => void;
   syncLiveData: (scope?: 'indices' | 'all') => Promise<{ success: boolean; durationMs?: number; benchmarks?: any; message?: string }>;
+  loadStarterWatchlist: () => void;
 }
 
 const StockContext = createContext<StockContextType | undefined>(undefined);
+
+export const STARTER_WATCHLIST = ['RELIANCE', 'TCS', 'HDFCBANK', 'INFY', 'ICICIBANK'];
 
 type ProfileField = 'watchlist' | 'customTickers' | 'thresholds';
 type BrowserProfile = {
@@ -92,7 +95,7 @@ type BrowserProfile = {
   pending: ProfileField[];
 };
 const profileFields: ProfileField[] = ['watchlist', 'customTickers', 'thresholds'];
-const emptyBrowserProfile = (email: string | null): BrowserProfile => ({ email, watchlist: [], customTickers: [], thresholds: {}, pending: [] });
+const emptyBrowserProfile = (email: string | null): BrowserProfile => ({ email, watchlist: STARTER_WATCHLIST, customTickers: [], thresholds: {}, pending: [] });
 const browserProfileKey = (email: string) => `axion_${email}_profile_v1`;
 
 function readBrowserProfile(email: string): BrowserProfile {
@@ -395,6 +398,12 @@ export function StockProvider({ children }: { children: React.ReactNode }) {
     if (updateBrowserProfile({ watchlist: updated })) addToast(`${ticker} ${removing ? 'removed from' : 'added to'} your Watchlist`, removing ? 'info' : 'success', ticker);
   };
 
+  const loadStarterWatchlist = () => {
+    if (!ownsProfileRequest()) return;
+    updateBrowserProfile({ watchlist: STARTER_WATCHLIST });
+    addToast('Loaded Nifty 50 Leaders starter watchlist (5 core stocks)', 'success');
+  };
+
   // Auth simulators (Removed due to NextAuth integration)
 
   const updatePollingInterval = async (interval: number) => {
@@ -495,7 +504,8 @@ export function StockProvider({ children }: { children: React.ReactNode }) {
         customTickers,
         addCustomTicker,
         holdings,
-        updateHoldings
+        updateHoldings,
+        loadStarterWatchlist
       }}
     >
       {children}

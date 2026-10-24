@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Stock } from '../lib/stock-data';
+import { type Stock, INITIAL_STOCKS } from '../lib/stock-data';
 import { isProviderStock } from '../lib/market-quote';
 import { axionApiPath } from '../lib/in-process';
 
@@ -18,11 +18,11 @@ export function useMarketStockPolling(options: {
 }) {
   const { livePolling, pollingInterval, simulatedErrorType, dataSource, customTickers, addToast } = options;
   const customTickersKey = customTickers.join(',');
-  const [stocks, setStocks] = useState<Stock[]>([]);
+  const [stocks, setStocks] = useState<Stock[]>(INITIAL_STOCKS);
   const [isFetching, setIsFetching] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [pollingError, setPollingError] = useState<string | null>(null);
-  const [apiSource, setApiSource] = useState<string | null>('unavailable');
+  const [apiSource, setApiSource] = useState<string | null>('cached-snapshot');
   const isFetchingRef = useRef(false);
 
   const fetchBackendStocks = useCallback(async () => {
