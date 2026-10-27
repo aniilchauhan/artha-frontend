@@ -53,7 +53,7 @@ export default function LiveMarketHeatmapGrid({
     });
 
     return pool.map((s) => {
-      const detailed = Array.isArray(s.history) && s.history.length > 0 ? calculateDetailedStockSuggestion(s) : null;
+      const detailed = Array.isArray(s.history) && s.history.length >= 20 ? calculateDetailedStockSuggestion(s.history) : null;
       const metrics = calculateReturnMetrics(s, detailed);
       const cmp = s.currentPrice ?? (s as any).price ?? 100;
       const targetPrice = metrics.targetPrice || Number((cmp * (1 + metrics.projectedReturnPercent / 100)).toFixed(2));
