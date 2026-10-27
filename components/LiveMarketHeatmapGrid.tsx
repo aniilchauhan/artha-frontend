@@ -41,6 +41,12 @@ export default function LiveMarketHeatmapGrid({
   const [search, setSearch] = useState('');
   const [tradeStock, setTradeStock] = useState<any | null>(null);
 
+  // User-configurable prediction model inputs
+  const [predictionHorizon, setPredictionHorizon] = useState<'intraday' | 'swing' | 'positional'>('swing');
+  const [minRR, setMinRR] = useState<number>(0);
+  const [minConfidence, setMinConfidence] = useState<number>(0);
+  const [plannedCapital, setPlannedCapital] = useState<number>(50000);
+
   const gridColsClass = useMemo(() => {
     switch (columns) {
       case 3:
@@ -67,7 +73,11 @@ export default function LiveMarketHeatmapGrid({
 
     return pool.map((s) => {
       const detailed = Array.isArray(s.history) && s.history.length >= 20 ? calculateDetailedStockSuggestion(s.history) : null;
-      const metrics = calculateReturnMetrics(s, detailed);
+      const metrics = calculateReturnMetrics(s, detailed, {
+        horizon: predictionHorizon,
+        capital: plannedCapital,
+        minRiskReward: minRR,
+      });
       const cmp = s.currentPrice ?? (s as any).price ?? 100;
       const targetPrice = metrics.targetPrice || Number((cmp * (1 + metrics.projectedReturnPercent / 100)).toFixed(2));
       const stopLossPrice = metrics.stopLossPrice || Number((cmp * (1 - metrics.downsideRiskPercent / 100)).toFixed(2));
@@ -82,14 +92,23 @@ export default function LiveMarketHeatmapGrid({
         detailed,
         returnMetrics: metrics,
         targetPrice,
+        targetPrice2: metrics.targetPrice2,
         stopLossPrice,
         projectedReturnPercent: metrics.projectedReturnPercent,
+        projectedReturnPercent2: metrics.projectedReturnPercent2,
         riskRewardRatio: metrics.riskRewardRatio,
+        confidenceScore: metrics.confidenceScore,
+        rsi14: metrics.rsi14,
+        atrPercent: metrics.atrPercent,
+        rvol: metrics.rvol,
+        bandwidth: metrics.bandwidth,
         setupType: metrics.setupType,
+        technicalCatalyst: metrics.technicalCatalyst,
+        expectedGainRupees: metrics.expectedGainRupees,
         isCoiled,
       };
     });
-  }, [rawStocks]);
+  }, [rawStocks, predictionHorizon, plannedCapital, minRR]);
 
   const filteredStocks = useMemo(() => {
     let pool = enrichedPool;
@@ -105,6 +124,13 @@ export default function LiveMarketHeatmapGrid({
     }
 
     if (viewPerspective === 'forward') {
+      if (minRR > 0) {
+        pool = pool.filter((s) => s.riskRewardRatio >= minRR);
+      }
+      if (minConfidence > 0) {
+        pool = pool.filter((s) => s.confidenceScore >= minConfidence);
+      }
+
       switch (filterMode) {
         case 'next_2_5':
           // Stocks consolidating/coiled in base (not already spiked) with +2% to +5% target from CMP
@@ -334,6 +360,114 @@ export default function LiveMarketHeatmapGrid({
         </div>
       </div>
 
+      {/* ─── Quantitative Model Inputs Control Bar (Timeframe, Min R:R, Min Conf, Capital) ─── */}
+      {viewPerspective === 'forward' && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 p-3 text-xs font-mono backdrop-blur-xs">
+          {/* Horizon / Holding Period */}
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Horizon:</span>
+            <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-0.5 gap-0.5 border border-slate-200/80 dark:border-slate-700/80">
+              {[
+                { id: 'intraday', label: '⚡ Scalp (1–3d)' },
+                { id: 'swing', label: '🎯 Swing (1–3w)' },
+                { id: 'positional', label: '📈 Positional (1–3m)' },
+              ].map((h) => (
+                <button
+                  key={h.id}
+                  type="button"
+                  onClick={() => setPredictionHorizon(h.id as any)}
+                  className={`cursor-pointer rounded-lg px-2.5 py-1 text-xs font-bold transition-all ${
+                    predictionHorizon === h.id
+                      ? 'bg-white text-emerald-700 shadow-xs dark:bg-slate-950 dark:text-emerald-300'
+                      : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'
+                  }`}
+                >
+                  {h.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Min R:R Filter */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Min R:R:</span>
+              <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-0.5 gap-0.5 border border-slate-200/80 dark:border-slate-700/80">
+                {[
+                  { val: 0, label: 'All' },
+                  { val: 2.0, label: '≥ 2.0x' },
+                  { val: 2.5, label: '≥ 2.5x' },
+                  { val: 3.0, label: '≥ 3.0x' },
+                ].map((opt) => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setMinRR(opt.val)}
+                    className={`cursor-pointer rounded-lg px-2 py-1 text-[11px] font-bold transition-all ${
+                      minRR === opt.val
+                        ? 'bg-white text-indigo-700 shadow-xs dark:bg-slate-950 dark:text-indigo-300'
+                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Min Confidence Filter */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Min Conf:</span>
+              <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-0.5 gap-0.5 border border-slate-200/80 dark:border-slate-700/80">
+                {[
+                  { val: 0, label: 'All' },
+                  { val: 70, label: '≥ 70%' },
+                  { val: 80, label: '≥ 80%' },
+                ].map((opt) => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setMinConfidence(opt.val)}
+                    className={`cursor-pointer rounded-lg px-2 py-1 text-[11px] font-bold transition-all ${
+                      minConfidence === opt.val
+                        ? 'bg-white text-emerald-700 shadow-xs dark:bg-slate-950 dark:text-emerald-300'
+                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Capital Allocation */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Capital:</span>
+              <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-0.5 gap-0.5 border border-slate-200/80 dark:border-slate-700/80">
+                {[
+                  { val: 25000, label: '₹25k' },
+                  { val: 50000, label: '₹50k' },
+                  { val: 100000, label: '₹1L' },
+                ].map((opt) => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setPlannedCapital(opt.val)}
+                    className={`cursor-pointer rounded-lg px-2 py-1 text-[11px] font-bold transition-all ${
+                      plannedCapital === opt.val
+                        ? 'bg-white text-emerald-700 shadow-xs dark:bg-slate-950 dark:text-emerald-300'
+                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ─── Grid Matrix ─── */}
       <div className={`grid ${gridColsClass} gap-3.5`}>
         {filteredStocks.slice(0, 48).map((stock) => {
@@ -355,25 +489,33 @@ export default function LiveMarketHeatmapGrid({
                     <span className="font-mono text-sm font-black tracking-tight text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                       {stock.ticker}
                     </span>
-                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300">
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      Coiled
+                      {stock.confidenceScore}% Conf
                     </span>
                   </div>
-                  <p className="mt-1 truncate text-xs text-slate-500 dark:text-slate-400">{stock.name}</p>
+                  <p className="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">{stock.name}</p>
                 </div>
 
                 {/* Forward Upside Hero Badge */}
-                <div className="mt-3 space-y-2">
+                <div className="mt-2.5 space-y-2">
                   <div className="flex items-center justify-between font-mono bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl px-2.5 py-1.5">
-                    <span className="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300">Modeled Upside</span>
-                    <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
-                      <ArrowUpRight className="h-3.5 w-3.5" />
-                      +{projectedPct}%
-                    </span>
+                    <div>
+                      <div className="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300">Modeled Upside</div>
+                      <div className="text-[9px] text-emerald-700/80 dark:text-emerald-400/80">Est. Gain: +₹{stock.expectedGainRupees?.toLocaleString('en-IN') || '—'}</div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5 justify-end">
+                        <ArrowUpRight className="h-4 w-4" />
+                        +{projectedPct}%
+                      </span>
+                      {stock.projectedReturnPercent2 && (
+                        <div className="text-[9px] text-slate-400 dark:text-slate-500">Ext: +{stock.projectedReturnPercent2}%</div>
+                      )}
+                    </div>
                   </div>
 
-                  {/* CMP, Target Levels & Today's Past Change */}
+                  {/* CMP, Target, Stop Loss Levels */}
                   <div className="bg-slate-50 dark:bg-slate-950/70 rounded-xl p-2.5 border border-slate-100 dark:border-slate-800/80 font-mono text-[11px] space-y-1">
                     <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
                       <span>CMP:</span>
@@ -383,18 +525,42 @@ export default function LiveMarketHeatmapGrid({
                       <span>Target:</span>
                       <span>₹{stock.targetPrice.toFixed(1)}</span>
                     </div>
-                    <div className="flex justify-between items-center text-slate-400 dark:text-slate-500 pt-1 border-t border-slate-200/50 dark:border-slate-800/50 text-[10px]">
+                    <div className="flex justify-between items-center text-rose-500 dark:text-rose-400 text-[10px]">
+                      <span>Stop Loss:</span>
+                      <span className="font-semibold">₹{stock.stopLossPrice.toFixed(1)} (-{stock.returnMetrics?.downsideRiskPercent}%)</span>
+                    </div>
+                    <div className="flex justify-between items-center text-slate-400 dark:text-slate-500 pt-0.5 border-t border-slate-200/50 dark:border-slate-800/50 text-[10px]">
                       <span>Today:</span>
                       <span className={`font-semibold ${(stock.changePercent ?? 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                         {(stock.changePercent ?? 0) >= 0 ? '+' : ''}{(stock.changePercent ?? 0).toFixed(2)}%
                       </span>
                     </div>
                   </div>
+
+                  {/* Quantitative Telemetry Strip (Inputs Behind Prediction) */}
+                  <div className="grid grid-cols-4 gap-1 text-[10px] font-mono text-center">
+                    <div className="bg-slate-100 dark:bg-slate-800/60 rounded-md py-1 border border-slate-200/50 dark:border-slate-700/50">
+                      <div className="text-[8px] text-slate-400 uppercase">RSI</div>
+                      <div className="font-bold text-slate-700 dark:text-slate-300">{stock.rsi14 ?? 50}</div>
+                    </div>
+                    <div className="bg-slate-100 dark:bg-slate-800/60 rounded-md py-1 border border-slate-200/50 dark:border-slate-700/50">
+                      <div className="text-[8px] text-slate-400 uppercase">RVOL</div>
+                      <div className="font-bold text-slate-700 dark:text-slate-300">{stock.rvol ? `${stock.rvol}x` : '1.0x'}</div>
+                    </div>
+                    <div className="bg-slate-100 dark:bg-slate-800/60 rounded-md py-1 border border-slate-200/50 dark:border-slate-700/50">
+                      <div className="text-[8px] text-slate-400 uppercase">ATR</div>
+                      <div className="font-bold text-slate-700 dark:text-slate-300">{stock.atrPercent ? `${stock.atrPercent}%` : '2.5%'}</div>
+                    </div>
+                    <div className="bg-slate-100 dark:bg-slate-800/60 rounded-md py-1 border border-slate-200/50 dark:border-slate-700/50">
+                      <div className="text-[8px] text-slate-400 uppercase">R:R</div>
+                      <div className="font-bold text-emerald-600 dark:text-emerald-400">{stock.riskRewardRatio}x</div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Footer setup type & Action */}
-                <div className="mt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-2 text-[10px] font-mono text-slate-500">
-                  <span className="font-semibold text-slate-600 dark:text-slate-300 truncate max-w-[140px]">{stock.setupType || 'Breakout'}</span>
+                <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-2 text-[10px] font-mono text-slate-500">
+                  <span className="font-semibold text-slate-600 dark:text-slate-300 truncate max-w-[130px]">{stock.setupType || 'Breakout'}</span>
                   <button
                     type="button"
                     onClick={(e) => {

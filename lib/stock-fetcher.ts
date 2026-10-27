@@ -177,7 +177,7 @@ export async function fetchStocksData(customTickers: string[] = [], forceRealApi
 export async function fetchStockQuotes(tickers: string[]): Promise<Array<CachedStock | null>> {
   const result: Array<CachedStock | null> = new Array(tickers.length);
   let cursor = 0;
-  await Promise.all(Array.from({ length: Math.min(8, tickers.length) }, async () => {
+  await Promise.all(Array.from({ length: Math.min(24, tickers.length) }, async () => {
     while (cursor < tickers.length) {
       const index = cursor++;
       result[index] = await fetchStockQuote(tickers[index]);

@@ -1071,6 +1071,119 @@ export interface DetailedSuggestionResult {
   smaSignal: 'BUY' | 'SELL';
   macd: MacdResult;
   bollingerBands: BollingerBandsResult;
+  rsi?: number;
+  atr?: number;
+  atrPercent?: number;
+  rvol?: number;
+  bandwidth?: number;
+  trendAlignment?: 'BULLISH' | 'BEARISH' | 'CONSOLIDATING';
+  confidence?: number;
+}
+
+// Calculate Relative Strength Index (RSI - 14 period default)
+export function calculateRSI(history: { price: number }[], period = 14): number {
+  const prices = history.map((h: any) => (typeof h === 'number' ? h : h?.price ?? h?.close ?? 0)).filter(p => p > 0);
+  if (prices.length < period + 1) return 50.0;
+
+  let gains = 0;
+  let losses = 0;
+
+  for (let i = 1; i <= period; i++) {
+    const diff = prices[i] - prices[i - 1];
+    if (diff >= 0) gains += diff;
+    else losses += Math.abs(diff);
+  }
+
+  let avgGain = gains / period;
+  let avgLoss = losses / period;
+
+  for (let i = period + 1; i < prices.length; i++) {
+    const diff = prices[i] - prices[i - 1];
+    const gain = diff > 0 ? diff : 0;
+    const loss = diff < 0 ? Math.abs(diff) : 0;
+    avgGain = (avgGain * (period - 1) + gain) / period;
+    avgLoss = (avgLoss * (period - 1) + loss) / period;
+  }
+
+  if (avgLoss === 0) return 100;
+  const rs = avgGain / avgLoss;
+  const rsi = 100 - (100 / (1 + rs));
+  return Number(rsi.toFixed(1));
+}
+
+// Calculate Average True Range (ATR - 14 period default)
+export function calculateATR(history: any[], currentPrice?: number, period = 14): { atr: number; atrPercent: number } {
+  if (!Array.isArray(history) || history.length < 2) {
+    const cp = currentPrice || 100;
+    return { atr: Number((cp * 0.025).toFixed(2)), atrPercent: 2.5 };
+  }
+
+  const cp = currentPrice || history[history.length - 1]?.price || history[history.length - 1]?.close || 100;
+  const trs: number[] = [];
+
+  for (let i = 1; i < history.length; i++) {
+    const prevClose = history[i - 1]?.close ?? history[i - 1]?.price ?? cp;
+    const currHigh = history[i]?.high ?? Math.max(history[i]?.price ?? cp, prevClose);
+    const currLow = history[i]?.low ?? Math.min(history[i]?.price ?? cp, prevClose);
+    const tr = Math.max(
+      currHigh - currLow,
+      Math.abs(currHigh - prevClose),
+      Math.abs(currLow - prevClose)
+    );
+    trs.push(tr);
+  }
+
+  const slice = trs.slice(-period);
+  const atr = slice.length > 0 ? slice.reduce((a, b) => a + b, 0) / slice.length : cp * 0.025;
+  const atrPercent = Number(((atr / Math.max(0.01, cp)) * 100).toFixed(2));
+  return { atr: Number(atr.toFixed(2)), atrPercent };
+}
+
+// Calculate Relative Volume (RVOL) compared to 20-period moving average volume
+export function calculateRVOL(history: any[], currentVolume?: number, period = 20): number {
+  const vols = (history || [])
+    .map(h => h.volume)
+    .filter((v): v is number => typeof v === 'number' && v > 0);
+  
+  if (vols.length < 5) {
+    return currentVolume && currentVolume > 500000 ? 1.6 : 1.1;
+  }
+  
+  const slice = vols.slice(-period);
+  const avgVol = slice.reduce((a, b) => a + b, 0) / slice.length;
+  const curr = currentVolume ?? vols[vols.length - 1] ?? 100000;
+  if (avgVol <= 0) return 1.0;
+  return Number((curr / avgVol).toFixed(2));
+}
+
+// Calculate Trend Alignment across Exponential Moving Averages (EMA 20 & EMA 50)
+export function calculateTrendAlignment(history: { price: number }[]): {
+  ema20: number;
+  ema50: number;
+  alignment: 'BULLISH' | 'BEARISH' | 'CONSOLIDATING';
+  bandwidth: number;
+} {
+  const prices = history.map(h => (typeof h === 'number' ? h : h?.price ?? 0)).filter(p => p > 0);
+  if (prices.length < 20) {
+    return { ema20: 0, ema50: 0, alignment: 'CONSOLIDATING', bandwidth: 5.0 };
+  }
+  const ema20Arr = calculateEMA(prices, 20);
+  const ema50Arr = prices.length >= 50 ? calculateEMA(prices, 50) : calculateEMA(prices, Math.min(prices.length, 30));
+  const ema20 = ema20Arr[ema20Arr.length - 1] || 0;
+  const ema50 = ema50Arr[ema50Arr.length - 1] || 0;
+  const cp = prices[prices.length - 1] || 0;
+
+  const bb = calculateBollingerBands(history, 20);
+  const bandwidth = bb.middleBand > 0 ? Number((((bb.upperBand - bb.lowerBand) / bb.middleBand) * 100).toFixed(2)) : 5.0;
+
+  let alignment: 'BULLISH' | 'BEARISH' | 'CONSOLIDATING' = 'CONSOLIDATING';
+  if (cp > ema20 && ema20 >= ema50 * 0.99) {
+    alignment = 'BULLISH';
+  } else if (cp < ema20 && ema20 < ema50) {
+    alignment = 'BEARISH';
+  }
+
+  return { ema20: Number(ema20.toFixed(2)), ema50: Number(ema50.toFixed(2)), alignment, bandwidth };
 }
 
 // Calculate Exponential Moving Average helper
@@ -1171,7 +1284,14 @@ export function calculateDetailedStockSuggestion(historyOrStock: any): DetailedS
     score: 0,
     smaSignal: 'SELL',
     macd: { macdLine: 0, signalLine: 0, histogram: 0, signal: 'NEUTRAL' },
-    bollingerBands: { middleBand: 0, upperBand: 0, lowerBand: 0, signal: 'NEUTRAL' }
+    bollingerBands: { middleBand: 0, upperBand: 0, lowerBand: 0, signal: 'NEUTRAL' },
+    rsi: 50.0,
+    atr: 2.5,
+    atrPercent: 2.5,
+    rvol: 1.0,
+    bandwidth: 5.0,
+    trendAlignment: 'CONSOLIDATING',
+    confidence: 50,
   };
 
   const history: { price: number }[] | null = Array.isArray(historyOrStock)
@@ -1220,6 +1340,12 @@ export function calculateDetailedStockSuggestion(historyOrStock: any): DetailedS
     }
   }
 
+  // 4. Extended Quantitative Indicators
+  const rsi = calculateRSI(history, 14);
+  const atrData = calculateATR(history, currentPrice, 14);
+  const rvol = calculateRVOL(history);
+  const trend = calculateTrendAlignment(history);
+
   // Aggregate weighted score (-100 to +100)
   const score = smaPoints + macdPoints + bbPoints;
 
@@ -1231,12 +1357,28 @@ export function calculateDetailedStockSuggestion(historyOrStock: any): DetailedS
     suggestion = 'SELL';
   }
 
+  // Calculate composite confidence score % (50 - 95%)
+  let conf = 52;
+  if (trend.alignment === 'BULLISH') conf += 12;
+  if (rsi >= 48 && rsi <= 68) conf += 12;
+  if (rvol >= 1.4) conf += 10;
+  if (macd.signal === 'BULLISH') conf += 8;
+  if (trend.bandwidth <= 7.5) conf += 6;
+  const confidence = Math.min(94, Math.max(45, conf));
+
   return {
     suggestion,
     score,
     smaSignal,
     macd,
-    bollingerBands
+    bollingerBands,
+    rsi,
+    atr: atrData.atr,
+    atrPercent: atrData.atrPercent,
+    rvol,
+    bandwidth: trend.bandwidth,
+    trendAlignment: trend.alignment,
+    confidence,
   };
 }
 
