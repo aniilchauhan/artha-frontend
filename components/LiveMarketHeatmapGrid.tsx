@@ -37,8 +37,21 @@ export default function LiveMarketHeatmapGrid({
   // Mode: 'forward' (who can move AFTER current time) vs 'retrospective' (who already moved earlier today)
   const [viewPerspective, setViewPerspective] = useState<'forward' | 'retrospective'>('forward');
   const [filterMode, setFilterMode] = useState<string>(initialFilter);
+  const [columns, setColumns] = useState<3 | 4 | 5>(4); // Default to 4 items per row (less items, more room)
   const [search, setSearch] = useState('');
   const [tradeStock, setTradeStock] = useState<any | null>(null);
+
+  const gridColsClass = useMemo(() => {
+    switch (columns) {
+      case 3:
+        return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+      case 5:
+        return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
+      case 4:
+      default:
+        return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4';
+    }
+  }, [columns]);
 
   // Enrich all stocks with forward-looking return metrics from current price (CMP)
   const enrichedPool = useMemo(() => {
@@ -232,16 +245,38 @@ export default function LiveMarketHeatmapGrid({
 
       {/* ─── Search & Sub-Filter Toolbar ─── */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* Quick Search */}
-        <div className="relative w-full sm:w-48">
-          <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search ticker..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white py-1.5 pl-8 pr-3 text-xs text-slate-900 outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-          />
+        {/* Quick Search & Per-Row Control */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="relative w-full sm:w-48">
+            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search ticker..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white py-1.5 pl-8 pr-3 text-xs text-slate-900 outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            />
+          </div>
+
+          {/* Density Selector: 3 | 4 | 5 items per row */}
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-xl border border-slate-200 dark:border-slate-700">
+            <span className="text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500 px-1.5">Per row:</span>
+            {([3, 4, 5] as const).map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setColumns(n)}
+                aria-label={`${n} cards per row`}
+                className={`cursor-pointer rounded-lg px-2.5 py-0.5 text-xs font-mono font-bold transition-all ${
+                  columns === n
+                    ? 'bg-white text-indigo-700 shadow-xs dark:bg-slate-900 dark:text-white'
+                    : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Dynamic Filter Pills */}
@@ -300,7 +335,7 @@ export default function LiveMarketHeatmapGrid({
       </div>
 
       {/* ─── Grid Matrix ─── */}
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+      <div className={`grid ${gridColsClass} gap-3.5`}>
         {filteredStocks.slice(0, 48).map((stock) => {
           if (viewPerspective === 'forward') {
             // Forward Perspective: Highlights modeled upside from CMP
@@ -309,7 +344,7 @@ export default function LiveMarketHeatmapGrid({
             return (
               <div
                 key={stock.ticker}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 hover:border-emerald-500/70 p-3 transition-all duration-200 hover:scale-[1.03] hover:z-20 cursor-pointer shadow-xs hover:shadow-lg hover:shadow-emerald-500/10"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 hover:border-emerald-500/70 p-4 transition-all duration-200 hover:scale-[1.02] hover:z-20 cursor-pointer shadow-xs hover:shadow-xl hover:shadow-emerald-500/10"
                 onClick={() => {
                   setSelectedTicker(stock.ticker);
                   setActiveTab('dashboard');
@@ -317,37 +352,40 @@ export default function LiveMarketHeatmapGrid({
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-black tracking-tight text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                    <span className="font-mono text-sm font-black tracking-tight text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                       {stock.ticker}
                     </span>
-                    <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" title="Coiled Setup Ready" />
+                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Coiled
+                    </span>
                   </div>
-                  <p className="mt-0.5 truncate text-[10px] text-slate-500 dark:text-slate-400">{stock.name}</p>
+                  <p className="mt-1 truncate text-xs text-slate-500 dark:text-slate-400">{stock.name}</p>
                 </div>
 
                 {/* Forward Upside Hero Badge */}
-                <div className="mt-2.5 space-y-1">
-                  <div className="flex items-center justify-between font-mono">
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-medium">Modeled Upside</span>
-                    <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 flex items-center">
-                      <ArrowUpRight className="h-3 w-3" />
+                <div className="mt-3 space-y-2">
+                  <div className="flex items-center justify-between font-mono bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl px-2.5 py-1.5">
+                    <span className="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300">Modeled Upside</span>
+                    <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
+                      <ArrowUpRight className="h-3.5 w-3.5" />
                       +{projectedPct}%
                     </span>
                   </div>
 
                   {/* CMP, Target Levels & Today's Past Change */}
-                  <div className="bg-slate-50 dark:bg-slate-950/70 rounded-lg p-1.5 border border-slate-100 dark:border-slate-800/80 font-mono text-[10px] space-y-0.5">
-                    <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                  <div className="bg-slate-50 dark:bg-slate-950/70 rounded-xl p-2.5 border border-slate-100 dark:border-slate-800/80 font-mono text-[11px] space-y-1">
+                    <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
                       <span>CMP:</span>
                       <span className="font-bold text-slate-900 dark:text-white">₹{stock.cmp.toFixed(1)}</span>
                     </div>
-                    <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
+                    <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 font-bold">
                       <span>Target:</span>
                       <span>₹{stock.targetPrice.toFixed(1)}</span>
                     </div>
-                    <div className="flex justify-between text-slate-400 dark:text-slate-500 pt-0.5 border-t border-slate-200/50 dark:border-slate-800/50">
+                    <div className="flex justify-between items-center text-slate-400 dark:text-slate-500 pt-1 border-t border-slate-200/50 dark:border-slate-800/50 text-[10px]">
                       <span>Today:</span>
-                      <span className={(stock.changePercent ?? 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'}>
+                      <span className={`font-semibold ${(stock.changePercent ?? 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                         {(stock.changePercent ?? 0) >= 0 ? '+' : ''}{(stock.changePercent ?? 0).toFixed(2)}%
                       </span>
                     </div>
@@ -355,15 +393,15 @@ export default function LiveMarketHeatmapGrid({
                 </div>
 
                 {/* Footer setup type & Action */}
-                <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-1.5 text-[9px] font-mono text-slate-500">
-                  <span className="truncate max-w-[65px] font-medium">{stock.setupType?.split(' ')[0] || 'Breakout'}</span>
+                <div className="mt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-2 text-[10px] font-mono text-slate-500">
+                  <span className="font-semibold text-slate-600 dark:text-slate-300 truncate max-w-[140px]">{stock.setupType || 'Breakout'}</span>
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       setTradeStock(stock);
                     }}
-                    className="cursor-pointer rounded bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 font-bold transition-colors"
+                    className="cursor-pointer rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 px-2.5 py-1 font-bold text-[11px] transition-colors"
                     title="Open Trade Scenario"
                   >
                     Trade ⚡
@@ -380,7 +418,7 @@ export default function LiveMarketHeatmapGrid({
           return (
             <div
               key={stock.ticker}
-              className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-3 transition-all duration-200 hover:scale-[1.03] hover:z-20 cursor-pointer shadow-xs ${getHeatmapColor(
+              className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 transition-all duration-200 hover:scale-[1.02] hover:z-20 cursor-pointer shadow-xs ${getHeatmapColor(
                 stock.changePercent ?? 0
               )}`}
               onClick={() => {
@@ -390,34 +428,34 @@ export default function LiveMarketHeatmapGrid({
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-black tracking-tight">{stock.ticker}</span>
+                  <span className="font-mono text-sm font-black tracking-tight">{stock.ticker}</span>
                   {isExtreme && (
-                    <span className="flex h-1.5 w-1.5 animate-ping rounded-full bg-amber-300" />
+                    <span className="flex h-2 w-2 animate-ping rounded-full bg-amber-300" />
                   )}
                 </div>
-                <p className="mt-0.5 truncate text-[10px] opacity-80">{stock.name}</p>
+                <p className="mt-1 truncate text-xs opacity-85">{stock.name}</p>
               </div>
 
-              <div className="mt-3">
+              <div className="mt-4">
                 <div className="flex items-baseline justify-between font-mono">
-                  <span className="text-xs font-bold">
+                  <span className="text-sm font-bold">
                     ₹{stock.cmp.toFixed(1)}
                   </span>
-                  <span className="text-xs font-black">
+                  <span className="text-sm font-black">
                     {isUp ? '+' : ''}
                     {(stock.changePercent ?? 0).toFixed(2)}%
                   </span>
                 </div>
 
-                <div className="mt-2 flex items-center justify-between border-t border-black/10 pt-1.5 text-[9px] font-mono opacity-80 group-hover:opacity-100">
-                  <span>{stock.sector ? stock.sector.slice(0, 10) : 'Equity'}</span>
+                <div className="mt-3 flex items-center justify-between border-t border-black/10 pt-2 text-[10px] font-mono opacity-85 group-hover:opacity-100">
+                  <span className="font-medium">{stock.sector || 'Equity'}</span>
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       setTradeStock(stock);
                     }}
-                    className="cursor-pointer rounded bg-black/20 px-1 py-0.5 font-bold hover:bg-black/30"
+                    className="cursor-pointer rounded-lg bg-black/20 hover:bg-black/30 px-2.5 py-1 font-bold text-[11px]"
                     title="Open price scenario"
                   >
                     Trade ⚡
