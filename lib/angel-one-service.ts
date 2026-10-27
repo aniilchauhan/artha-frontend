@@ -17,6 +17,7 @@ export interface AngelOneCredentials {
   clientCode: string;
   pin: string;
   totpSecret: string;
+  clientPublicIp?: string;
 }
 
 export interface AngelOneSession {
@@ -110,10 +111,11 @@ export class AngelOneClient {
 
   constructor(credentials?: Partial<AngelOneCredentials>) {
     this.credentials = {
-      apiKey: credentials?.apiKey || process.env.ANGELONE_API_KEY || '',
-      clientCode: credentials?.clientCode || process.env.ANGELONE_CLIENT_CODE || '',
-      pin: credentials?.pin || process.env.ANGELONE_PIN || '',
-      totpSecret: credentials?.totpSecret || process.env.ANGELONE_TOTP_SECRET || '',
+      apiKey: credentials?.apiKey || process.env.ANGELONE_API_KEY || process.env.ANGEL_ONE_API_KEY || '',
+      clientCode: credentials?.clientCode || process.env.ANGELONE_CLIENT_CODE || process.env.ANGEL_ONE_CLIENT_CODE || '',
+      pin: credentials?.pin || process.env.ANGELONE_PIN || process.env.ANGEL_ONE_PIN || '',
+      totpSecret: credentials?.totpSecret || process.env.ANGELONE_TOTP_SECRET || process.env.ANGEL_ONE_TOTP_SECRET || '',
+      clientPublicIp: credentials?.clientPublicIp || process.env.ANGELONE_CLIENT_PUBLIC_IP || process.env.ANGEL_ONE_CLIENT_PUBLIC_IP || '127.0.0.1',
     };
   }
 
@@ -144,7 +146,7 @@ export class AngelOneClient {
           'X-UserType': 'USER',
           'X-SourceID': 'WEB',
           'X-ClientLocalIP': '127.0.0.1',
-          'X-ClientPublicIP': '127.0.0.1',
+          'X-ClientPublicIP': this.credentials.clientPublicIp || '127.0.0.1',
           'X-MACAddress': 'fe80::1',
           'X-PrivateKey': this.credentials.apiKey,
         },
@@ -193,7 +195,7 @@ export class AngelOneClient {
           'X-UserType': 'USER',
           'X-SourceID': 'WEB',
           'X-ClientLocalIP': '127.0.0.1',
-          'X-ClientPublicIP': '127.0.0.1',
+          'X-ClientPublicIP': this.credentials.clientPublicIp || '127.0.0.1',
           'X-MACAddress': 'fe80::1',
           'X-PrivateKey': this.credentials.apiKey,
           'Authorization': `Bearer ${session.jwtToken}`,
@@ -266,7 +268,7 @@ export class AngelOneClient {
           'X-UserType': 'USER',
           'X-SourceID': 'WEB',
           'X-ClientLocalIP': '127.0.0.1',
-          'X-ClientPublicIP': '127.0.0.1',
+          'X-ClientPublicIP': this.credentials.clientPublicIp || '127.0.0.1',
           'X-MACAddress': 'fe80::1',
           'X-PrivateKey': this.credentials.apiKey,
           'Authorization': `Bearer ${session.jwtToken}`,

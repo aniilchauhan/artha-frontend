@@ -34,7 +34,7 @@ import {
   Star, ArrowUpRight, ArrowDownRight, ArrowRight, Loader2, AlertCircle,
   ArrowUpDown, Cpu, ChevronRight, ChevronLeft, Sparkles, Search, SlidersHorizontal,
   Flame, TrendingUp, TrendingDown, Zap, ShieldCheck, LayoutGrid, List, Database, Plus, BarChart2,
-  Target, Rocket, Coins, Percent, Lock, Unlock, Calendar
+  Target, Rocket, Coins, Percent, Lock, Unlock, Calendar, Compass, Layers, ExternalLink
 } from 'lucide-react';
 
 
@@ -340,6 +340,25 @@ export default function DashboardMain() {
     targetPct?: number;
     stopLossPct?: number;
   } | null>(null);
+
+  type DashboardTab = 'radars' | 'opportunities' | 'research' | 'macro' | 'all';
+  const [dashboardTab, setDashboardTab] = useState<DashboardTab>('radars');
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('axion_dashboard_active_tab') as DashboardTab | null;
+      if (saved && ['radars', 'opportunities', 'research', 'macro', 'all'].includes(saved)) {
+        setDashboardTab(saved);
+      }
+    } catch {}
+  }, []);
+
+  const handleTabChange = (tab: DashboardTab) => {
+    setDashboardTab(tab);
+    try {
+      localStorage.setItem('axion_dashboard_active_tab', tab);
+    } catch {}
+  };
 
   const handleQuickTrade = (stockData: {
     ticker: string;
@@ -650,64 +669,74 @@ export default function DashboardMain() {
     <div id="dashboard-screen-container" className="space-y-6">
 
       {/* ─── Top Header & Controls ─────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 animate-fade-up">
-        <div className="flex min-w-0 flex-col items-start gap-2.5">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-700 dark:from-white dark:via-indigo-200 dark:to-slate-400 bg-clip-text text-transparent">
-              Market Intelligence
-            </h1>
-            <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2.5 py-1 rounded-full uppercase border ${dataStatusTone}`}>
-              <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${dataStatusDotTone}`} />
-              {dataStatusLabel}
-            </span>
-          </div>
-          <nav aria-label="Dashboard sections" className="flex max-w-full gap-1.5 overflow-x-auto pb-0.5">
-            {[
-              { href: '#dashboard-power-radars-hub', label: 'Top 3 Radars' },
-              { href: '#live-market-heatmap-grid', label: 'Market heatmap' },
-              { href: '#dashboard-research-desk', label: 'Research desk' },
-              { href: '#dashboard-stock-opportunities', label: 'Stock opportunities' },
-              { href: '#dashboard-market-context', label: 'Market context' },
-            ].map(item => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="shrink-0 rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1 text-[10px] font-semibold text-slate-600 transition-colors hover:border-indigo-300 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:text-indigo-300"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fade-up">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Market Intelligence
+          </h1>
+          <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono font-medium px-2 py-0.5 rounded-full uppercase border ${dataStatusTone}`}>
+            <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${dataStatusDotTone}`} />
+            {dataStatusLabel}
+          </span>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <Link
             href={axionAppPath("/database")}
-            className="rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 hover:from-indigo-500 hover:to-violet-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5"
+            className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 hover:bg-slate-100 dark:hover:bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1.5"
           >
-            <Search className="h-3.5 w-3.5" />
+            <Search className="h-3.5 w-3.5 text-slate-400" />
             <span>Find Stock</span>
           </Link>
           {watchlist.length === 0 ? (
             <button
               type="button"
               onClick={loadStarterWatchlist}
-              className="rounded-xl border border-amber-500/40 px-3.5 py-2 text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5 cursor-pointer"
+              className="rounded-lg border border-amber-500/30 px-3 py-1.5 text-xs font-medium bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 transition-colors flex items-center gap-1.5 cursor-pointer"
               title="Click to load Nifty 50 Leaders starter pack"
             >
               <Plus className="h-3.5 w-3.5" />
-              <span>Load Starter Watchlist</span>
+              <span>Starter Watchlist</span>
             </button>
           ) : (
             <Link
               href={axionAppPath("/watchlist")}
-              className="rounded-xl border border-slate-200/80 dark:border-slate-800 px-3.5 py-2 text-xs font-bold bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5"
+              className="rounded-lg border border-slate-200 dark:border-slate-800 px-3 py-1.5 text-xs font-medium bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5"
             >
               <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500/30" />
               <span>Watchlist ({watchlist.length})</span>
             </Link>
           )}
         </div>
+      </div>
+
+      {/* ─── Minimal Sleek Navigation Tabs ─────────────────────── */}
+      <div className="border-b border-slate-200 dark:border-slate-800/80 pt-1">
+        <nav aria-label="Dashboard views" className="flex items-center gap-6 overflow-x-auto scrollbar-none -mb-px">
+          {[
+            { id: 'radars', label: 'Radars' },
+            { id: 'opportunities', label: 'Opportunities' },
+            { id: 'research', label: 'AI Research' },
+            { id: 'macro', label: 'Market Context' },
+            { id: 'all', label: 'Full Terminal' },
+          ].map(tab => {
+            const active = dashboardTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => handleTabChange(tab.id as DashboardTab)}
+                className={`pb-2.5 text-xs font-medium transition-colors border-b-2 cursor-pointer shrink-0 ${
+                  active
+                    ? 'border-indigo-500 text-indigo-600 dark:text-white font-semibold'
+                    : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
       </div>
 
       {/* ─── Error Notification ─────────────────────────────────── */}
@@ -721,26 +750,37 @@ export default function DashboardMain() {
         </div>
       )}
 
-      {/* ─── Top 3 Core Execution Radars: Small Cap 2%, 10% Screener, 2-5% Fall ─── */}
-      <DashboardPowerRadarsHub />
+      {/* ─── TAB 1: EXECUTION RADARS ──────────────────────────────── */}
+      {(dashboardTab === 'radars' || dashboardTab === 'all') && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          {/* Top 3 Core Execution Radars: Small Cap 2%, 10% Screener, 2-5% Fall */}
+          <DashboardPowerRadarsHub />
 
-      {/* ─── Real-Time Sentiment & Signal Fusion Radar ─── */}
-      <div id="dashboard-sentiment-fusion-radar" className="scroll-mt-24">
-        <SentimentRadarWidget initialTicker={selectedTicker ? (selectedTicker.includes('.') ? selectedTicker : `${selectedTicker}.NS`) : 'RELIANCE.NS'} />
-      </div>
+          {/* 5-Minute Momentum Radar & 2% Small-Cap Prediction Dock */}
+          <MomentumRadarBanner />
 
-      {/* ─── Live Intraday Small-Cap Multi-Indicator Heatmap Grid (Top Priority) ── */}
-      <LiveMarketHeatmapGrid customStocks={effectiveStocks} />
+          {/* Real-Time Sentiment & Signal Fusion Radar */}
+          <div id="dashboard-sentiment-fusion-radar" className="scroll-mt-24">
+            <SentimentRadarWidget initialTicker={selectedTicker ? (selectedTicker.includes('.') ? selectedTicker : `${selectedTicker}.NS`) : 'RELIANCE.NS'} />
+          </div>
+        </div>
+      )}
 
-      <div id="dashboard-research-desk" className="scroll-mt-24">
-        <DashboardOverview
-          stocks={effectiveStocks}
-          watchlist={watchlist}
-          capital={selectedCapital}
-          loading={isLoading}
-          onSelectTicker={(ticker) => { setSelectedTicker(ticker); setActiveTab('dashboard'); }}
-        />
-      </div>
+      {/* ─── TAB 2: STOCK OPPORTUNITIES & HEATMAP ─────────────────── */}
+      {(dashboardTab === 'opportunities' || dashboardTab === 'all') && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          {/* Live Intraday Small-Cap Multi-Indicator Heatmap Grid */}
+          <LiveMarketHeatmapGrid customStocks={effectiveStocks} />
+
+          <div id="dashboard-research-desk" className="scroll-mt-24">
+            <DashboardOverview
+              stocks={effectiveStocks}
+              watchlist={watchlist}
+              capital={selectedCapital}
+              loading={isLoading}
+              onSelectTicker={(ticker) => { setSelectedTicker(ticker); setActiveTab('dashboard'); }}
+            />
+          </div>
 
       {/* ─── Main Content: Stock Opportunities ─ */}
       <div id="dashboard-stock-opportunities" className="grid scroll-mt-24 grid-cols-1 xl:grid-cols-3 gap-6 items-start">
@@ -1952,11 +1992,13 @@ export default function DashboardMain() {
           <DashboardMoodWidget />
         </div>
       </div>
+    </div>
+  )}
 
-      {/* ─── 5-Minute Momentum Radar & 2% Small-Cap Prediction Dock ── */}
-      <MomentumRadarBanner />
-
-      {/* ─── AI Research Spotlight ─────────────────────────────── */}
+      {/* ─── TAB 3: AI RESEARCH & ALPHA ───────────────────────────── */}
+      {(dashboardTab === 'research' || dashboardTab === 'all') && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          {/* AI Research Spotlight */}
       <div
         id="ai-research-spotlight"
         className="relative rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800/90 bg-gradient-to-br from-white dark:from-slate-950 via-slate-50 dark:via-slate-900 to-indigo-50 dark:to-slate-950 shadow-2xl shadow-indigo-950/20 p-6 sm:p-7 animate-fade-up"
@@ -2273,18 +2315,33 @@ export default function DashboardMain() {
 
       <WholeMarketForecast />
       <ResearchWorkflowStatus />
+      </div>
+      )}
 
-      <details id="dashboard-market-context" className="workspace-context scroll-mt-24">
-        <summary><div><h2 className="text-sm font-semibold">Market context</h2><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Outlook, benchmark charts, breadth and macro indicators</p></div><ChevronRight size={18} className="shrink-0 text-slate-400 transition-transform" /></summary>
-        <div className="workspace-context-content space-y-4">
-          <IndexBanner />
-          <MarketStatsBar customStocks={effectiveStocks} />
-          <NseSmartMoneyWidget selectedTicker={selectedTicker} onSelectTicker={(t) => setSelectedTicker(t)} />
-          <MarketBenchmarkChart />
-          <MacroFlowBar />
-          <MarketBreadthRadar />
+      {/* ─── TAB 4: MARKET CONTEXT & INSTITUTIONAL MACRO ─────────── */}
+      {(dashboardTab === 'macro' || dashboardTab === 'all') && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl p-5 sm:p-6 space-y-6 shadow-xl shadow-slate-950/5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800/80 gap-2">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white font-mono flex items-center gap-2">
+                  <Compass className="h-4 w-4 text-indigo-500" />
+                  Institutional Macro & Market Context
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Live index benchmark monitors, FII/DII liquidity flow tracker, market breadth and macro pulse
+                </p>
+              </div>
+            </div>
+            <IndexBanner />
+            <MarketStatsBar customStocks={effectiveStocks} />
+            <NseSmartMoneyWidget selectedTicker={selectedTicker} onSelectTicker={(t) => setSelectedTicker(t)} />
+            <MarketBenchmarkChart />
+            <MacroFlowBar />
+            <MarketBreadthRadar />
+          </div>
         </div>
-      </details>
+      )}
 
       {/* Institutional 1-Click Quick Trade Modal */}
       {quickTradeStock && (

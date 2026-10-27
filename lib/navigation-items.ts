@@ -103,6 +103,36 @@ export const FOCUS_NAV_GROUP: NavGroup = {
 };
 
 /**
+ * Post-IPO Section - Dedicated Sidebar Accordion
+ */
+export const POST_IPO_NAV_GROUP: NavGroup = {
+  id: 'post-ipo-group',
+  name: 'Post-IPO Radar',
+  icon: Rocket,
+  accentColor: 'text-purple-500 dark:text-purple-400',
+  items: [
+    {
+      name: 'Post-IPO Predictions',
+      href: '/post-ipo',
+      icon: Rocket,
+      badge: '2YR',
+      badgeType: 'ai',
+      color: 'text-purple-500',
+      description: 'Stage-1 base accumulation & breakout tracker',
+    },
+    {
+      name: 'IPOs & GMP Tracker',
+      href: '/ipo',
+      icon: Award,
+      badge: 'GMP',
+      badgeType: 'gmp',
+      color: 'text-amber-500',
+      description: 'Mainboard & SME pipeline, grey market premiums',
+    },
+  ],
+};
+
+/**
  * Extended Tools moved to Settings Panel
  */
 export const SETTINGS_TOOLS_SECTIONS: {

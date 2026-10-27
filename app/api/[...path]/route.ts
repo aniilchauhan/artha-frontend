@@ -67,7 +67,7 @@ async function handleProxy(
       headers,
       body,
       cache: "no-store",
-      signal: AbortSignal.timeout(6000), // 6 second fail-safe timeout
+      signal: AbortSignal.timeout(30000), // 30 second fail-safe timeout for deep analytics
     });
 
     // If backend returned a server failure, handle gracefully for critical dashboard paths

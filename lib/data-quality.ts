@@ -24,7 +24,7 @@ export function deriveDataQualityStatus(
   const hasProviderData = stocks.some(stock => !stock.isFallback && stock.dataSource === 'provider');
   if (hasNonProviderData) return hasProviderData ? 'mixed' : 'simulated';
 
-  const hasDelayedQuote = stocks.some(stock => {
+  const delayedCount = stocks.filter(stock => {
     const currentStatus = stock.quoteAsOf
       ? quoteStatus({
           quoteAsOf: stock.quoteAsOf,
@@ -34,6 +34,9 @@ export function deriveDataQualityStatus(
         }, now)
       : stock.quoteStatus;
     return currentStatus ? currentStatus !== 'recent' : false;
-  });
-  return hasDelayedQuote ? 'mixed' : 'live';
+  }).length;
+
+  // If >20% of quotes are delayed, flag as mixed. If >=80% are live, report live provider quotes.
+  const isPredominantlyLive = delayedCount === 0 || (delayedCount / stocks.length) <= 0.20;
+  return isPredominantlyLive ? 'live' : 'mixed';
 }

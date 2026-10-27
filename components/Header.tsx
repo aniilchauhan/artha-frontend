@@ -55,12 +55,13 @@ export default function Header() {
   } = useStockContext();
 
   const { data: session, status: authStatus } = useSession();
-  const dataModeLabel = {
+  const dataModeLabel = ({
     live: 'RECENT',
+    cached: 'CACHED',
     mixed: 'MIXED',
     simulated: 'SIMULATED',
     unavailable: 'UNAVAILABLE',
-  }[dataQualityStatus] ?? 'LIVE';
+  } as Record<string, string>)[dataQualityStatus] ?? 'LIVE';
 
   const [showSettings, setShowSettings] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);

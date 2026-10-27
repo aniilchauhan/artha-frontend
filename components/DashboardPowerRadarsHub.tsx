@@ -179,147 +179,86 @@ export default function DashboardPowerRadarsHub() {
   return (
     <section id="dashboard-power-radars-hub" className="scroll-mt-24 space-y-4">
       
-      {/* ─── HUB HEADER & RADAR SELECTOR WITH DYNAMIC AMBIENT GLOW ─── */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: 'easeOut' }}
-        className="relative overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl p-5 sm:p-6 shadow-sm group"
-      >
-        {/* Animated ambient background beam */}
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/10 dark:bg-indigo-500/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
-        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-500/10 dark:bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      {/* ─── HUB HEADER & RADAR SELECTOR ─── */}
+      <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900/60 p-4 sm:p-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2.5">
-              {/* Radar Icon with animated ping wave */}
-              <div className="relative flex items-center justify-center p-2 rounded-xl bg-gradient-to-br from-indigo-500/15 to-purple-500/15 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400">
-                <span className="absolute inset-0 rounded-xl bg-indigo-500/20 animate-ping opacity-30" />
-                <Flame className="h-4 w-4 relative z-10 animate-bounce" style={{ animationDuration: '2.5s' }} />
-              </div>
-
-              <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                Top 3 Execution Radars
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                <Flame className="h-4 w-4 text-amber-500" />
+                Execution Radars
               </h2>
-
-              <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 Live Engine
               </span>
             </div>
-
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xl">
-              High-priority quant discovery: intraday 2% breakouts, multi-day 10% expansions, and 2–5% short breakdown setups.
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Intraday 2% breakouts, multi-day 10% expansions, and 2–5% short setups.
             </p>
           </div>
 
-          {/* Smooth Spring Tab Switcher with layoutId sliding pill */}
-          <div className="relative flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-950/70 shadow-inner">
+          {/* Minimal Segmented Tab Switcher */}
+          <div className="flex flex-wrap items-center gap-1 p-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/80">
             {/* Tab 1: Small Cap 2% */}
-            <motion.button
+            <button
               type="button"
-              whileTap={{ scale: 0.96 }}
-              whileHover={{ scale: 1.02 }}
               onClick={() => setActiveRadar('small_cap')}
-              className={`relative z-10 flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
                 activeRadar === 'small_cap'
-                  ? 'text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-xs'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
               }`}
             >
-              {activeRadar === 'small_cap' && (
-                <motion.div
-                  layoutId="activeRadarPill"
-                  className="absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 shadow-md shadow-emerald-500/25"
-                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-                />
+              <Zap className="h-3.5 w-3.5 text-emerald-500" />
+              <span>Small Cap 2%</span>
+              {displayedSmallCapList.length > 0 && (
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-mono font-bold">
+                  {displayedSmallCapList.length}
+                </span>
               )}
-              <span className="relative z-10 flex items-center gap-1.5">
-                <Zap className="h-3.5 w-3.5" />
-                <span>Small Cap 2% Picks</span>
-                {displayedSmallCapList.length > 0 && (
-                  <motion.span
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    className="ml-0.5 text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-950/40 border border-emerald-400/40 text-white font-mono"
-                  >
-                    {displayedSmallCapList.length}
-                  </motion.span>
-                )}
-              </span>
-            </motion.button>
+            </button>
 
             {/* Tab 2: 10% Rapid Moves */}
-            <motion.button
+            <button
               type="button"
-              whileTap={{ scale: 0.96 }}
-              whileHover={{ scale: 1.02 }}
               onClick={() => setActiveRadar('rapid_moves')}
-              className={`relative z-10 flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
                 activeRadar === 'rapid_moves'
-                  ? 'text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-xs'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
               }`}
             >
-              {activeRadar === 'rapid_moves' && (
-                <motion.div
-                  layoutId="activeRadarPill"
-                  className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 shadow-md shadow-cyan-500/25"
-                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-                />
+              <Rocket className="h-3.5 w-3.5 text-cyan-500" />
+              <span>10% Screener</span>
+              {rapidMoveCandidates.length > 0 && (
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-mono font-bold">
+                  {rapidMoveCandidates.length}
+                </span>
               )}
-              <span className="relative z-10 flex items-center gap-1.5">
-                <Rocket className="h-3.5 w-3.5" />
-                <span>10% Move Screener</span>
-                {rapidMoveCandidates.length > 0 && (
-                  <motion.span
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    className="ml-0.5 text-[10px] px-1.5 py-0.2 rounded-full bg-cyan-950/40 border border-cyan-400/40 text-white font-mono"
-                  >
-                    {rapidMoveCandidates.length}
-                  </motion.span>
-                )}
-              </span>
-            </motion.button>
+            </button>
 
             {/* Tab 3: Fall Predictions */}
-            <motion.button
+            <button
               type="button"
-              whileTap={{ scale: 0.96 }}
-              whileHover={{ scale: 1.02 }}
               onClick={() => setActiveRadar('fall_predictions')}
-              className={`relative z-10 flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
                 activeRadar === 'fall_predictions'
-                  ? 'text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-xs'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
               }`}
             >
-              {activeRadar === 'fall_predictions' && (
-                <motion.div
-                  layoutId="activeRadarPill"
-                  className="absolute inset-0 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 shadow-md shadow-rose-500/25"
-                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-                />
+              <TrendingDown className="h-3.5 w-3.5 text-rose-500" />
+              <span>2–5% Fall</span>
+              {displayedFallList.length > 0 && (
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-mono font-bold">
+                  {displayedFallList.length}
+                </span>
               )}
-              <span className="relative z-10 flex items-center gap-1.5">
-                <TrendingDown className="h-3.5 w-3.5" />
-                <span>2–5% Fall Module</span>
-                {displayedFallList.length > 0 && (
-                  <motion.span
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    className="ml-0.5 text-[10px] px-1.5 py-0.2 rounded-full bg-rose-950/40 border border-rose-400/40 text-white font-mono"
-                  >
-                    {displayedFallList.length}
-                  </motion.span>
-                )}
-              </span>
-            </motion.button>
+            </button>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* ─── ANIMATED RADAR CONTENT CAROUSEL WITH ANIMATEPRESENCE ─── */}
       <AnimatePresence mode="wait">
@@ -354,9 +293,10 @@ export default function DashboardPowerRadarsHub() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {displayedSmallCapList.map((item: any) => {
                 const ticker = item.ticker || 'STOCK';
-                const price = item.currentPrice || 100;
-                const target = Number((price * 1.025).toFixed(2));
-                const score = item.score ?? 85;
+                const price = typeof item.price === 'number' ? item.price : (typeof item.currentPrice === 'number' ? item.currentPrice : (typeof item.close === 'number' ? item.close : 100));
+                const target = item.targetPrice ?? Number((price * 1.025).toFixed(2));
+                const score = item.score ?? item.convictionScore ?? 85;
+                const change = item.changePercent ?? item.changePct ?? (item.signals?.includes('+2% momentum') ? 2.5 : 0);
 
                 return (
                   <motion.div
@@ -385,7 +325,7 @@ export default function DashboardPowerRadarsHub() {
                           </span>
                           <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center justify-end gap-0.5">
                             <ArrowUpRight className="h-3 w-3 inline" />
-                            {item.changePercent >= 0 ? '+' : ''}{Number(item.changePercent || 0).toFixed(2)}%
+                            {change >= 0 ? '+' : ''}{Number(change).toFixed(2)}%
                           </span>
                         </div>
                       </div>
@@ -463,8 +403,12 @@ export default function DashboardPowerRadarsHub() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {rapidMoveCandidates.slice(0, 6).map((c: any) => {
-                const cleanTicker = c.ticker.replace('.NS', '');
-                const target10 = Number((c.close * 1.10).toFixed(1));
+                const cleanTicker = (c.ticker || '').replace('.NS', '').replace('.BO', '');
+                const price = typeof c.price === 'number' ? c.price : (typeof c.close === 'number' ? c.close : (typeof c.entry === 'number' ? c.entry : 100));
+                const target10 = typeof c.target === 'number' ? c.target : Number((price * 1.10).toFixed(1));
+                const score = typeof c.score === 'number' ? Math.min(100, Math.round(c.score)) : Math.round((c.conviction || 0.85) * 100);
+                const strategy = c.setup ? `${String(c.setup).toUpperCase()} Expansion` : (c.strategy || '10% Expansion Setup');
+                const days = c.horizons?.[0]?.days ?? c.daysToTarget ?? '1-5';
 
                 return (
                   <motion.div
@@ -484,15 +428,15 @@ export default function DashboardPowerRadarsHub() {
                             {cleanTicker}
                           </span>
                           <span className="text-[10px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider block">
-                            {c.strategy || '10% Expansion Setup'}
+                            {strategy}
                           </span>
                         </div>
                         <div className="text-right font-mono">
                           <span className="text-base font-black text-slate-900 dark:text-white block">
-                            ₹{c.close.toFixed(2)}
+                            ₹{price.toFixed(2)}
                           </span>
                           <span className="text-[10px] text-slate-400">
-                            {c.daysToTarget || '1-5'} Days
+                            {days} Days
                           </span>
                         </div>
                       </div>
@@ -504,7 +448,7 @@ export default function DashboardPowerRadarsHub() {
                         </div>
                         <div>
                           <span className="text-[9px] font-sans font-bold text-slate-400 block uppercase">Conviction</span>
-                          <span className="text-xs font-black text-slate-800 dark:text-slate-200">{Math.round((c.conviction || 0.85) * 100)}%</span>
+                          <span className="text-xs font-black text-slate-800 dark:text-slate-200">{score}%</span>
                         </div>
                       </div>
                     </div>
@@ -526,7 +470,7 @@ export default function DashboardPowerRadarsHub() {
                         whileTap={{ scale: 0.94 }}
                         onClick={() => {
                           playTargetChime();
-                          setTradeModalStock({ ticker: cleanTicker, name: `${cleanTicker} 10% Radar`, currentPrice: c.close });
+                          setTradeModalStock({ ticker: cleanTicker, name: `${cleanTicker} 10% Radar`, currentPrice: price });
                         }}
                         className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs shadow-md shadow-cyan-600/25 transition cursor-pointer flex items-center gap-1.5"
                       >

@@ -11,7 +11,7 @@ import {
   Compass,
 } from 'lucide-react';
 import { useStockContext } from '../context/StockContext';
-import { FOCUS_NAV_GROUP } from '../lib/navigation-items';
+import { FOCUS_NAV_GROUP, POST_IPO_NAV_GROUP } from '../lib/navigation-items';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -21,8 +21,9 @@ export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(120);
 
-  // Accordion open state for the first (and only focus) accordion
+  // Accordion open states
   const [isAccordionOpen, setIsAccordionOpen] = useState(true);
+  const [isPostIpoOpen, setIsPostIpoOpen] = useState(true);
 
   useEffect(() => {
     const header = document.getElementById('app-main-header');
@@ -133,6 +134,7 @@ export default function Sidebar() {
   };
 
   const GroupIcon = FOCUS_NAV_GROUP.icon;
+  const PostIpoGroupIcon = POST_IPO_NAV_GROUP.icon;
 
   return (
     <>
@@ -173,106 +175,211 @@ export default function Sidebar() {
 
         {/* Scrollable Navigation Area */}
         <div id="sidebar-tools" className="sidebar-tools min-h-0 flex-1 overflow-y-auto overscroll-contain pt-3 flex flex-col justify-between">
-          {/* FIRST ACCORDION: FOCUS RADARS */}
           {isCollapsed ? (
-            /* Rail mode: Show mini focus icons */
-            <div className="space-y-1.5">
-              {FOCUS_NAV_GROUP.items.map(item => {
-                const active = pathname === item.href;
-                const ItemIcon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={clearSelection}
-                    title={item.name}
-                    aria-label={item.name}
-                    aria-current={active ? 'page' : undefined}
-                    className={`group relative flex items-center justify-center min-h-[42px] rounded-xl p-2.5 transition-all ${
-                      active
-                        ? 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-500/30 shadow-xs'
-                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-                    }`}
-                  >
-                    <ItemIcon size={18} className={`transition-transform group-hover:scale-110 ${item.color}`} />
-                  </Link>
-                );
-              })}
+            /* Rail mode: Show mini focus icons + post-ipo icons */
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                {FOCUS_NAV_GROUP.items.map(item => {
+                  const active = pathname === item.href;
+                  const ItemIcon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={clearSelection}
+                      title={item.name}
+                      aria-label={item.name}
+                      aria-current={active ? 'page' : undefined}
+                      className={`group relative flex items-center justify-center min-h-[42px] rounded-xl p-2.5 transition-all ${
+                        active
+                          ? 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-500/30 shadow-xs'
+                          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      }`}
+                    >
+                      <ItemIcon size={18} className={`transition-transform group-hover:scale-110 ${item.color}`} />
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <div className="border-t border-slate-100 dark:border-slate-800/80 mx-1" />
+
+              <div className="space-y-1.5">
+                {POST_IPO_NAV_GROUP.items.map(item => {
+                  const active = pathname === item.href;
+                  const ItemIcon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={clearSelection}
+                      title={item.name}
+                      aria-label={item.name}
+                      aria-current={active ? 'page' : undefined}
+                      className={`group relative flex items-center justify-center min-h-[42px] rounded-xl p-2.5 transition-all ${
+                        active
+                          ? 'bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold border border-purple-500/30 shadow-xs'
+                          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      }`}
+                    >
+                      <ItemIcon size={18} className={`transition-transform group-hover:scale-110 ${item.color || 'text-purple-500'}`} />
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           ) : (
-            <section className="space-y-1.5">
-              {/* Accordion Toggle Header */}
-              <button
-                type="button"
-                onClick={() => setIsAccordionOpen(!isAccordionOpen)}
-                aria-expanded={isAccordionOpen}
-                aria-controls="sidebar-focus-accordion"
-                className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left text-xs font-bold transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100/70 dark:hover:bg-slate-800/50"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="p-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
-                    <GroupIcon size={14} className={FOCUS_NAV_GROUP.accentColor} />
+            <div className="space-y-4">
+              {/* FIRST ACCORDION: FOCUS RADARS */}
+              <section className="space-y-1.5">
+                {/* Accordion Toggle Header */}
+                <button
+                  type="button"
+                  onClick={() => setIsAccordionOpen(!isAccordionOpen)}
+                  aria-expanded={isAccordionOpen}
+                  aria-controls="sidebar-focus-accordion"
+                  className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left text-xs font-bold transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100/70 dark:hover:bg-slate-800/50"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="p-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+                      <GroupIcon size={14} className={FOCUS_NAV_GROUP.accentColor} />
+                    </div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                      Primary Focus
+                    </span>
                   </div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-                    Primary Focus
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
-                    {FOCUS_NAV_GROUP.items.length}
-                  </span>
-                  <ChevronDown
-                    size={13}
-                    className={`text-slate-400 transition-transform duration-200 ${isAccordionOpen ? 'rotate-180' : ''}`}
-                  />
-                </div>
-              </button>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
+                      {FOCUS_NAV_GROUP.items.length}
+                    </span>
+                    <ChevronDown
+                      size={13}
+                      className={`text-slate-400 transition-transform duration-200 ${isAccordionOpen ? 'rotate-180' : ''}`}
+                    />
+                  </div>
+                </button>
 
-              {/* Accordion Items Body */}
-              {isAccordionOpen && (
-                <div id="sidebar-focus-accordion" className="mt-1 space-y-1 pl-1">
-                  {FOCUS_NAV_GROUP.items.map(item => {
-                    const active = pathname === item.href;
-                    const ItemIcon = item.icon;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={clearSelection}
-                        aria-current={active ? 'page' : undefined}
-                        className={`group relative flex min-h-[42px] items-center justify-between rounded-xl px-3 py-2 text-xs font-medium transition-all duration-200 overflow-hidden ${
-                          active
-                            ? 'bg-gradient-to-r from-indigo-500/15 via-purple-500/10 to-transparent text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-500/30 shadow-xs'
-                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200'
-                        }`}
-                      >
-                        {active && (
-                          <div className="absolute left-0 top-1 bottom-1 w-1 bg-gradient-to-b from-indigo-500 to-purple-600 rounded-r-full shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
-                        )}
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div
-                            className={`p-1.5 rounded-lg transition-transform duration-200 group-hover:scale-110 ${
-                              active
-                                ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400'
-                                : 'bg-slate-100/70 dark:bg-slate-800/50 group-hover:bg-slate-200 dark:group-hover:bg-slate-700/60'
-                            }`}
-                          >
-                            <ItemIcon
-                              size={15}
-                              className={active ? 'text-indigo-600 dark:text-indigo-400' : item.color || 'text-slate-400'}
-                            />
+                {/* Accordion Items Body */}
+                {isAccordionOpen && (
+                  <div id="sidebar-focus-accordion" className="mt-1 space-y-1 pl-1">
+                    {FOCUS_NAV_GROUP.items.map(item => {
+                      const active = pathname === item.href;
+                      const ItemIcon = item.icon;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={clearSelection}
+                          aria-current={active ? 'page' : undefined}
+                          className={`group relative flex min-h-[42px] items-center justify-between rounded-xl px-3 py-2 text-xs font-medium transition-all duration-200 overflow-hidden ${
+                            active
+                              ? 'bg-gradient-to-r from-indigo-500/15 via-purple-500/10 to-transparent text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-500/30 shadow-xs'
+                              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200'
+                          }`}
+                        >
+                          {active && (
+                            <div className="absolute left-0 top-1 bottom-1 w-1 bg-gradient-to-b from-indigo-500 to-purple-600 rounded-r-full shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                          )}
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div
+                              className={`p-1.5 rounded-lg transition-transform duration-200 group-hover:scale-110 ${
+                                active
+                                  ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400'
+                                  : 'bg-slate-100/70 dark:bg-slate-800/50 group-hover:bg-slate-200 dark:group-hover:bg-slate-700/60'
+                              }`}
+                            >
+                              <ItemIcon
+                                size={15}
+                                className={active ? 'text-indigo-600 dark:text-indigo-400' : item.color || 'text-slate-400'}
+                              />
+                            </div>
+                            <span className="sidebar-tool-label truncate">
+                              {item.name}
+                            </span>
                           </div>
-                          <span className="sidebar-tool-label truncate">
-                            {item.name}
-                          </span>
-                        </div>
-                        {renderBadge(item.badge, item.badgeType)}
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </section>
+                          {renderBadge(item.badge, item.badgeType)}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+
+              {/* SECOND ACCORDION: POST-IPO SECTION */}
+              <section className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                {/* Accordion Toggle Header */}
+                <button
+                  type="button"
+                  onClick={() => setIsPostIpoOpen(!isPostIpoOpen)}
+                  aria-expanded={isPostIpoOpen}
+                  aria-controls="sidebar-post-ipo-accordion"
+                  className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left text-xs font-bold transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100/70 dark:hover:bg-slate-800/50"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="p-1 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
+                      <PostIpoGroupIcon size={14} className={POST_IPO_NAV_GROUP.accentColor} />
+                    </div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                      Post-IPO Radar
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400">
+                      {POST_IPO_NAV_GROUP.items.length}
+                    </span>
+                    <ChevronDown
+                      size={13}
+                      className={`text-slate-400 transition-transform duration-200 ${isPostIpoOpen ? 'rotate-180' : ''}`}
+                    />
+                  </div>
+                </button>
+
+                {/* Accordion Items Body */}
+                {isPostIpoOpen && (
+                  <div id="sidebar-post-ipo-accordion" className="mt-1 space-y-1 pl-1">
+                    {POST_IPO_NAV_GROUP.items.map(item => {
+                      const active = pathname === item.href;
+                      const ItemIcon = item.icon;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={clearSelection}
+                          aria-current={active ? 'page' : undefined}
+                          className={`group relative flex min-h-[42px] items-center justify-between rounded-xl px-3 py-2 text-xs font-medium transition-all duration-200 overflow-hidden ${
+                            active
+                              ? 'bg-gradient-to-r from-purple-500/15 via-indigo-500/10 to-transparent text-purple-700 dark:text-purple-300 font-bold border border-purple-500/30 shadow-xs'
+                              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200'
+                          }`}
+                        >
+                          {active && (
+                            <div className="absolute left-0 top-1 bottom-1 w-1 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-r-full shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                          )}
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div
+                              className={`p-1.5 rounded-lg transition-transform duration-200 group-hover:scale-110 ${
+                                active
+                                  ? 'bg-purple-500/15 text-purple-600 dark:text-purple-400'
+                                  : 'bg-slate-100/70 dark:bg-slate-800/50 group-hover:bg-slate-200 dark:group-hover:bg-slate-700/60'
+                              }`}
+                            >
+                              <ItemIcon
+                                size={15}
+                                className={active ? 'text-purple-600 dark:text-purple-400' : item.color || 'text-slate-400'}
+                              />
+                            </div>
+                            <span className="sidebar-tool-label truncate">
+                              {item.name}
+                            </span>
+                          </div>
+                          {renderBadge(item.badge, item.badgeType)}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+            </div>
           )}
 
           {/* Bottom Settings Link & Status Card */}
