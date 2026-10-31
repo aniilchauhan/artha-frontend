@@ -135,9 +135,9 @@ export default function SearchBar() {
   };
 
   return (
-    <div ref={wrapperRef} className="stock-search relative w-full max-w-md ml-2 xl:ml-6 hidden md:block transition-all duration-300">
+    <div ref={wrapperRef} className="stock-search relative w-full max-w-[140px] sm:max-w-xs lg:max-w-md ml-1 sm:ml-2 xl:ml-6 transition-all duration-300">
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+        <Search className="absolute left-2 sm:left-3.5 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-slate-400 pointer-events-none" />
         <input
           ref={inputRef}
           type="text"
@@ -147,8 +147,8 @@ export default function SearchBar() {
           aria-expanded={isOpen}
           aria-controls={isOpen && results.length > 0 ? 'stock-search-results' : undefined}
           aria-activedescendant={isOpen && selectedIndex >= 0 ? `stock-search-option-${selectedIndex}` : undefined}
-          className="w-full bg-slate-100/70 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/70 dark:border-slate-700/60 rounded-2xl pl-10 pr-16 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500/40 text-slate-900 dark:text-slate-100 placeholder-slate-400 transition-all duration-300 shadow-2xs hover:bg-slate-100 dark:hover:bg-slate-800/80"
-          placeholder="Search 5,000+ Indian stocks (NSE & BSE)..."
+          className="w-full bg-slate-100/70 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/70 dark:border-slate-700/60 rounded-xl sm:rounded-2xl pl-7 sm:pl-10 pr-2 sm:pr-16 py-1.5 sm:py-2 text-[10px] sm:text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500/40 text-slate-900 dark:text-slate-100 placeholder-slate-400 transition-all duration-300 shadow-2xs hover:bg-slate-100 dark:hover:bg-slate-800/80"
+          placeholder="Search..."
           value={query}
           onChange={e => {
             setQuery(e.target.value);
@@ -158,10 +158,10 @@ export default function SearchBar() {
           onKeyDown={handleInputKeyDown}
         />
 
-        {/* Right shortcut badge or loader */}
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
+        {/* Right shortcut badge or loader - Hidden on mobile */}
+        <div className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 pointer-events-none">
           {isSearching ? (
-            <Loader2 className="h-3.5 w-3.5 text-indigo-500 animate-spin" />
+            <Loader2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-indigo-500 animate-spin" />
           ) : (
             <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-mono font-bold text-slate-400 bg-white dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600/60 rounded-md shadow-2xs">
               {isMac ? '⌘K' : 'Ctrl+K'}

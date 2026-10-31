@@ -21,7 +21,8 @@ import {
   Briefcase, 
   Star,
   Compass,
-  Palette
+  Palette,
+  Search
 } from 'lucide-react';
 import Image from 'next/image';
 import SearchBar from './SearchBar';
@@ -70,6 +71,7 @@ export default function Header() {
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -170,12 +172,16 @@ export default function Header() {
           </Link>
 
           {/* Dynamic Global Stock Search & Terminal Palette Trigger */}
-          <div className="flex items-center gap-2 flex-1 max-w-lg min-w-0">
-            <SearchBar />
+          <div className="flex items-center gap-2 flex-1 lg:max-w-lg min-w-0">
+            {/* Search bar - Hidden on mobile, visible from lg+ */}
+            <div className="hidden lg:block flex-1">
+              <SearchBar />
+            </div>
+            {/* Command Palette - Hide on mobile, show on large screens only */}
             <button
               type="button"
               onClick={() => setShowCommandPalette(true)}
-              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 to-teal-500/10 hover:border-indigo-500/60 hover:from-indigo-500/20 hover:to-teal-500/20 text-indigo-700 dark:text-indigo-300 text-xs font-bold font-mono transition-all cursor-pointer shadow-xs shrink-0"
+              className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 to-teal-500/10 hover:border-indigo-500/60 hover:from-indigo-500/20 hover:to-teal-500/20 text-indigo-700 dark:text-indigo-300 text-xs font-bold font-mono transition-all cursor-pointer shadow-xs shrink-0"
               title="Open Terminal Command Palette (Ctrl+K)"
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-500" />
@@ -183,10 +189,22 @@ export default function Header() {
             </button>
           </div>
 
-          {/* Right actions: Live Sync, Theme, Login/Profile, Settings */}
-          <div className="flex items-center gap-1 md:gap-1.5 lg:gap-2.5 shrink-0" id="header-actions-container">
-            {/* Status indicator */}
-            <div className={`flex items-center gap-1.5 border px-2 py-1.5 rounded-full text-[10px] sm:text-[11px] font-semibold shrink-0 shadow-sm backdrop-blur-md ${
+          {/* Right actions: Mobile shows search + user icon, desktop shows all */}
+          <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-2.5 shrink-0" id="header-actions-container">
+            
+            {/* Mobile-only Search Icon Button - Opens mobile search modal */}
+            <button
+              onClick={() => setShowMobileSearch(true)}
+              className="lg:hidden p-2 rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all cursor-pointer shadow-sm shrink-0"
+              id="btn-mobile-search"
+              aria-label="Open Search"
+              title="Search Stocks"
+            >
+              <Search className="h-4 w-4" />
+            </button>
+
+            {/* Status indicator - Hidden on mobile, visible from lg+ */}
+            <div className={`hidden lg:flex items-center gap-1 sm:gap-1.5 border px-1.5 sm:px-2 py-1.5 rounded-full text-[9px] sm:text-[11px] font-semibold shrink-0 shadow-sm backdrop-blur-md ${
               dataQualityStatus === 'live'
                 ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-300'
                 : dataQualityStatus === 'mixed'
@@ -204,13 +222,13 @@ export default function Header() {
               <span className="hidden xl:inline tracking-wide">{dataQualityStatus === 'live' ? 'Provider quotes' : dataQualityStatus === 'mixed' ? 'Mixed data feed' : dataQualityStatus === 'simulated' ? 'Simulated feed' : 'Data unavailable'}</span>
             </div>
 
-            {/* On-Demand Live Data Sync Button */}
+            {/* On-Demand Live Data Sync Button - Hidden on mobile, visible from lg+ */}
             <button
               onClick={handleSyncLive}
               disabled={isSyncing}
               id="btn-header-sync-live"
               aria-label={isSyncing ? 'Syncing market data' : 'Sync Live'}
-              className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 shrink-0 shadow-sm ${
+              className={`hidden lg:flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 shrink-0 shadow-sm ${
                 isSyncing
                   ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 cursor-wait'
                   : 'bg-white/80 dark:bg-gray-900/80 border-gray-200 dark:border-gray-700/50 text-gray-600 dark:text-gray-300 hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-indigo-500/10'
@@ -221,24 +239,24 @@ export default function Header() {
               <span className="hidden sm:inline">{isSyncing ? 'Syncing…' : 'Sync Live'}</span>
             </button>
 
-            {/* Pilot Tour & Task Onboarding Button */}
+            {/* Pilot Tour & Task Onboarding Button - Hidden on mobile, visible from xl+ */}
             <button
               onClick={() => setShowOnboarding(true)}
               id="btn-header-onboarding"
               aria-label="Platform Tour & Task Onboarding"
-              className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl border border-indigo-500/30 bg-indigo-50/60 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 text-xs font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 shrink-0 shadow-sm hover:border-indigo-400 hover:shadow-indigo-500/10"
+              className="hidden xl:flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl border border-indigo-500/30 bg-indigo-50/60 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 text-xs font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 shrink-0 shadow-sm hover:border-indigo-400 hover:shadow-indigo-500/10"
               title="Take the Interactive Platform Tour & Check Task Progress"
             >
               <Compass className="h-3.5 w-3.5 shrink-0 animate-pulse text-indigo-600 dark:text-indigo-400" />
               <span className="hidden md:inline">Tour</span>
             </button>
 
-            {/* Theme Studio Button */}
+            {/* Theme Studio Button - Hidden on mobile, visible from xl+ */}
             <button
               onClick={() => setShowThemeModal(true)}
               id="btn-header-theme-studio"
               aria-label="Theme Customization Studio"
-              className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl border border-purple-500/30 bg-purple-50/60 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 text-xs font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 shrink-0 shadow-sm hover:border-purple-400 hover:shadow-purple-500/10"
+              className="hidden xl:flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl border border-purple-500/30 bg-purple-50/60 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 text-xs font-semibold cursor-pointer transition-all duration-300 hover:-translate-y-0.5 shrink-0 shadow-sm hover:border-purple-400 hover:shadow-purple-500/10"
               title="Theme Customization Studio (10 Themes)"
             >
               <Palette className="h-3.5 w-3.5 shrink-0 text-purple-600 dark:text-purple-400" />
@@ -246,10 +264,10 @@ export default function Header() {
               <span className="text-[9px] px-1 py-0.2 rounded font-mono bg-purple-500/20 font-bold">10</span>
             </button>
 
-            {/* Theme Toggle Button */}
+            {/* Theme Toggle Button - Hidden on mobile, visible from lg+ */}
             <button
               onClick={() => toggleTheme()}
-              className="p-1.5 sm:p-2 rounded-xl border cursor-pointer transition-all duration-300 hover:-translate-y-0.5 shrink-0 bg-white/80 dark:bg-gray-900/80 border-gray-200 dark:border-gray-700/50 text-gray-500 dark:text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:border-amber-200 dark:hover:border-amber-800 hover:shadow-amber-500/10 shadow-sm"
+              className="hidden lg:flex p-1.5 sm:p-2 rounded-xl border cursor-pointer transition-all duration-300 hover:-translate-y-0.5 shrink-0 bg-white/80 dark:bg-gray-900/80 border-gray-200 dark:border-gray-700/50 text-gray-500 dark:text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:border-amber-200 dark:hover:border-amber-800 hover:shadow-amber-500/10 shadow-sm"
               id="btn-toggle-theme"
               aria-label={theme !== 'light' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               title={theme !== 'light' ? "Switch to Light Mode" : "Switch to Dark Mode"}
@@ -261,11 +279,11 @@ export default function Header() {
               )}
             </button>
 
-            {/* Authentication / Profile Option */}
+            {/* Authentication / Profile Option - Always visible, compact on mobile */}
             {authStatus === 'loading' ? (
               <div className="w-8 h-8 rounded-xl bg-slate-200/60 dark:bg-slate-800/60 animate-pulse shrink-0" />
             ) : authStatus === 'authenticated' && session?.user ? (
-              /* Authenticated User Menu Dropdown */
+              /* Authenticated User Menu Dropdown - Simplified on mobile */
               <div className="relative" ref={profileMenuRef}>
                 <button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -273,13 +291,13 @@ export default function Header() {
                   className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-700/60 bg-white/80 dark:bg-slate-900/80 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-800 dark:text-slate-200 text-xs font-semibold cursor-pointer transition-all duration-300 shadow-sm hover:-translate-y-0.5 shrink-0"
                   title="User Profile & Settings"
                 >
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 text-white font-bold text-[10px] sm:text-[11px] flex items-center justify-center uppercase shadow-sm shrink-0">
+                  <div className="w-6 h-6 sm:w-6 sm:h-6 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 text-white font-bold text-[11px] flex items-center justify-center uppercase shadow-sm shrink-0">
                     {session.user.email?.[0] || 'U'}
                   </div>
-                  <span className="hidden sm:inline max-w-[80px] md:max-w-[120px] truncate text-slate-700 dark:text-slate-300">
+                  <span className="hidden lg:inline max-w-[80px] xl:max-w-[120px] truncate text-slate-700 dark:text-slate-300">
                     {session.user.email?.split('@')[0]}
                   </span>
-                  <ChevronDown className={`h-3 w-3 text-slate-400 transition-transform duration-200 ${showProfileMenu ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`hidden lg:inline h-3 w-3 text-slate-400 transition-transform duration-200 ${showProfileMenu ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Profile Dropdown Menu */}
@@ -346,7 +364,7 @@ export default function Header() {
                 )}
               </div>
             ) : (
-              /* Signed Out: Sign In Button */
+              /* Signed Out: Sign In Button - Compact on mobile, full on desktop */
               <button
                 onClick={() => setShowAuthModal(true)}
                 id="btn-header-signin"
@@ -354,14 +372,14 @@ export default function Header() {
                 title="Sign In / Register"
               >
                 <LogIn className="h-3.5 w-3.5" />
-                <span className="hidden xs:inline sm:inline">Sign In</span>
+                <span className="hidden sm:inline">Sign In</span>
               </button>
             )}
 
-            {/* Toggle settings panel */}
+            {/* Toggle settings panel - Hidden on mobile, visible from lg+ */}
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className={`p-1.5 sm:p-2 rounded-xl border cursor-pointer transition-all duration-300 hover:-translate-y-0.5 shrink-0 shadow-sm ${
+              className={`hidden lg:flex p-1.5 sm:p-2 rounded-xl border cursor-pointer transition-all duration-300 hover:-translate-y-0.5 shrink-0 shadow-sm ${
                 showSettings 
                   ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 shadow-indigo-500/10' 
                   : 'bg-white/80 dark:bg-gray-900/80 border-gray-200 dark:border-gray-700/50 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 dark:hover:border-indigo-800 hover:shadow-indigo-500/10'
@@ -370,7 +388,7 @@ export default function Header() {
               aria-label="Settings"
               aria-expanded={showSettings}
               aria-controls="header-settings-panel"
-              title="System Simulation Settings"
+              title="Live Data Refresh Settings"
             >
               <Settings className={`h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform ${showSettings ? 'rotate-90' : ''}`} />
             </button>
@@ -382,7 +400,7 @@ export default function Header() {
       {showSettings && (
         <div 
           id="header-settings-panel"
-          className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border-b border-gray-100 dark:border-gray-800 px-4 py-6 md:px-8 shadow-inner animate-in fade-in slide-in-from-top-2 duration-300"
+          className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border-b border-gray-100 dark:border-gray-800 px-4 py-6 md:px-8 shadow-inner animate-in fade-in slide-in-from-top-2 duration-300 max-h-[70vh] overflow-y-auto"
         >
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Polling Interval Controls */}
@@ -391,10 +409,10 @@ export default function Header() {
                 Polling Interval
               </h4>
               <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
-                Configure how frequently the simulated stock market ticks.
+                Configure live quote refresh frequency. Polling pauses while this tab is hidden.
               </p>
               <div className="flex gap-1.5">
-                {[1000, 3000, 5000, 10000].map((interval) => (
+                {[30000, 60000, 120000].map((interval) => (
                   <button
                     key={interval}
                     onClick={() => updatePollingInterval(interval)}
@@ -660,6 +678,34 @@ export default function Header() {
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
       />
+
+      {/* Mobile Search Modal - Full screen search on mobile */}
+      {showMobileSearch && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] lg:hidden"
+          onClick={() => setShowMobileSearch(false)}
+        >
+          <div 
+            className="absolute top-0 left-0 right-0 bg-white dark:bg-slate-900 p-4 shadow-2xl animate-in slide-in-from-top duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <button
+                onClick={() => setShowMobileSearch(false)}
+                className="p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Close search"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Search Stocks</h2>
+            </div>
+            <SearchBar />
+          </div>
+        </div>,
+        document.body
+      )}
     </header>
   );
 }

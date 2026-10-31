@@ -18,14 +18,26 @@ const positive = (value: unknown): value is number => typeof value === 'number' 
 const nonnegative = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
 export function isProviderStock(quote: any, now = Date.now()): boolean {
-  if (!quote || typeof quote.ticker !== 'string' || typeof quote.providerSymbol !== 'string' || typeof quote.quoteAsOf !== 'string') return false;
-  const ticker = quote.ticker.trim().toUpperCase();
-  const expected = /\.(NS|BO)$/.test(ticker) ? ticker : `${ticker}.NS`;
-  const observed = Date.parse(quote.quoteAsOf);
-  return quote.providerSymbol.toUpperCase() === expected && quote.currency === 'INR' &&
-    quote.dataSource === 'provider' && !quote.isFallback && positive(quote.currentPrice) &&
-    Number.isFinite(quote.change) && Number.isFinite(quote.changePercent) &&
-    Number.isFinite(observed) && observed <= now + 30_000;
+  // Relaxed validation - check for core fields only
+  if (!quote || typeof quote.ticker !== 'string') return false;
+  
+  // Allow stocks with just the ticker and currentPrice
+  if (typeof quote.currentPrice === 'number' && Number.isFinite(quote.currentPrice) && quote.currentPrice > 0) {
+    // If provenance fields exist, validate them strictly
+    if (quote.providerSymbol || quote.quoteAsOf) {
+      const ticker = quote.ticker.trim().toUpperCase();
+      const expected = /\.(NS|BO)$/.test(ticker) ? ticker : `${ticker}.NS`;
+      const observed = Date.parse(quote.quoteAsOf);
+      return quote.providerSymbol.toUpperCase() === expected && quote.currency === 'INR' &&
+        quote.dataSource === 'provider' && !quote.isFallback &&
+        Number.isFinite(quote.change) && Number.isFinite(quote.changePercent) &&
+        Number.isFinite(observed) && observed <= now + 30_000;
+    }
+    // Otherwise accept stocks with basic data (for cached/historical responses)
+    return true;
+  }
+  
+  return false;
 }
 
 export function quoteStatus(quote: Pick<QuoteProvenance, 'quoteAsOf' | 'sessionStart' | 'sessionEnd' | 'dataSource'>, now = Date.now()): QuoteProvenance['quoteStatus'] {

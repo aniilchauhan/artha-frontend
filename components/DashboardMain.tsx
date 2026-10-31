@@ -30,6 +30,7 @@ const SentimentRadarWidget = dynamic(() => import('./SentimentRadarWidget'), { s
 import QuickTradeModal from './QuickTradeModal';
 import RegulatoryDisclaimerFooter from './RegulatoryDisclaimerFooter';
 import { playTargetChime } from '../lib/sound-notifications';
+import { useDashboardData } from '../hooks/useDashboardData';
 import {
   Star, ArrowUpRight, ArrowDownRight, ArrowRight, Loader2, AlertCircle,
   ArrowUpDown, Cpu, ChevronRight, ChevronLeft, Sparkles, Search, SlidersHorizontal,
@@ -372,10 +373,6 @@ export default function DashboardMain() {
     } catch {}
     setQuickTradeStock(stockData);
   };
-  const [aiPicks, setAiPicks] = useState<any[]>([]);
-  const [aiLoading, setAiLoading] = useState(true);
-  const [postIpoPicks, setPostIpoPicks] = useState<any[]>(INITIAL_POST_IPO);
-  const [postIpoLoading, setPostIpoLoading] = useState(false);
   const [catalogRequested, setCatalogRequested] = useState(false);
 
   // Pagination states
@@ -451,31 +448,25 @@ export default function DashboardMain() {
     setCurrentPage(1);
   }, [activeCategory, searchQuery, sortBy, sortOrder]);
 
-  // Fetch AI Predictions
-  useEffect(() => {
-    fetch(axionApiPath('/api/stock-ai/predictions'))
-      .then(r => r.json())
-      .then(d => {
-        if (d.success && d.data) {
-          setAiPicks(d.data.slice(0, 4));
-        }
-      })
-      .catch(() => {})
-      .finally(() => setAiLoading(false));
-  }, []);
+  // Optimized data loading using custom hook
+  const dashboardData = useDashboardData({
+    loadAiPredictions: dashboardTab === 'opportunities' || dashboardTab === 'all',
+    loadPostIpo: dashboardTab === 'opportunities' || dashboardTab === 'all',
+    loadSmallCap: false, // Loaded in PowerRadarsHub
+    loadFall: false, // Loaded in PowerRadarsHub
+    loadRapidMoves: false, // Loaded in PowerRadarsHub
+    loadMomentumRadar: dashboardTab === 'radars' || dashboardTab === 'all',
+    cacheTTL: 60000, // 1 minute cache
+    autoRefreshInterval: 120000, // Auto-refresh every 2 minutes
+  });
 
-  // Fetch 2-Year Post-IPO Predictions
-  useEffect(() => {
-    fetch(axionApiPath('/api/post-ipo/predict?live=false'))
-      .then(r => r.json())
-      .then(d => {
-        if (d.success && Array.isArray(d.data)) {
-          setPostIpoPicks(d.data.slice(0, 4));
-        }
-      })
-      .catch(() => {})
-      .finally(() => setPostIpoLoading(false));
-  }, []);
+  // Use data from optimized hook
+  const aiPicks = dashboardData.aiPredictions;
+  const aiLoading = dashboardData.aiLoading;
+  const postIpoPicks = dashboardData.postIpoPredictions.length > 0 
+    ? dashboardData.postIpoPredictions 
+    : INITIAL_POST_IPO;
+  const postIpoLoading = dashboardData.postIpoLoading;
 
   const postIpoTickers = useMemo(() => {
     return new Set(postIpoPicks.map(p => (p.ticker || p.symbol || '').toUpperCase().replace(/\.NS$/, '')));

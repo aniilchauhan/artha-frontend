@@ -25,6 +25,7 @@ import {
 import { axionFetch, axionApiPath, axionAppPath } from '../lib/in-process';
 import { useStockContext } from '../context/StockContext';
 import { useRapidMoveScan } from '../hooks/useRapidMoveScan';
+import { useDashboardData } from '../hooks/useDashboardData';
 import QuickTradeModal from './QuickTradeModal';
 import { playTargetChime } from '../lib/sound-notifications';
 
@@ -67,69 +68,27 @@ export default function DashboardPowerRadarsHub() {
   const { setSelectedTicker, stocks } = useStockContext();
   const [activeRadar, setActiveRadar] = useState<'small_cap' | 'rapid_moves' | 'fall_predictions'>('small_cap');
   
-  // 1. Small Cap 2% Picks
-  const [smallCapList, setSmallCapList] = useState<any[]>([]);
-  const [loadingSmallCap, setLoadingSmallCap] = useState(false);
-
-  // 2. 10% Rapid Moves
-  const { candidates: rapidMoveCandidates, running: loadingRapidMoves } = useRapidMoveScan();
-
-  // 3. 2-5% Fall Predictions
-  const [fallList, setFallList] = useState<any[]>([]);
-  const [loadingFall, setLoadingFall] = useState(false);
-
   // Quick Trade Modal
   const [tradeModalStock, setTradeModalStock] = useState<any | null>(null);
 
-  // Load Small Cap 2% candidates
-  useEffect(() => {
-    let active = true;
-    async function loadSmallCap() {
-      try {
-        setLoadingSmallCap(true);
-        const res = await axionFetch(axionApiPath('/api/small-cap-predictions?limit=6'));
-        if (res.ok) {
-          const json = await res.json();
-          const items = json.stocks || json.candidates;
-          if (active && Array.isArray(items) && items.length > 0) {
-            setSmallCapList(items.slice(0, 6));
-            return;
-          }
-        }
-      } catch {
-        // graceful
-      } finally {
-        if (active) setLoadingSmallCap(false);
-      }
-    }
-    void loadSmallCap();
-    return () => { active = false; };
-  }, []);
+  // Optimized data loading - only loads data for active radar
+  const dashboardData = useDashboardData({
+    loadSmallCap: activeRadar === 'small_cap',
+    loadFall: activeRadar === 'fall_predictions',
+    loadRapidMoves: activeRadar === 'rapid_moves',
+    cacheTTL: 30000, // 30 seconds cache for radars
+  });
 
-  // Load 2-5% Fall predictions
-  useEffect(() => {
-    let active = true;
-    async function loadFall() {
-      try {
-        setLoadingFall(true);
-        const res = await axionFetch(axionApiPath('/api/fall-predictions'));
-        if (res.ok) {
-          const json = await res.json();
-          const items = json.data || json.breakdowns;
-          if (active && Array.isArray(items) && items.length > 0) {
-            setFallList(items.slice(0, 6));
-            return;
-          }
-        }
-      } catch {
-        // graceful
-      } finally {
-        if (active) setLoadingFall(false);
-      }
-    }
-    void loadFall();
-    return () => { active = false; };
-  }, []);
+  // 1. Small Cap 2% Picks - from optimized hook
+  const smallCapList = dashboardData.smallCapPredictions;
+  const loadingSmallCap = dashboardData.smallCapLoading;
+
+  // 2. 10% Rapid Moves - keep existing hook (it has its own optimization)
+  const { candidates: rapidMoveCandidates, running: loadingRapidMoves } = useRapidMoveScan();
+
+  // 3. 2-5% Fall Predictions - from optimized hook
+  const fallList = dashboardData.fallPredictions;
+  const loadingFall = dashboardData.fallLoading;
 
   // Derive immediate fallback cards from stocks context so UI never flickers empty
   const displayedSmallCapList = useMemo(() => {
@@ -180,40 +139,43 @@ export default function DashboardPowerRadarsHub() {
     <section id="dashboard-power-radars-hub" className="scroll-mt-24 space-y-4">
       
       {/* ─── HUB HEADER & RADAR SELECTOR ─── */}
-      <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900/60 p-4 sm:p-5">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900/60 p-3 sm:p-5">
+        <div className="flex flex-col gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                <Flame className="h-4 w-4 text-amber-500" />
-                Execution Radars
+              <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500" />
+                <span className="hidden xs:inline">Execution Radars</span>
+                <span className="xs:hidden">Radars</span>
               </h2>
-              <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Live Engine
+              <span className="text-[9px] sm:text-[10px] font-mono font-medium px-1.5 sm:px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center gap-1">
+                <span className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-emerald-500" />
+                <span className="hidden xs:inline">Live Engine</span>
+                <span className="xs:hidden">Live</span>
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
               Intraday 2% breakouts, multi-day 10% expansions, and 2–5% short setups.
             </p>
           </div>
 
-          {/* Minimal Segmented Tab Switcher */}
-          <div className="flex flex-wrap items-center gap-1 p-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/80">
+          {/* Mobile-Optimized Horizontal Scrolling Tab Switcher */}
+          <div className="flex gap-1.5 sm:gap-1 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
             {/* Tab 1: Small Cap 2% */}
             <button
               type="button"
               onClick={() => setActiveRadar('small_cap')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 text-[11px] sm:text-xs rounded-lg transition-colors cursor-pointer shrink-0 whitespace-nowrap touch-target ${
                 activeRadar === 'small_cap'
-                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-xs'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium active:bg-slate-100 dark:active:bg-slate-800'
               }`}
             >
-              <Zap className="h-3.5 w-3.5 text-emerald-500" />
-              <span>Small Cap 2%</span>
+              <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-500" />
+              <span className="hidden xs:inline">Small Cap 2%</span>
+              <span className="xs:hidden">2%</span>
               {displayedSmallCapList.length > 0 && (
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-mono font-bold">
+                <span className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-mono font-bold">
                   {displayedSmallCapList.length}
                 </span>
               )}
@@ -223,16 +185,17 @@ export default function DashboardPowerRadarsHub() {
             <button
               type="button"
               onClick={() => setActiveRadar('rapid_moves')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 text-[11px] sm:text-xs rounded-lg transition-colors cursor-pointer shrink-0 whitespace-nowrap touch-target ${
                 activeRadar === 'rapid_moves'
-                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-xs'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium active:bg-slate-100 dark:active:bg-slate-800'
               }`}
             >
-              <Rocket className="h-3.5 w-3.5 text-cyan-500" />
-              <span>10% Screener</span>
+              <Rocket className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-cyan-500" />
+              <span className="hidden xs:inline">10% Screener</span>
+              <span className="xs:hidden">10%</span>
               {rapidMoveCandidates.length > 0 && (
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-mono font-bold">
+                <span className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-mono font-bold">
                   {rapidMoveCandidates.length}
                 </span>
               )}
@@ -242,16 +205,17 @@ export default function DashboardPowerRadarsHub() {
             <button
               type="button"
               onClick={() => setActiveRadar('fall_predictions')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 text-[11px] sm:text-xs rounded-lg transition-colors cursor-pointer shrink-0 whitespace-nowrap touch-target ${
                 activeRadar === 'fall_predictions'
-                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-xs'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium active:bg-slate-100 dark:active:bg-slate-800'
               }`}
             >
-              <TrendingDown className="h-3.5 w-3.5 text-rose-500" />
-              <span>2–5% Fall</span>
+              <TrendingDown className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-rose-500" />
+              <span className="hidden xs:inline">2–5% Fall</span>
+              <span className="xs:hidden">Fall</span>
               {displayedFallList.length > 0 && (
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-mono font-bold">
+                <span className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-mono font-bold">
                   {displayedFallList.length}
                 </span>
               )}
@@ -290,7 +254,7 @@ export default function DashboardPowerRadarsHub() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
               {displayedSmallCapList.map((item: any) => {
                 const ticker = item.ticker || 'STOCK';
                 const price = typeof item.price === 'number' ? item.price : (typeof item.currentPrice === 'number' ? item.currentPrice : (typeof item.close === 'number' ? item.close : 100));
@@ -304,7 +268,7 @@ export default function DashboardPowerRadarsHub() {
                     variants={cardVariants}
                     whileHover={{ y: -6, scale: 1.015 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                    className="relative overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-5 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-500/50 transition-colors flex flex-col justify-between group"
+                    className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-4 sm:p-5 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-500/50 transition-colors flex flex-col justify-between group active:scale-98"
                   >
                     {/* Top corner gradient hover glow */}
                     <div className="absolute -top-12 -right-12 w-28 h-28 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/25 transition-all" />
@@ -401,7 +365,7 @@ export default function DashboardPowerRadarsHub() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
               {rapidMoveCandidates.slice(0, 6).map((c: any) => {
                 const cleanTicker = (c.ticker || '').replace('.NS', '').replace('.BO', '');
                 const price = typeof c.price === 'number' ? c.price : (typeof c.close === 'number' ? c.close : (typeof c.entry === 'number' ? c.entry : 100));
@@ -512,7 +476,7 @@ export default function DashboardPowerRadarsHub() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
               {displayedFallList.map((item: any) => {
                 const cleanTicker = (item.ticker || 'STOCK').replace('.NS', '');
                 const entry = item.entry_price || item.close || 100;

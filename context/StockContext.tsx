@@ -138,7 +138,7 @@ export function StockProvider({ children }: { children: React.ReactNode }) {
   const accountStoragePrefix = session?.user?.email ? `axion_${session.user.email.toLowerCase()}_` : null;
   const portfolioControls = usePortfolioSync(status === 'authenticated' && session?.user?.email ? session.user.email.toLowerCase() : null);
   const [livePolling, setLivePolling] = useState(true);
-  const [pollingInterval, setPollingInterval] = useState(30000); // 30s interval to avoid socket contention
+  const [pollingInterval, setPollingInterval] = useState(60000); // 60s default; live requests pause in hidden tabs
   const [simulatedErrorType, setSimulatedErrorType] = useState<'network' | 'rateLimit' | null>(null);
   const [dataSource, setDataSource] = useState<'real' | 'simulated'>('real');
 

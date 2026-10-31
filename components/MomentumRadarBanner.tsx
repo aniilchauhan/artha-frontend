@@ -174,22 +174,22 @@ export default function MomentumRadarBanner() {
     }
   };
 
-  // Initial fetch and dynamic polling: 15s during active market hours, 5m idle when closed/weekend
+  // Initial fetch and dynamic polling: 30s during active market hours, 5m idle when closed/weekend
   useEffect(() => {
     fetchRadar();
     const marketOpen = isNSEMarketOpen();
     if (!marketOpen) {
       // Off-hours/Weekend: idle heartbeat, resume rapid polling when market opens
       const idleInterval = setInterval(() => {
-        if (isNSEMarketOpen()) {
+        if (!document.hidden && isNSEMarketOpen()) {
           fetchRadar();
         }
       }, 5 * 60 * 1000);
       return () => clearInterval(idleInterval);
     }
     const pollInterval = setInterval(() => {
-      fetchRadar();
-    }, 15_000);
+      if (!document.hidden) fetchRadar();
+    }, 30_000);
     return () => clearInterval(pollInterval);
   }, [audioEnabled, desktopAlerts]);
 
@@ -200,9 +200,6 @@ export default function MomentumRadarBanner() {
         const diffMs = new Date(snapshot.nextCycleAt).getTime() - Date.now();
         const secs = Math.max(0, Math.floor(diffMs / 1000));
         setSecondsRemaining(secs % 300);
-        if (secs <= 0) {
-          fetchRadar();
-        }
       } else {
         const now = Date.now();
         const nextBound = Math.ceil(now / (5 * 60 * 1000)) * (5 * 60 * 1000);

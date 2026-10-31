@@ -87,11 +87,18 @@ export function useMarketStockPolling(options: {
   }, [addToast, customTickersKey, dataSource, simulatedErrorType]);
 
   useEffect(() => {
-    void fetchBackendStocks();
+    if (document.visibilityState === 'visible') void fetchBackendStocks();
     if (!livePolling) return;
 
-    const intervalId = setInterval(() => { void fetchBackendStocks(); }, pollingInterval);
-    return () => clearInterval(intervalId);
+    const pollWhenVisible = () => {
+      if (document.visibilityState === 'visible') void fetchBackendStocks();
+    };
+    const intervalId = setInterval(pollWhenVisible, pollingInterval);
+    document.addEventListener('visibilitychange', pollWhenVisible);
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', pollWhenVisible);
+    };
   }, [fetchBackendStocks, livePolling, pollingInterval]);
 
   return { stocks, setStocks, isFetching, isLoading, setIsLoading, pollingError, setPollingError, apiSource, fetchBackendStocks };

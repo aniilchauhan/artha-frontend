@@ -75,14 +75,6 @@ export default function Sidebar() {
 
   const clearSelection = () => setSelectedTicker(null);
 
-  const openSettingsPanel = () => {
-    const btn = document.getElementById('btn-toggle-settings-panel');
-    if (btn) {
-      btn.click();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
   // Badge pill renderer
   const renderBadge = (badge?: string, type?: string) => {
     if (!badge) return null;
@@ -385,18 +377,18 @@ export default function Sidebar() {
           {/* Bottom Settings Link & Status Card */}
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 mt-auto">
             {isCollapsed ? (
-              <button
-                type="button"
-                onClick={openSettingsPanel}
-                title="Open Settings Panel (All Other Tools)"
+              <Link
+                href="/settings"
+                onClick={clearSelection}
+                title="Open Settings Page (All Other Tools)"
                 className="group relative flex items-center justify-center w-full min-h-[40px] rounded-xl p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 <Settings size={18} className="group-hover:rotate-45 transition-transform duration-200" />
-              </button>
+              </Link>
             ) : (
-              <button
-                type="button"
-                onClick={openSettingsPanel}
+              <Link
+                href="/settings"
+                onClick={clearSelection}
                 className="group w-full flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 border border-slate-200/60 dark:border-slate-800/80 transition-all text-left"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -405,7 +397,7 @@ export default function Sidebar() {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 leading-tight">
-                      Settings Panel
+                      Settings Page
                     </p>
                     <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-tight">
                       All other tools & modules
@@ -415,7 +407,7 @@ export default function Sidebar() {
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300">
                   25+
                 </span>
-              </button>
+              </Link>
             )}
           </div>
         </div>
@@ -428,8 +420,8 @@ export default function Sidebar() {
         aria-label="Mobile navigation"
         className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-slate-200/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl dark:border-slate-800/80 pb-safe shadow-lg"
       >
-        <div className="grid grid-cols-6 px-1 py-1.5">
-          {FOCUS_NAV_GROUP.items.map(item => {
+        <div className="grid grid-cols-5 px-1 py-1.5">
+          {FOCUS_NAV_GROUP.items.slice(0, 4).map(item => {
             const active = pathname === item.href;
             const ItemIcon = item.icon;
             return (
@@ -454,9 +446,9 @@ export default function Sidebar() {
             );
           })}
 
-          <button
-            type="button"
-            onClick={openSettingsPanel}
+          <Link
+            href="/settings"
+            onClick={clearSelection}
             aria-label="Open Settings and all other tools"
             className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-2xl text-[10px] font-bold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
@@ -464,7 +456,7 @@ export default function Sidebar() {
               <Settings size={18} />
             </div>
             <span>Settings</span>
-          </button>
+          </Link>
         </div>
       </nav>
     </>
